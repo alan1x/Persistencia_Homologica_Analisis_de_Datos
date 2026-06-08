@@ -54,6 +54,60 @@ def resumen(diags):
     return res
 
 
+def ciclos_H1(simplex_tree, puntos_xy, min_persistencia=200.0):
+    """Extrae las clases H₁ persistentes usando persistence_pairs() (funciona con Alpha complex).
+
+    Para cada par (birth_simplex, death_simplex) de dimensión 1:
+      - birth_simplex = arista [v1, v2] que crea el hueco
+      - death_simplex = triángulo [v1, v2, v3] que rellena el hueco
+      - centroide = promedio de los 3 vértices del triángulo de muerte
+
+    Devuelve lista de dicts ordenada de mayor a menor persistencia:
+        'birth', 'death', 'pers'  → en metros (sqrt del valor alpha)
+        'centroide'               → (cx, cy) en metros UTM
+        'aristas'                 → array (1, 2, 2) con la arista de nacimiento
+    """
+    simplex_tree.compute_persistence()
+    pairs = simplex_tree.persistence_pairs()
+
+    ciclos = []
+    for birth_simplex, death_simplex in pairs:
+        # H₁: birth = arista (2 vértices), death = triángulo (3 vértices)
+        if len(birth_simplex) != 2 or len(death_simplex) != 3:
+            continue
+
+        birth_alpha = simplex_tree.filtration(list(birth_simplex))
+        death_alpha = simplex_tree.filtration(list(death_simplex))
+
+        if not np.isfinite(death_alpha):
+            continue
+
+        birth_m = float(np.sqrt(max(birth_alpha, 0)))
+        death_m = float(np.sqrt(max(death_alpha, 0)))
+        pers = death_m - birth_m
+
+        if pers < min_persistencia:
+            continue
+
+        # Centroide: promedio de los 3 vértices del triángulo de muerte
+        pts_muerte = puntos_xy[list(death_simplex)]
+        cx, cy = float(pts_muerte[:, 0].mean()), float(pts_muerte[:, 1].mean())
+
+        # Arista de nacimiento para visualización
+        p1, p2 = puntos_xy[birth_simplex[0]], puntos_xy[birth_simplex[1]]
+
+        ciclos.append({
+            "birth": birth_m,
+            "death": death_m,
+            "pers": pers,
+            "centroide": (cx, cy),
+            "aristas": np.array([[p1, p2]]),
+        })
+
+    ciclos.sort(key=lambda c: c["pers"], reverse=True)
+    return ciclos
+
+
 def rips_submuestra(puntos, n=500, seed=0, maxdim=1, thresh=None):
     """Vietoris-Rips sobre una submuestra (didáctico: contraste con Alpha).
 

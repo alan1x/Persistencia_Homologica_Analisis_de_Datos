@@ -1,0 +1,38 @@
+[project]
+name = "persistencia-homologica"
+version = "0.1.0"
+description = "Análisis topológico de datos (TDA) sobre DENUE — sector salud SCIAN 62"
+requires-python = ">=3.12"
+
+dependencies = [
+    # datos
+    "pandas>=3.0",
+    "numpy>=2.0",
+    "pyarrow>=14.0",
+    "pyproj>=3.6",
+
+    # TDA
+    "gudhi>=3.10",
+    "ripser>=0.6",
+    "persim>=0.3",
+    "kmapper>=2.1",
+
+    # ML / stats
+    "scikit-learn>=1.4",
+    "scipy>=1.12",
+
+    # visualización
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "folium>=0.17",
+
+    # notebooks
+    "jupytext>=1.16",
+    "ipykernel>=6.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "notebook>=7.0",
+    "jupyterlab>=4.0",
+]

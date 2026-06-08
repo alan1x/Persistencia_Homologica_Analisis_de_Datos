@@ -1,10 +1,9 @@
 """Configuración central del proyecto: rutas, columnas, parámetros geográficos."""
 from pathlib import Path
 
-# Raíz del proyecto (carpeta Proyecto/), asumiendo lib/ dentro de src/
-SRC_DIR = Path(__file__).resolve().parent.parent
-PROYECTO_DIR = SRC_DIR.parent
-DATOS_DIR = PROYECTO_DIR / "Datos"
+# Raíz del proyecto: lib/ está directamente en la raíz del repositorio.
+SRC_DIR = Path(__file__).resolve().parent.parent  # Persistencia_Homologica_Analisis_de_Datos/
+DATOS_DIR = SRC_DIR / "Datos"
 OUTPUTS_DIR = SRC_DIR / "outputs"
 FIGURAS_DIR = OUTPUTS_DIR / "figuras"
 INTERMEDIOS_DIR = OUTPUTS_DIR / "intermedios"
