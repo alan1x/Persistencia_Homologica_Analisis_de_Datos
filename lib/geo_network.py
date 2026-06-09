@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import Point
+from shapely import concave_hull
 import osmnx as ox
 import networkx as nx
 from pyproj import Transformer
@@ -137,7 +138,14 @@ def isocrona_desde_nodo(G_proj, nodo, tiempo_minutos=15, velocidad_kmh=VELOCIDAD
         sub_g = nx.ego_graph(G_proj, nodo, radius=tiempo_minutos, distance="time")
         puntos = [Point(d["x"], d["y"]) for _, d in sub_g.nodes(data=True)]
         if len(puntos) >= 3:
-            return gpd.GeoSeries(puntos).unary_union.convex_hull
+            envolvente = gpd.GeoSeries(puntos).unary_union
+            # Concave hull (no convexo): refleja la deformación real de la red vial
+            # peatonal frente al disco euclidiano. ratio bajo = contorno más ajustado
+            # a la geometría de calles. Cae a convex_hull si el concavo falla.
+            try:
+                return concave_hull(envolvente, ratio=0.4)
+            except Exception:
+                return envolvente.convex_hull
     except Exception:
         pass
     return None

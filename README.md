@@ -18,7 +18,7 @@ src/
   outputs/
     intermedios/   # parquet de datos limpios por región
     figuras/       # PNG (EDA, persistencia) + HTML (Mapper)
-reporte/       # reporte.md con hallazgos
+reporte/       # trabajo_final.md — reporte final con hallazgos
 ```
 
 ## Setup
@@ -46,4 +46,4 @@ Editar el `.py` y regenerar: `uv run jupytext --to notebook *.py`.
 
 - CDMX 21,585 / EDOMEX 30,787 unidades de salud limpias.
 - EDOMEX presenta ~3× más huecos H₁ persistentes (zonas sin cobertura) que CDMX.
-- Ver `reporte/reporte.md`.
+- Ver `reporte/trabajo_final.md` (reporte final).

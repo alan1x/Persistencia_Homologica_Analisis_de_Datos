@@ -301,6 +301,8 @@ Resultados:
 | Moderado | — | — |
 | **Total prioritarios** | **46** | **77** |
 
+Los niveles Crítico/Alto son los cortes por percentil del **score compuesto** (≥ p75 y ≥ p50). El total de **46 / 77 prioritarios no es la suma de esos niveles** (16+15=31 en CDMX): proviene del **filtro de selección OR de §8.2**, donde basta cumplir uno de los 4 ejes (tiempo, inequidad, persistencia o marginación) para entrar. Por eso captura huecos que ningún corte por percentil del score global marcaría como Crítico/Alto pero que son severos en un eje individual.
+
 El IM medio de los huecos críticos de EDOMEX (0.37) supera al de CDMX (0.29), confirmando que los desiertos de salud más severos del Estado de México no solo son más grandes sino que están en zonas socioeconómicamente más vulnerables.
 
 > **Figura:** `outputs/figuras/scoring_scatter.png` — Scatter de los 4 ejes: eje X = inaccesibilidad (tiempo), eje Y = inequidad (personas sin seguro), tamaño del punto = persistencia topológica, color = score final. Los puntos rojos grandes en la esquina superior derecha son los huecos de mayor urgencia compuesta.
@@ -437,7 +439,7 @@ La razón geométrica es clara: EDOMEX tiene 69 clusters para 72 huecos (casi to
 
 ### 9.5 EDOMEX: Estrategia Subregional K=12 (4 Zonas × 3 Clínicas)
 
-Dividimos EDOMEX en 4 subregiones geográficas y asignamos **K=3 clínicas por zona** — presupuesto uniforme que garantiza presencia en todas las áreas del estado:
+Dividimos EDOMEX en 4 subregiones geográficas y asignamos **K=3 clínicas por zona** — presupuesto uniforme que garantiza presencia en todas las áreas del estado. Esto da **K=12 presupuestadas, pero solo 9 ubicables**: la zona Oriente no tiene candidatos válidos al umbral de 15 min (ver abajo), así que sus 3 clínicas quedan sin colocar y la solución efectiva opera con 9.
 
 | Subregión | Delimitación | Huecos | K asignado | Huecos cubiertos | Sin seguro cubiertos | % subregional |
 |-----------|-------------|--------|-----------|-----------------|---------------------|---------------|
@@ -541,7 +543,7 @@ Los huecos que K=7 cubre en CDMX tienen un IM medio de 0.35 vs 0.28 de los que p
 
 K=7 es el punto donde la cobertura supera el 44% antes de que los incrementos marginales entren en caída sostenida (K=8→9: +4.0 pp, K=9→10: +3.0 pp). Con 7 nuevas clínicas estratégicamente ubicadas se cubren 42,687 personas sin seguro en 46 huecos prioritarios. Los 5 clusters del núcleo estable (C1, C2, C5, C7, C8) aparecen en toda la curva K=5→10 y deben ser la primera fase de inversión. Los clusters C16 y C19 se añaden al pasar de K=5 a K=7 y son la segunda prioridad.
 
-**EDOMEX — Estrategia subregional 4 zonas × 3 clínicas = 12 total:**
+**EDOMEX — Estrategia subregional 4 zonas × 3 clínicas (12 presupuestadas, 9 ubicables):**
 
 No existe un K óptimo global para EDOMEX porque su curva K=5→10 es casi perfectamente lineal (~2 pp por clínica). La inversión debe distribuirse geográficamente: 3 clínicas para Norte (8 huecos), 3 para Poniente (22 huecos), 3 para ZMVM-Centro (41 huecos), cubriendo 9/77 huecos y 35,868 personas. La zona Oriente (6 huecos, 12,270 sin seguro) no tiene candidatos válidos al umbral de 15 min y requiere estrategia complementaria: umbral extendido de 20–30 min, clínicas móviles o telemedicina.
 

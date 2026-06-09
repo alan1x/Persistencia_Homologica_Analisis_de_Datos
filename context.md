@@ -61,7 +61,7 @@ bottleneck **≈5.9 km**, Wasserstein **≈87 km** → EDOMEX mucho más dispers
 EDOMEX 983/1213 → EDOMEX más fragmentado.
 
 ### 4. Conclusiones — hecho
-`reporte/reporte.md` + `notebooks/05_conclusiones`. Implicaciones: huecos H₁ de
+`reporte/trabajo_final.md` + `notebooks/05_conclusiones`. Implicaciones: huecos H₁ de
 gran radio en EDOMEX = zonas mal cubiertas, candidatas a nuevas unidades de salud.
 
 ---
@@ -72,7 +72,7 @@ src/
   lib/         config, data, eda, tda, viz_tda, mapper_viz
   notebooks/   01_limpieza_eda … 05_conclusiones (.py percent + .ipynb)
   outputs/     intermedios/ (parquet) · figuras/ (PNG + HTML Mapper)
-  reporte/     reporte.md
+  reporte/     trabajo_final.md
 ```
 Setup y ejecución: ver `README.md` (entorno con `uv`, py3.12).
 
