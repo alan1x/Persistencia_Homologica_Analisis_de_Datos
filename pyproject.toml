@@ -29,6 +29,7 @@ dependencies = [
     "networkx>=3.6.1",
     "pulp>=3.3.2",
     "osmium>=4.3.1",
+    "python-pptx>=1.0.2",
 ]
 
 [tool.uv]
