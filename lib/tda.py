@@ -19,6 +19,28 @@ def alpha_complex(puntos, max_alpha_square=None):
     return st
 
 
+def pesos_desde_per_ocu(df, radio_base=50.0, factor=30.0):
+    """Calcula los pesos (radio^2) para el Weighted Alpha Complex.
+    
+    El radio de la unidad médica crece sublinealmente (sqrt) con el personal ocupado.
+    - Consultorio chico (per_ocu=2.5) -> radio_base + factor * sqrt(2.5) ~ 97m
+    - Hospital grande (per_ocu=1000)  -> radio_base + factor * sqrt(1000) ~ 998m
+    """
+    per_ocu = df["per_ocu_num"].fillna(0).values
+    radios = radio_base + factor * np.sqrt(per_ocu)
+    return radios ** 2
+
+
+def weighted_alpha_complex(puntos, pesos):
+    """Construye un Weighted Alpha complex (Laguerre) con Gudhi.
+    
+    Requiere que los pesos sean un array de numpy de dimensión 1.
+    """
+    ac = gudhi.AlphaComplex(points=puntos, weights=pesos)
+    st = ac.create_simplex_tree()
+    return st
+
+
 def persistencia(simplex_tree):
     """Calcula persistencia y devuelve dict dim -> array (n,2) de (nacimiento, muerte)."""
     simplex_tree.compute_persistence()

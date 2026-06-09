@@ -3,5 +3,13 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 outputs/intermedios/*.parquet
+outputs/intermedios/*.csv
+outputs/intermedios/*.pkl
 .codegraph/
 /Datos
+/cache
+/reporte/implementation_plan.md
+/reporte/task.md
+/reporte/walkthrough.md
+.md
+/outputs/redes
