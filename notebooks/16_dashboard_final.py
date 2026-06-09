@@ -37,6 +37,10 @@ from lib import config
 
 _TR = Transformer.from_crs("EPSG:4326", config.CRS_METROS, always_xy=True)
 
+# INEGI municipality/alcaldía boundaries (offline, no extra dependency)
+_gdf_cdmx   = gpd.read_file(str(_ROOT / "Datos/Geoestadistico/CDMX/conjunto_de_datos/09mun.shp")).to_crs(config.CRS_METROS)
+_gdf_edomex = gpd.read_file(str(_ROOT / "Datos/Geoestadistico/EDOMEX/conjunto_de_datos/15mun.shp")).to_crs(config.CRS_METROS)
+
 URG_COLOR = {
     "Crítico":  "#b2182b",
     "Alto":     "#e08214",
@@ -94,6 +98,7 @@ fig.suptitle(
 ax.set_facecolor("#f0f0f0")
 ax.hexbin(sal_cdmx["x"].values, sal_cdmx["y"].values,
           gridsize=40, cmap="Greys", alpha=0.18, zorder=1, mincnt=1)
+_gdf_cdmx.boundary.plot(ax=ax, color="#aaaaaa", linewidth=0.8, zorder=2)
 
 # Huecos no prioritarios
 df_desc = df_all_cdmx[~df_all_cdmx["hueco_id"].isin(df_prio_cdmx["hueco_id"])]
@@ -333,6 +338,7 @@ def dibujar_edomex(ax, df_prio, clinicas_xy, ids_cub, titulo, nota, colorear_sub
     ax.set_facecolor("#f0f4f8")
     ax.hexbin(sal_edomex["x"].values, sal_edomex["y"].values,
               gridsize=40, cmap="Greys", alpha=0.15, zorder=1, mincnt=1)
+    _gdf_edomex.boundary.plot(ax=ax, color="#aaaaaa", linewidth=0.8, zorder=2)
     for _, row in df_prio.iterrows():
         hid   = int(row["hueco_id"])
         color = URG_COLOR.get(row.get("urgencia", "Moderado"), "#aaa")
@@ -491,6 +497,7 @@ for ax, sr in zip(axes, SUBREGIONES_PLOT):
     ax.set_facecolor("#f0f4f8")
     ax.hexbin(sal_edomex["x"].values, sal_edomex["y"].values,
               gridsize=30, cmap="Greys", alpha=0.12, zorder=1, mincnt=1)
+    _gdf_edomex.boundary.plot(ax=ax, color="#aaaaaa", linewidth=0.8, zorder=2)
 
     for _, row in df_sr.iterrows():
         hid   = int(row["hueco_id"])

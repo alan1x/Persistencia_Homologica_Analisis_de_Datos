@@ -22,10 +22,13 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
+import matplotlib
+matplotlib.use("Agg")
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import geopandas as gpd
 from sklearn.cluster import DBSCAN
 from pyproj import Transformer
 
@@ -34,6 +37,10 @@ from lib import config
 REGIONES = ["CDMX", "EDOMEX"]
 COLORES  = {"CDMX": "#4393c3", "EDOMEX": "#d6604d"}
 _TR = Transformer.from_crs("EPSG:4326", config.CRS_METROS, always_xy=True)
+
+_gdf_cdmx   = gpd.read_file(str(_ROOT / "Datos/Geoestadistico/CDMX/conjunto_de_datos/09mun.shp")).to_crs(config.CRS_METROS)
+_gdf_edomex = gpd.read_file(str(_ROOT / "Datos/Geoestadistico/EDOMEX/conjunto_de_datos/15mun.shp")).to_crs(config.CRS_METROS)
+_GDF_MUN = {"CDMX": _gdf_cdmx, "EDOMEX": _gdf_edomex}
 
 # Umbrales de selección — 4 ejes (consistent con el scoring 25/25/25/25)
 TIEMPO_UMBRAL  = 10.0   # minutos caminando a clínica más cercana
@@ -167,6 +174,7 @@ for ax, region in zip(axes, REGIONES):
     df_desc = dfs_all[region][~dfs_all[region]["hueco_id"].isin(df_hue["hueco_id"])]
 
     ax.set_facecolor("#f0f4f8")
+    _GDF_MUN[region].boundary.plot(ax=ax, color="#aaaaaa", linewidth=0.8, zorder=1)
 
     # ── Huecos NO prioritarios: círculos grises translúcidos con borde punteado ──
     for _, row in df_desc.iterrows():

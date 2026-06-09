@@ -408,11 +408,11 @@ El análisis más revelador compara las características promedio de los 11 huec
 
 1. Los huecos cubiertos tienen casi el **doble de personas sin seguro** (3,881 vs 1,555) — el MCLP maximiza correctamente el impacto poblacional.
 
-2. Los huecos cubiertos tienen **mayor IM** (0.35 vs 0.28) — el 4.° eje de marginación sí cambia la solución: sin él, algunos de estos huecos habrían tenido menor prioridad.
+2. Los huecos cubiertos tienen **mayor IM** (0.35 vs 0.29) — el 4.° eje de marginación sí cambia la solución: sin él, algunos de estos huecos habrían tenido menor prioridad.
 
-3. Los huecos persistentes tienen **mayor persistencia geométrica** (401 m vs 296 m) — los vacíos geográficos más grandes tienden a quedar fuera porque suelen estar en zonas periféricas con baja densidad de población.
+3. Los huecos persistentes tienen **mayor persistencia geométrica** (364 m vs 296 m) — los vacíos geográficos más grandes tienden a quedar fuera porque suelen estar en zonas periféricas con baja densidad de población.
 
-4. La paradoja del tiempo: los huecos cubiertos tienen menor tiempo (7.89 vs 10.16 min). Esto no indica que K=7 ignora la inaccesibilidad — indica que los huecos muy lejanos tienden a tener poca población (están en zonas periféricas) y el MCLP racionalmente los pospone.
+4. La paradoja del tiempo: los huecos cubiertos tienen menor tiempo (7.89 vs 9.27 min). Esto no indica que K=7 ignora la inaccesibilidad — indica que los huecos muy lejanos tienden a tener poca población (están en zonas periféricas) y el MCLP racionalmente los pospone.
 
 > **Figura:** `outputs/figuras/fase3_CDMX_k7_mapa.png` — Mapa de CDMX con las 7 clínicas propuestas (puntos numerados), sus zonas de cobertura de 15 min (polígonos de colores), los huecos prioritarios (coloreados por urgencia) y los no prioritarios (gris). Los huecos con borde blanco grueso son los cubiertos por la solución K=7.
 
