@@ -35,10 +35,11 @@ REGIONES = ["CDMX", "EDOMEX"]
 COLORES  = {"CDMX": "#4393c3", "EDOMEX": "#d6604d"}
 _TR = Transformer.from_crs("EPSG:4326", config.CRS_METROS, always_xy=True)
 
-# Umbrales de selección
-TIEMPO_UMBRAL  = 10.0   # minutos
-PERS_UMBRAL    = 400.0  # metros de persistencia
+# Umbrales de selección — 4 ejes (consistent con el scoring 25/25/25/25)
+TIEMPO_UMBRAL  = 10.0   # minutos caminando a clínica más cercana
+PERS_UMBRAL    = 400.0  # metros de persistencia topológica
 PSIN_PCT       = 60     # percentil de sin_seguro dentro de cada ciudad
+MARG_PCT       = 60     # percentil de indice_marg dentro de cada ciudad
 
 # DBSCAN: huecos a ≤ 1500 m entre sí forman un cluster
 DBSCAN_EPS     = 1500   # metros
@@ -56,39 +57,44 @@ for region in REGIONES:
     df["x_utm"], df["y_utm"] = _TR.transform(df["lon"].values, df["lat"].values)
     dfs_all[region] = df.copy()
 
-    # Percentil 60 de sin_seguro dentro de la región
+    # Percentiles dentro de la región para cada eje
     p60_psin = df["pob_sin_salud"].quantile(PSIN_PCT / 100)
+    p60_marg = df["indice_marg"].quantile(MARG_PCT / 100) if "indice_marg" in df.columns else 1.0
 
-    # Criterio OR: basta cumplir uno
+    # Criterio OR sobre los 4 ejes — basta cumplir uno para ser prioritario
     mask = (
         (df["tiempo_est_min"] > TIEMPO_UMBRAL)  |
         (df["pob_sin_salud"]  > p60_psin)       |
-        (df["pers_m"]         > PERS_UMBRAL)
+        (df["pers_m"]         > PERS_UMBRAL)    |
+        (df["indice_marg"]    > p60_marg)
     )
     df_sel = df[mask].copy()
 
     # Etiqueta de eje dominante (para visualización)
-    def eje_dominante(row, p60):
+    def eje_dominante(row, p60_ps, p60_mg):
         ejes = []
-        if row["tiempo_est_min"] > TIEMPO_UMBRAL: ejes.append("Tiempo")
-        if row["pob_sin_salud"]  > p60:           ejes.append("Sin seguro")
-        if row["pers_m"]         > PERS_UMBRAL:   ejes.append("Persistencia")
+        if row["tiempo_est_min"] > TIEMPO_UMBRAL:  ejes.append("Tiempo")
+        if row["pob_sin_salud"]  > p60_ps:         ejes.append("Sin seguro")
+        if row["pers_m"]         > PERS_UMBRAL:    ejes.append("Persistencia")
+        if "indice_marg" in row and row["indice_marg"] > p60_mg:
+            ejes.append("Marginación")
         return " + ".join(ejes) if ejes else "—"
 
     df_sel["eje_dominante"] = df_sel.apply(
-        lambda r: eje_dominante(r, p60_psin), axis=1
+        lambda r: eje_dominante(r, p60_psin, p60_marg), axis=1
     )
 
     dfs_sel[region] = df_sel
     n_desc = len(df) - len(df_sel)
 
     print(f"[{region}]")
-    print(f"  Total habitados:      {len(df)}")
-    print(f"  Seleccionados (MCLP): {len(df_sel)}  "
+    print(f"  Total habitados:           {len(df)}")
+    print(f"  Seleccionados (4 ejes OR): {len(df_sel)}  "
           f"({len(df_sel)/len(df)*100:.0f}%)")
-    print(f"  Descartados:          {n_desc}  "
-          f"(bajo en los 3 ejes — micro-brechas sin impacto)")
-    print(f"  Umbral p60 sin seguro: {p60_psin:.0f} personas")
+    print(f"  Descartados:               {n_desc}  "
+          f"(micro-brechas sin impacto en ningún eje)")
+    print(f"  Umbral p60 sin seguro:  {p60_psin:.0f} personas")
+    print(f"  Umbral p60 marginación: {p60_marg:.3f} IM")
     print()
 
 # %% [markdown]
@@ -137,11 +143,21 @@ for region in REGIONES:
 # %%
 PALETA_CLUSTERS = plt.cm.tab20.colors   # hasta 20 colores distintos
 
-fig, axes = plt.subplots(1, 2, figsize=(18, 9))
+# Colores de urgencia (igual que nb16)
+URG_COLOR_CL = {
+    "Crítico":  "#b2182b",
+    "Alto":     "#e08214",
+    "Moderado": "#4dac26",
+    "Bajo":     "#b8e186",
+}
+
+fig, axes = plt.subplots(1, 2, figsize=(20, 10))
 fig.suptitle(
-    "Huecos prioritarios agrupados por proximidad geográfica (DBSCAN, radio 1.5 km)\n"
-    "Cada color = un cluster = una decisión de inversión potencial",
-    fontsize=13, fontweight="bold"
+    "Agrupación geográfica de huecos prioritarios (DBSCAN, radio 1.5 km)\n"
+    "CRITERIO OR sobre 4 ejes: tiempo > 10 min  ·  sin seguro > p60  ·  persistencia > 400 m  ·  marginación > p60\n"
+    "SELECCIONADOS (coloreados): cumplen ≥1 criterio  ·  NO PRIORITARIOS (grises con X): bajo en los 4 ejes\n"
+    "Número = rank del cluster (C1 = mayor score compuesto)  ·  Contorno = urgencia (rojo=Crítico, naranja=Alto, verde=Moderado)",
+    fontsize=10, fontweight="bold"
 )
 
 for ax, region in zip(axes, REGIONES):
@@ -150,52 +166,87 @@ for ax, region in zip(axes, REGIONES):
     df_res  = data["resumen"]
     df_desc = dfs_all[region][~dfs_all[region]["hueco_id"].isin(df_hue["hueco_id"])]
 
-    ax.set_facecolor("#f5f5f5")
+    ax.set_facecolor("#f0f4f8")
 
-    # Huecos descartados (gris pequeño)
+    # ── Huecos NO prioritarios: círculos grises translúcidos con borde punteado ──
+    for _, row in df_desc.iterrows():
+        circ = plt.Circle(
+            (row["x_utm"], row["y_utm"]), row["pers_m"],
+            facecolor="#d8d8d8", edgecolor="#aaaaaa",
+            linewidth=1.0, linestyle=":", alpha=0.40, zorder=1
+        )
+        ax.add_patch(circ)
+    # Marca "X" encima de cada hueco descartado
     ax.scatter(df_desc["x_utm"], df_desc["y_utm"],
-               s=15, c="#d0d0d0", alpha=0.5, zorder=1,
-               label=f"Descartados ({len(df_desc)})")
+               marker="x", s=20, c="#999999", linewidths=1.0,
+               alpha=0.6, zorder=2, label=f"No prioritario ({len(df_desc)}): baja urgencia en los 4 ejes")
 
-    # Huecos seleccionados, coloreados por cluster
+    # ── Huecos PRIORITARIOS agrupados por cluster ──
     n_clusters = df_hue["cluster_id"].nunique()
     for cl_id, sub in df_hue.groupby("cluster_id"):
-        color = PALETA_CLUSTERS[cl_id % len(PALETA_CLUSTERS)]
-        # Círculos proporcionales a persistencia
+        color_cl  = PALETA_CLUSTERS[cl_id % len(PALETA_CLUSTERS)]
+        info      = df_res[df_res["cluster_id"] == cl_id].iloc[0]
+        rank_cl   = int(info["rank_cluster"])
+
         for _, row in sub.iterrows():
-            circ = plt.Circle((row["x_utm"], row["y_utm"]),
-                              row["pers_m"], color=color,
-                              alpha=0.55, zorder=2)
-            ax.add_patch(circ)
-        # Centroide del cluster
-        info = df_res[df_res["cluster_id"] == cl_id].iloc[0]
-        ax.plot(info["cx_utm"], info["cy_utm"], "o",
-                color=color, markersize=9, markeredgecolor="#333",
-                markeredgewidth=1.0, zorder=4)
-        # Número de rank del cluster
-        ax.text(info["cx_utm"], info["cy_utm"] + info["pers_max"] * 0.6,
-                f"C{int(info['rank_cluster'])}",
-                fontsize=7, ha="center", color="#222", fontweight="bold", zorder=5)
+            urg_color = URG_COLOR_CL.get(row.get("urgencia", "Moderado"), "#4dac26")
+            # Relleno = color del cluster (identidad)
+            circ_fill = plt.Circle(
+                (row["x_utm"], row["y_utm"]), row["pers_m"],
+                facecolor=color_cl, alpha=0.50, zorder=3
+            )
+            # Contorno = color de urgencia
+            circ_edge = plt.Circle(
+                (row["x_utm"], row["y_utm"]), row["pers_m"],
+                facecolor="none", edgecolor=urg_color,
+                linewidth=2.5, zorder=4
+            )
+            ax.add_patch(circ_fill)
+            ax.add_patch(circ_edge)
+
+        # Centroide del cluster: diamante con número de rank
+        ax.plot(info["cx_utm"], info["cy_utm"], "D",
+                color=color_cl, markersize=12,
+                markeredgecolor="white", markeredgewidth=1.5, zorder=6)
+        ax.text(info["cx_utm"], info["cy_utm"],
+                f"C{rank_cl}", ha="center", va="center",
+                fontsize=6.5, fontweight="bold", color="white", zorder=7)
+        # Label con score encima del cluster
+        ax.text(info["cx_utm"], info["cy_utm"] + info["pers_max"] * 1.1,
+                f"C{rank_cl}  score={info['score_max']:.2f}",
+                ha="center", fontsize=6, color="#333", zorder=7,
+                bbox=dict(boxstyle="round,pad=0.1", facecolor="white", alpha=0.6, linewidth=0))
 
     ax.set_aspect("equal")
     ax.set_axis_off()
     ax.set_title(
-        f"{region}  —  {len(df_hue)} huecos prioritarios → {n_clusters} clusters\n"
-        f"(gris = {len(df_desc)} huecos descartados por baja urgencia en los 3 ejes)",
+        f"{region}  —  {len(df_hue)} huecos PRIORITARIOS → {n_clusters} clusters de inversión\n"
+        f"{len(df_desc)} huecos NO prioritarios (gris con X, baja urgencia en los 4 ejes)",
         fontsize=11, fontweight="bold", color=COLORES[region]
     )
 
-# Leyenda
-parches = [
-    mpatches.Patch(color="#d0d0d0", alpha=0.6, label="Hueco descartado (bajo en 3 ejes)"),
-    mpatches.Patch(color="#888", alpha=0.6, label="Hueco prioritario (cada color = cluster)"),
-    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#888",
-               markersize=9, markeredgecolor="#333", label="Centroide del cluster"),
+# Leyenda completa
+parches_urg = [
+    mpatches.Patch(facecolor="white", edgecolor=c, linewidth=2.5, label=f"Urgencia {u}")
+    for u, c in URG_COLOR_CL.items() if u != "Bajo"
 ]
-fig.legend(handles=parches, loc="lower center", ncol=3, fontsize=9,
-           bbox_to_anchor=(0.5, 0.005), framealpha=0.95)
+parche_noprio = mpatches.Patch(facecolor="#d8d8d8", edgecolor="#aaa",
+                                linestyle=":", alpha=0.6,
+                                label="No prioritario (gris): baja urgencia en los 4 ejes")
+parche_cluster = plt.Line2D([0], [0], marker="D", color="w",
+                             markerfacecolor="#555", markersize=11,
+                             markeredgecolor="white",
+                             label="Centroide cluster (C# = rank por score)")
+parche_relleno = mpatches.Patch(color="#4393c3", alpha=0.5,
+                                 label="Relleno = identidad del cluster (mismo color = misma decisión)")
 
-plt.tight_layout(rect=[0, 0.04, 1, 1])
+fig.legend(
+    handles=parches_urg + [parche_noprio, parche_cluster, parche_relleno],
+    loc="lower center", ncol=4, fontsize=8.5,
+    bbox_to_anchor=(0.5, 0.005), framealpha=0.95
+)
+
+plt.tight_layout(rect=[0, 0.07, 1, 1])
 ruta = config.FIGURAS_DIR / "clusters_geograficos.png"
 plt.savefig(str(ruta), dpi=150, bbox_inches="tight", facecolor="white")
 plt.show()

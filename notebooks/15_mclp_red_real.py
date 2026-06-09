@@ -29,7 +29,9 @@ REGIONES      = ["CDMX", "EDOMEX"]
 VELOCIDAD_KMH = 4.5
 TIEMPO_LIM    = 15
 DETOUR        = 1.35          # fallback euclidiano
-K_VALS        = [3, 4, 5]
+# CDMX: K=7 es el óptimo (máximo retorno marginal). EDOMEX: estrategia subregional en nb19.
+K_VALS_CDMX   = [5, 7]
+K_VALS_EDOMEX = [5]
 MAX_CANDS     = 20
 REDES_DIR     = config.OUTPUTS_DIR / "redes"
 
@@ -197,7 +199,7 @@ for region in REGIONES:
 def resolver_mclp(huecos_df, candidatos, K, region):
     n_h     = len(huecos_df)
     n_c     = len(candidatos)
-    demanda = (huecos_df["score"] * huecos_df["pob_sin_salud"]).values
+    demanda = (huecos_df["score"].fillna(0) * huecos_df["pob_sin_salud"].fillna(0)).values
     ids_h   = huecos_df["hueco_id"].astype(int).tolist()
 
     C = np.zeros((n_h, n_c), dtype=np.int8)
@@ -235,6 +237,7 @@ for region in REGIONES:
     huecos_df  = datos[region]["huecos"]
     candidatos = resultados[region]
     soluciones[region] = {}
+    K_VALS = K_VALS_CDMX if region == "CDMX" else K_VALS_EDOMEX
     print(f"\n[{region}]", flush=True)
 
     for K in K_VALS:
@@ -299,7 +302,7 @@ for region in REGIONES:
     modo       = modos[region]
     print(f"\n[{region}]  ({modo})  {int(total_psin):,} sin seguro en huecos prioritarios",
           flush=True)
-    for K in K_VALS:
+    for K in sorted(soluciones[region].keys()):
         sol   = soluciones[region][K]
         pct   = sol["psin_cub"] / total_psin * 100
         ranks = [sol["candidatos"][j]["rank"] for j in sol["sel_idx"]]

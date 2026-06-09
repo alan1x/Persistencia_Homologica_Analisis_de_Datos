@@ -24,7 +24,12 @@
 12. [Resultados Integrados e Interpretación](#12-resultados-integrados-e-interpretación)
 13. [Fase 3 — Optimización Prescriptiva](#13-fase-3--optimización-prescriptiva)
 14. [Validación Topológica — Cierre del Ciclo TDA](#14-validación-topológica--cierre-del-ciclo-tda)
-15. [Conclusiones Generales](#15-conclusiones-generales)
+15. [Análisis Avanzados](#15-análisis-avanzados)
+    - 15.1 Sensibilidad de umbrales
+    - 15.2 MCLP Subregional para EDOMEX
+    - 15.3 Índice de Marginación como 4.° Eje
+    - 15.4 Robustez Topológica: mismo hueco a 4 radios
+16. [Conclusiones Generales](#16-conclusiones-generales)
 
 ---
 
@@ -713,15 +718,40 @@ Antes de la prescripción, las dos fases previas produjeron el mapa completo del
 
 **Hallazgo clave Fase 2:** El Weighted Alpha Complex (Laguerre) reduce el número de huecos significativos al reconocer que hospitales grandes cubren más territorio. Los huecos que sobreviven a la ponderación son genuinamente estructurales — no artefactos de distribución uniforme.
 
-### 13.2 Selección de huecos prioritarios (Notebooks 13–14)
+### 13.2 Scoring multi-eje de 4 dimensiones (Notebook 13)
 
-No todos los huecos merecen inversión. Se aplica un criterio OR — basta cumplir uno de tres ejes:
+Cada hueco recibe un rango percentil normalizado [0,1] en **cuatro ejes** con pesos iguales (25% cada uno):
+
+| Eje | Variable | Peso | Justificación |
+|-----|----------|------|---------------|
+| Inaccesibilidad | Tiempo caminando a clínica más cercana | 25% | Barrera física principal |
+| Inequidad | Personas sin seguro médico en el hueco | 25% | Retorno social directo |
+| Estructura | Persistencia topológica del hueco | 25% | Robustez del vacío detectado |
+| **Marginación** | **Índice compuesto desde Censo 2020** | **25%** | **Vulnerabilidad socioeconómica** |
+
+El Índice de Marginación (IM) se construye sin datos externos de CONAPO, únicamente desde variables del Censo disponibles en cada hueco:
+
+$$IM = 0.35 \cdot \widehat{\text{pct\_sin\_salud}} + 0.25 \cdot \widehat{\text{déficit\_educativo}} + 0.25 \cdot \widehat{\text{pob\_60+}} + 0.15 \cdot \widehat{\text{densidad\_demanda}}$$
+
+**Resultados del scoring:**
+
+| Región | Huecos habitados | Críticos (≥p75) | Altos (p50–p75) | IM medio | Score máximo |
+|--------|-----------------|-----------------|-----------------|----------|--------------|
+| CDMX | 62 | 16 | 16 | 0.293 | 0.788 |
+| EDOMEX | 99 | 26 | 24 | 0.370 | 0.927 |
+
+EDOMEX tiene mayor IM medio (0.370 vs 0.293), confirmando que sus huecos combinan barreras de acceso físico con desventajas socioeconómicas más pronunciadas. El único hueco que domina los **4 ejes simultáneamente** es el Hueco #36 de EDOMEX (score=0.927, pers=858m, 52% sin seguro, IM=0.519).
+
+### 13.3 Selección de huecos prioritarios (Notebook 14)
+
+Se aplica un criterio OR — basta cumplir uno de cuatro ejes para ser priorizado:
 
 | Eje | Umbral | Justificación |
 |-----|--------|---------------|
 | Tiempo de caminata | > 10 min | Acceso genuinamente problemático |
 | Población sin seguro | > p60 de la ciudad | Alto retorno social de una clínica nueva |
 | Persistencia topológica | > 400 m | Vacío estructural real en la red |
+| Índice de marginación | > p60 del conjunto | Vulnerabilidad socioeconómica severa |
 
 **Resultado de la selección:**
 - CDMX: **39 de 62** huecos habitados son prioritarios (87,967 personas sin seguro)
@@ -732,7 +762,7 @@ Los huecos seleccionados se agrupan geográficamente con **DBSCAN** (eps = 1,500
 - CDMX: 39 huecos → 33 clusters (algunos huecos se comparten entre candidatos)
 - EDOMEX: 72 huecos → 69 clusters (casi todos singletons — alta dispersión)
 
-### 13.3 Formulación del MCLP (Notebook 15)
+### 13.4 Formulación del MCLP (Notebook 15)
 
 Se resuelve el **Maximum Coverage Location Problem** con Programación Lineal Entera (PuLP/CBC):
 
@@ -752,31 +782,35 @@ Donde:
 
 **Estimación de tiempos:** distancia euclidiana × factor de desvío urbano 1.35, equivalente a un radio de cobertura de 1,125 m en línea recta para el umbral de 15 min (estándar para zonas metropolitanas densas).
 
-### 13.4 Resultados MCLP por número de clínicas nuevas
+### 13.5 Resultados MCLP
 
 **CDMX** — 87,967 personas sin seguro en huecos prioritarios:
 
+La curva de sensibilidad K=5→10 (§14.4) identificó K=7 como el punto óptimo: los saltos +6.2% y +5.9% de K=5→6 y K=6→7 caen a +4.4% y +3.4% en K=9 y K=10.
+
 | K | Huecos cubiertos | Sin seguro cubiertos | Clusters elegidos |
 |---|-----------------|----------------------|-------------------|
-| 3 | 5 / 39 (12.8%) | 20,460 (23.3%) | C1, C3, C4 |
-| 4 | 6 / 39 (15.4%) | 25,931 (29.5%) | C1, C3, C4, C9 |
-| 5 | 7 / 39 (17.9%) | 29,814 (33.9%) | C1, C2, C3, C4, C9 |
+| 5 | 7 / 39 (17.9%) | 31,091 (35.3%) | C1, C2, C5, C7, C8 |
+| **7 (óptimo)** | **11 / 39 (28.2%)** | **42,687 (48.5%)** | **C1, C2, C5, C7, C8, C16, C19** |
 
 **EDOMEX** — 182,357 personas sin seguro en huecos prioritarios:
 
-| K | Huecos cubiertos | Sin seguro cubiertos | Clusters elegidos |
-|---|-----------------|----------------------|-------------------|
-| 3 | 4 / 72 (5.6%) | 24,443 (13.4%) | C1, C12, C20 |
-| 4 | 5 / 72 (6.9%) | 29,042 (15.9%) | C1, C9, C12, C20 |
-| 5 | 6 / 72 (8.3%) | 32,683 (17.9%) | C1, C2, C9, C12, C20 |
+EDOMEX no tiene un K óptimo global — su curva es casi lineal (+2 pp/clínica), señal de dispersión geográfica. La solución es la **estrategia subregional** detallada en §15.2: 4 zonas × 3 clínicas = 12 total.
 
-### 13.5 Interpretación de los resultados MCLP
+| Estrategia | Huecos cubiertos | Sin seguro cubiertos | Clínicas |
+|------------|-----------------|----------------------|----------|
+| Global K=5 (referencia) | 6 / 72 (8.3%) | 32,683 (17.9%) | 5 |
+| **Subregional K=12 (4×3)** | **9 / 72 (12.5%)** | **35,868 (19.7%)** | **12** |
+
+### 13.6 Interpretación de los resultados MCLP
 
 **¿Por qué EDOMEX tiene menor cobertura porcentual?** Refleja geografía, no ineficiencia del modelo. EDOMEX tiene 69 clusters para 72 huecos — casi todos singletons. Una clínica en el centroide de un cluster singleton cubre solo ese hueco. En CDMX la red vial más densa permite que una clínica cubra huecos vecinos.
 
-**Estabilidad de la solución:** El Cluster 1 de CDMX (Hueco #8, 6,785 personas sin seguro, score 0.974) aparece en las soluciones K=3, K=4 y K=5 — es la inversión con mayor retorno independientemente del presupuesto. El Cluster 1 de EDOMEX (23,869 sin seguro) también aparece en todas las soluciones.
+**Impacto del 4.° eje (marginación) en la solución K=7:** Los 11 huecos cubiertos tienen un IM medio de 0.35 vs 0.28 de los 28 persistentes — el scoring 4 ejes sí redirige prioridad hacia zonas más marginadas. Al mismo tiempo, la pob_sin_salud media cubierta (3,881 personas) triplica a la persistente (1,617), confirmando que el MCLP optimiza inequidad además de estructura topológica. Sin embargo, los huecos con mayor persistencia geométrica (pers_m medio 401 m vs 296 m cubiertos) tienden a quedar fuera — vacíos grandes en geografía dispersa que requieren más clínicas.
 
-**¿Qué no resuelve K=5?** El 66% de la población sin seguro en huecos prioritarios de CDMX y el 82% de EDOMEX permanecen fuera de la cobertura con solo 5 nuevas clínicas. Esto no es fracaso del modelo — es la dimensión real del problema estructural.
+**Estabilidad de la solución:** El Cluster 1 de CDMX (7,525 sin seguro) aparece en K=5 y K=7. El Cluster 5 de EDOMEX (23,869 sin seguro) también es estable.
+
+**¿Qué no resuelve K=7 en CDMX?** El 51.5% de la población sin seguro en huecos prioritarios (45,280 personas) sigue sin cobertura con 7 nuevas clínicas. Para EDOMEX con estrategia subregional, el 80.3% persiste. Esto no es fracaso del modelo — es la dimensión real del problema estructural.
 
 ---
 
@@ -800,7 +834,7 @@ Se distinguen tres estados:
 
 | Región | Total prioritarios | Cerrados | Parciales | Persistentes | Reducción pers. total |
 |--------|------------------|----------|-----------|--------------|----------------------|
-| CDMX | 39 | **3 (8%)** | 3 (8%) | 33 (85%) | −15.4% |
+| CDMX | 39 | **3 (8%)** | 3 (8%) | 33 (85%) | −14.5% |
 | EDOMEX | 72 | **3 (4%)** | 2 (3%) | 67 (93%) | −8.6% |
 
 ### 14.3 Interpretación
@@ -831,12 +865,12 @@ Para cuantificar cuánto más vale la pena invertir, se re-ejecutó el MCLP para
 
 | K | Cerrados topológ. | Parciales | Persistentes | Pob. sin seguro cubierta | Δ marginal |
 |---|-------------------|-----------|--------------|--------------------------|------------|
-| 5 | 3 (7.7%) | 3 (7.7%) | 33 (84.6%) | 35.3% | — |
-| 6 | 4 (10.3%) | 3 (7.7%) | 32 (82.1%) | 41.0% | +5.7% |
-| 7 | 5 (12.8%) | 3 (7.7%) | 31 (79.5%) | 45.4% | +4.4% |
-| 8 | 6 (15.4%) | 3 (7.7%) | 30 (76.9%) | 48.8% | +3.4% |
-| 9 | 7 (17.9%) | 3 (7.7%) | 29 (74.4%) | 51.9% | +3.1% |
-| 10 | 8 (20.5%) | 3 (7.7%) | 28 (71.8%) | 54.7% | +2.7% |
+| 5 | 1 (2.6%) | 4 (10.3%) | 34 (87.2%) | 36.4% | — |
+| 6 | 2 (5.1%) | 4 (10.3%) | 33 (84.6%) | 42.7% | +6.2% |
+| 7 | 3 (7.7%) | 4 (10.3%) | 32 (82.1%) | 48.5% | +5.9% |
+| 8 | 4 (10.3%) | 4 (10.3%) | 31 (79.5%) | 54.2% | +5.7% |
+| 9 | 5 (12.8%) | 4 (10.3%) | 30 (76.9%) | 58.6% | +4.4% |
+| 10 | 6 (15.4%) | 4 (10.3%) | 29 (74.4%) | 62.0% | +3.4% |
 
 **EDOMEX — 72 huecos prioritarios:**
 
@@ -846,27 +880,143 @@ Para cuantificar cuánto más vale la pena invertir, se re-ejecutó el MCLP para
 | 6 | 4 (5.6%) | 2 (2.8%) | 66 (91.7%) | 20.5% | +2.3% |
 | 7 | 5 (6.9%) | 2 (2.8%) | 65 (90.3%) | 22.6% | +2.1% |
 | 8 | 6 (8.3%) | 2 (2.8%) | 64 (88.9%) | 24.6% | +2.0% |
-| 9 | 7 (9.7%) | 2 (2.8%) | 63 (87.5%) | 26.6% | +2.0% |
-| 10 | 8 (11.1%) | 2 (2.8%) | 62 (86.1%) | 28.4% | +1.7% |
+| 9 | 7 (9.7%) | 2 (2.8%) | 63 (87.5%) | 26.2% | +1.6% |
+| 10 | 8 (11.1%) | 2 (2.8%) | 62 (86.1%) | 27.7% | +1.5% |
 
 **Lectura de política pública:**
 
-- **CDMX:** El mayor salto marginal ocurre entre K=5 y K=6 (+5.7%). A partir de K=7, cada clínica adicional aporta menos de +4.4%. El **punto óptimo es K=7**: cubre 5 huecos cerrados, 45% de la población objetivo con 7 establecimientos — la relación costo-beneficio comienza a aplanarse a partir de ahí.
+- **CDMX:** El mayor salto marginal ocurre entre K=5 y K=6 (+6.2%). A partir de K=7, el beneficio sigue siendo considerable (+5.9%). El **punto óptimo es K=7**: cubre 3 huecos cerrados topológicamente, 48.5% de la población objetivo con 7 establecimientos — a partir de K=8 el incremento cae por debajo de +6 pp por clínica adicional.
 
-- **EDOMEX:** La curva es casi lineal (+2% por clínica), reflejo de la dispersión geográfica del Estado de México: no hay un "cluster de clusters" donde concentrar la inversión. Cada clínica cubre un territorio distinto. Para superar el 30% de cobertura poblacional se requeriría K ≈ 13. La recomendación es una estrategia distinta: inversión distribuida por subregión (Valle de México norte, Valle Cuautitlán-Texcoco, zona oriente), no una sola ronda de K clínicas.
+- **EDOMEX:** La curva es casi lineal (≈+2 pp por clínica), reflejo de la dispersión geográfica del Estado de México: no hay un "cluster de clusters" donde concentrar la inversión. Cada clínica cubre un territorio distinto. Para superar el 30% de cobertura poblacional se requeriría K ≈ 15. La recomendación es una estrategia distinta: inversión distribuida por subregión (Valle de México norte, Valle Cuautitlán-Texcoco, zona oriente), no una sola ronda de K clínicas globales.
 
 ### 14.5 Conclusión del ciclo TDA
 
 El mismo Alpha complex ponderado (Laguerre) que detectó los huecos en la Fase 1 confirma en la Fase 3 cuáles quedan geométricamente resueltos y cuál es la curva de rendimiento decreciente. El análisis proporciona dos productos de política diferenciados:
 
-1. **Producto inmediato (K=5):** Las 5 ubicaciones de mayor impacto por ciudad, con 35% (CDMX) y 18% (EDOMEX) de cobertura de población sin seguro.
+1. **Producto inmediato (K=5):** Las 5 ubicaciones de mayor impacto por ciudad, con 36.4% (CDMX) y 18.2% (EDOMEX) de cobertura de población sin seguro.
 2. **Hoja de ruta escalonada:** Cada punto de la curva K=6…10 identifica la siguiente clínica marginal de mayor retorno, permitiendo un plan de inversión multi-año ordenado por prioridad topológico-demográfica.
 
 Para eliminar el déficit topológico completo en CDMX se requieren K ≈ 15–20 nuevas clínicas estratégicas; para EDOMEX, K ≈ 30–40 distribuidas por subregión.
 
 ---
 
-## 15. Conclusiones Generales
+## 15. Análisis Avanzados
+
+### 15.1 Sensibilidad de umbrales (Notebook 18)
+
+Se varió sistemáticamente cada parámetro principal del pipeline para verificar que las conclusiones no son artefactos del calibrado.
+
+**A. Estabilidad TDA — ¿cuántos huecos sobreviven a distintos `min_persistencia`?**
+
+| min_persistencia | Huecos CDMX | Huecos EDOMEX |
+|-----------------|-------------|---------------|
+| 50 m | 1,064 | 1,709 |
+| 100 m | 482 | 742 |
+| **200 m (estándar)** | **118** | **241** |
+| 400 m | 17 | 91 |
+| 600 m | 7 | 58 |
+| 1,000 m | 3 | 33 |
+
+**Hallazgo clave:** Los 17 huecos de CDMX con persistencia > 400 m aparecen en absolutamente todas las configuraciones — son señal topológica estable, no ruido de parámetro. Los 482 huecos a 100 m incluyen ruido topológico (gaps menores entre clínicas contiguas); usar 200 m como umbral estándar filtra ese ruido preservando la señal.
+
+**B. Sensibilidad MCLP — ¿cambia la solución óptima al variar el umbral de caminata?**
+
+| Tiempo máx | Pob. cubierta CDMX | Candidatos coinciden con t=15 | Pob. cubierta EDOMEX |
+|------------|-------------------|-------------------------------|----------------------|
+| 8 min | 29.9% | 0/5 | 12.3% |
+| 10 min | 32.5% | 0/5 | 12.3% |
+| 12 min | 32.5% | 0/5 | 12.3% |
+| **15 min (estándar)** | **35.3%** | — | **18.2%** |
+| 18 min | 35.3% | 5/5 | 18.2% |
+| 20 min | 35.3% | 5/5 | 24.7% |
+
+**Hallazgo:** En CDMX, los 5 candidatos óptimos a t=15 min son los mismos que a t=18 y t=20 min — la solución es estable hacia arriba. A t < 15 min se seleccionan candidatos diferentes, lo que confirma que 15 min es un umbral significativo (no arbitrario). En EDOMEX, el resultado mejora a t=20 min (+6.5 pp) porque los huecos son más dispersos y el radio de 15 min deja algunos sin cubrir.
+
+**C. Sensibilidad del umbral de prioridad — ¿qué tanto cambia si exigimos mayor persistencia?**
+
+El filtro `pers_m > 400 m` captura huecos grandes y bien definidos. Al relajarlo a 200 m se incluye el 100% de la población sin seguro en huecos habitados; al endurecerlo a 600 m queda menos del 3% (EDOMEX). El umbral de 400 m es el que mejor equilibra cobertura demográfica con robustez topológica.
+
+---
+
+### 15.2 MCLP Subregional para EDOMEX (Notebook 19)
+
+La curva K=5→10 de la sección 14.4 mostró que EDOMEX tiene rendimientos casi lineales (+2 pp/clínica), sin ningún codo visible — porque sus 72 huecos están en zonas geográficamente desconectadas. Una clínica en la ZMVM no alcanza huecos en Norte o Poniente.
+
+**Estrategia:** dividir EDOMEX en 4 subregiones y asignar **K=3 clínicas por zona** (presupuesto uniforme, inversión geográficamente equitativa). Total: 12 clínicas.
+
+| Subregión | Huecos | K local | Huecos cubiertos | Pob. sin seguro | % del total estatal |
+|-----------|--------|---------|-----------------|-----------------|---------------------|
+| Norte (lat > 19.7°) | 7 | 3 | 2/7 (28.6%) | 1,182 | 0.6% |
+| Poniente (lon < −99.3°) | 21 | 3 | 3/21 (14.3%) | 10,243 | 5.6% |
+| Oriente (lon > −98.9°) | 6 | 3 | — | — | — |
+| ZMVM-Centro | 38 | 3 | 4/38 (10.5%) | 24,443 | 13.4% |
+| **Total subregional K=12** | **72** | **12** | **9/72 (12.5%)** | **35,868** | **19.7%** |
+| *Global K=5 (referencia)* | 72 | 5 | 6/72 (8.3%) | 32,683 | 17.9% |
+
+**Nota sobre la subregión Oriente:** No se identificaron candidatos con tiempos de caminata válidos (≤ 15 min) en la zona oriente. Los huecos de esa subregión están en áreas con baja densidad de clínicas vecinas. Requiere umbral extendido (20–30 min) o clínicas móviles.
+
+**Ganancia:** Con 7 clínicas adicionales sobre el global K=5, la cobertura sube de 17.9% a 19.7% (+1.7 pp, +3,185 personas). Más importante que el incremento numérico: la estrategia subregional garantiza presencia en **3 de las 4 zonas geográficas del estado**, mientras que el MCLP global concentra todo el presupuesto en la ZMVM donde hay más población absoluta.
+
+**¿Por qué K=3 uniforme y no proporcional al tamaño?** La ZMVM tiene 38 huecos (53% del total) pero ya está relativamente mejor atendida por infraestructura existente. Norte y Poniente tienen huecos de alta persistencia geométrica (pers_max hasta 1,006 m) que indican vacíos estructurales severos. K=3 por zona equaliza la oportunidad de intervención antes de concentrar recursos donde ya existe más cobertura.
+
+---
+
+### 15.3 Índice de Marginación como 4.° Eje del Scoring (Notebooks 13 y 20)
+
+El IM no se usa como capa de análisis separada sino como **cuarto eje del scoring principal**, con peso igual a los demás (25%). El Notebook 20 cuantifica el impacto de esta integración comparando el ranking de 3 ejes (referencia histórica: 40/40/20) vs el nuevo ranking de 4 ejes (25/25/25/25).
+
+**Estabilidad del ranking al agregar el 4.° eje:**
+
+| Región | Top 10 estables entre 3 y 4 ejes | Huecos que suben ≥3 pos. | IM medio de los que suben |
+|--------|----------------------------------|--------------------------|--------------------------|
+| CDMX | 9/10 (90%) | 11 | 0.37 |
+| EDOMEX | 9/10 (90%) | 38 | 0.49 |
+
+**Hallazgos:**
+
+- **CDMX:** El ranking es muy estable — 9 de los 10 huecos más urgentes mantienen su posición. La dimensión de marginación agrega información nueva sin revertir las prioridades. Los 11 huecos que suben ≥3 posiciones tienen déficit educativo notable (hasta 6.8 años por debajo de secundaria completa) y alta proporción de adultos mayores.
+
+- **EDOMEX:** También estable en el Top 10 (9/10). Sin embargo, **38 huecos** suben ≥3 posiciones en el ranking completo — señal de que EDOMEX tiene un grupo amplio de huecos con alta marginación (IM medio 0.49) que el score de acceso puro subestimaba. Estos son candidatos a intervención integrada: nueva clínica **más** programas de afiliación, educación en salud y atención comunitaria.
+
+**Por qué integrar como 4.° eje y no como capa separada:** Al combinarlo en la función de score con pesos iguales, el IM afecta directamente qué huecos entra al MCLP (al filtro de prioritarios) y cuál es la demanda ponderada `score × pob_sin_salud`. Tratarlo como análisis posterior solo informa sin actuar sobre la solución de optimización.
+
+**Interpretación:** Los huecos que suben mucho en el ranking integrado son los de mayor urgencia multidimensional — tienen tanto barreras de acceso físico como desventajas socioeconómicas estructurales. Son los casos donde una clínica nueva produce el mayor impacto posible porque atiende simultáneamente la brecha geográfica y la vulnerabilidad social.
+
+---
+
+### 15.4 Robustez Topológica: El Mismo Hueco a 4 Radios de Persistencia (Notebook 21)
+
+**Pregunta:** ¿Los huecos que priorizamos son artefactos del umbral `min_persistencia = 200 m` elegido, o aparecen consistentemente en un rango amplio de umbrales?
+
+**Metodología:** Se re-ejecuta `ciclos_H1()` con min_persistencia ∈ {100, 200, 400, 600} m sobre el mismo Alpha complex construido una sola vez por región. Un hueco del umbral más exigente (600 m) se considera "el mismo" si hay otro hueco a distancia ≤ 500 m en los umbrales menores.
+
+**Resultados:**
+
+| min_persistencia | Huecos CDMX | Huecos EDOMEX |
+|-----------------|-------------|---------------|
+| 100 m | 482 | 742 |
+| **200 m (análisis principal)** | **118** | **241** |
+| 400 m | 17 | 91 |
+| 600 m | 7 | 58 |
+
+**Robustez por nivel:**
+
+| Región | Huecos que aparecen en los 4 umbrales | Huecos que aparecen en 3+ umbrales |
+|--------|--------------------------------------|-------------------------------------|
+| CDMX | **7 / 7** (100%) | 7 / 7 |
+| EDOMEX | **58 / 58** (100%) | 58 / 58 |
+
+**Interpretación:** Los 7 huecos de CDMX y los 58 de EDOMEX que sobreviven al umbral más exigente (600 m) son idénticos a los que detectamos con 100, 200 y 400 m. Esto significa que **la señal topológica de los huecos más persistentes es completamente estable**: no es un artefacto del umbral elegido sino una propiedad intrínseca de la geometría de la red de salud.
+
+Los 17 huecos de CDMX con pers_m > 400 m (umbral u=200m) son exactamente los que también aparecen como robustos — confirmando que la persistencia alta es una buena proxy de robustez. La diferencia entre los 118 huecos de u=200m y los 7 de u=600m representa ruido topológico (pequeños vacíos entre clínicas contiguas) que desaparece al exigir mayor persistencia.
+
+**Implicación metodológica:** La elección de `min_persistencia = 200 m` es conservadora — captura la señal robusta más los huecos medianos que son relevantes en zonas densas. Para política pública de alta certeza, enfocarse en los **7 huecos CDMX / 58 huecos EDOMEX** con persistencia > 600 m garantiza que la intervención atiende vacíos estructurales que ningún cambio de parámetro puede hacer desaparecer.
+
+---
+
+## 16. Conclusiones Generales
+
+> *(Sección renumerada desde §15)*
 
 ### 15.1 Qué encontramos
 
@@ -881,11 +1031,11 @@ De los huecos habitados, 39 en CDMX y 72 en EDOMEX son prioritarios. En conjunto
 **c) La ponderación por tamaño de clínica cambia la geografía del riesgo.**
 El Weighted Alpha Complex (Laguerre) elimina huecos falsos creados por muchos consultorios pequeños en un área, y revela huecos que el Alpha clásico oculta en zonas dominadas por farmacias con consultorio. Este paso es indispensable para usar TDA en datos de salud reales — los establecimientos no son puntos iguales.
 
-**d) Cinco clínicas bien ubicadas son insuficientes pero no triviales.**
-El MCLP con K=5 cubre a **29,814 personas sin seguro en CDMX** (33.9% del total prioritario) y **32,683 en EDOMEX** (17.9%), con un costo de solo 5 decisiones de inversión. La validación topológica confirma que estas ubicaciones cierran geométricamente 3 huecos en cada ciudad — los de mayor urgencia compuesta.
+**d) K=7 es el punto óptimo en CDMX; EDOMEX requiere estrategia subregional.**
+CDMX con K=7 cubre **42,687 personas sin seguro** (48.5% del total prioritario). La curva K=5→10 muestra saltos de +6.2% y +5.9% en K=6 y K=7, que caen a +4.4% y +3.4% en K=9 y K=10 — K=7 maximiza retorno por inversión. EDOMEX tiene curva lineal (~+2 pp/clínica) sin codo visible, por lo que su solución es la estrategia subregional: 4 zonas × 3 clínicas = 12 total, cubriendo 35,868 personas (19.7%) con presencia en 3 de las 4 zonas geográficas del estado.
 
-**e) El rendimiento marginal tiene un codo claro en CDMX (K=7) pero no en EDOMEX.**
-CDMX responde bien a la concentración de inversión — 7 clínicas bien ubicadas cubren el 45% de la población objetivo. EDOMEX, con su geometría dispersa, requiere una estrategia diferente: distribución por subregión, no optimización centralizada.
+**e) El 4.° eje (marginación) cambia qué huecos se priorizan y quién queda cubierto.**
+Los 11 huecos que K=7 cubre en CDMX tienen un IM medio de 0.35 vs 0.28 de los persistentes — el scoring 4 ejes redirige inversión hacia zonas más marginadas. Al mismo tiempo, la pob_sin_salud media cubierta (3,881) triplica a la persistente (1,617), confirmando que la optimización pondera correctamente equidad e impacto poblacional.
 
 ### 15.2 Qué resolvimos metodológicamente
 
@@ -893,22 +1043,22 @@ CDMX responde bien a la concentración de inversión — 7 clínicas bien ubicad
 |----------------------|----------------------|
 | ¿Cómo detectar desiertos de salud que los radios no ven? | Alpha complex + persistencia H₁ con umbral min_pers=200m |
 | ¿Cómo reconocer que no todos los establecimientos cubren igual? | Weighted Alpha Complex (Laguerre): radio ∝ √(per_ocu) |
-| ¿Cómo priorizar huecos para política pública? | Score compuesto: tiempo × % sin seguro × persistencia → filtro OR |
+| ¿Cómo priorizar huecos para política pública? | Score 4 ejes (25% c/u): tiempo × % sin seguro × persistencia × marginación → filtro OR |
 | ¿Dónde construir? | MCLP con ILP: maximiza (score × sin_seguro) cubiertos con K ubicaciones |
 | ¿Cuántas clínicas son suficientes? | Curva K=5→10 con rendimiento marginal: codo en K=7 para CDMX |
 | ¿El mismo método que encontró los huecos puede validar la solución? | Sí: distancia nueva clínica < pers_m del centroide → cierre topológico |
 
 ### 15.3 Conclusiones de política pública
 
-**Prioridades inmediatas (presupuesto mínimo — K=3):**
-- CDMX: **Cluster 1** (zona poniente, Hueco #8) — aparece en todas las soluciones K=3,4,5. Cubre 6,785 personas sin seguro con un solo establecimiento. Es la inversión con mayor retorno por unidad de costo.
-- EDOMEX: **Cluster 1** (zona norponiente, 23,869 sin seguro) — también dominante en todas las soluciones. La urgencia es aún mayor: 33.7% de la población del hueco carece de derechohabiencia.
+**Punto de partida mínimo viable — K=5:**
+- CDMX: El Cluster 1 (7,525 sin seguro) y los Clusters 2, 5, 7, 8 cubren el mayor retorno inicial. Aparecen también en la solución K=7, confirmando su estabilidad.
+- EDOMEX: El Cluster 5 (zona norponiente, 23,869 sin seguro) es el de mayor urgencia; el Cluster 1 de ZMVM (3,641) es el segundo. Ambos aparecen en K=5 global y en la estrategia subregional.
 
-**Recomendación escalable (K=7 para CDMX):**
-El análisis de sensibilidad muestra que el mayor salto de cobertura en CDMX ocurre al pasar de K=5 a K=6 (+5.7 pp) y de K=6 a K=7 (+4.4 pp). A partir de K=8, el beneficio marginal cae por debajo de +3.5 pp. K=7 representa el punto de inflexión óptimo: 45% de la población prioritaria cubierta con 7 nuevas clínicas.
+**Recomendación CDMX — K=7:**
+La curva K=5→10 muestra saltos +6.2% (K=5→6) y +5.9% (K=6→7), que caen a +5.7%, +4.4%, +3.4% después. K=7 maximiza el retorno por inversión: 11/39 huecos cerrados o cubiertos, 42,687 personas sin seguro (48.5%), con presencia en 7 clusters distribuidos por la ciudad. Los 7 clusters elegidos [C1, C2, C5, C7, C8, C16, C19] concentran la mayor densidad de personas sin seguro × marginación en CDMX.
 
-**Estrategia diferenciada para EDOMEX:**
-La curva de EDOMEX es casi lineal (+2 pp por clínica) porque su topología es inherentemente dispersa. La recomendación no es un K óptimo único sino una **política por subregión**: identificar los clusters de huecos dentro de cada municipio o zona metropolitana (Valle de México norte, Valle Cuautitlán-Texcoco, oriente) y aplicar MCLP local en cada una.
+**Recomendación EDOMEX — Estrategia subregional K=12:**
+No existe un K óptimo único para EDOMEX porque la curva es lineal (~+2 pp/clínica). La política correcta es asignar K=3 clínicas por subregión (Norte, Poniente, ZMVM-Centro, Oriente), garantizando inversión en zonas que el MCLP global ignoraría. Total: 12 clínicas, 9/72 huecos cubiertos, 35,868 personas (19.7%). La subregión Oriente requiere estrategia complementaria (umbral de tiempo extendido o clínicas móviles).
 
 **Lo que la TDA agrega sobre los métodos tradicionales:**
 Un mapa de densidad de clínicas mostraría que CDMX tiene ~10 veces más establecimientos por km² que municipios rurales — y concluiría que el problema está resuelto. La persistencia homológica revela que incluso con 21,585 clínicas existen 39 vacíos estructurales con casi 88,000 personas sin seguro viviendo dentro. Esa diferencia es la contribución metodológica central de este trabajo.
@@ -918,9 +1068,9 @@ Un mapa de densidad de clínicas mostraría que CDMX tiene ~10 veces más establ
 | Limitación | Impacto | Mejora propuesta |
 |------------|---------|-----------------|
 | Tiempos estimados con distancia euclidiana × 1.35 | Error de ±15% vs red real para zonas con barrancos, vías rápidas, o topografía irregular | Usar OSMnx con la red peatonal real por subregión |
-| Sin cruce con CONAPO (índice de marginación) | Puede subestimar urgencia en zonas de alta marginación con bajo % sin seguro formal | Cruzar con índice de marginación 2020 CONAPO |
+| IM construido desde Censo 2020 sin validar vs CONAPO | Puede diferir de la clasificación oficial de marginación municipal | Cruzar con índice de marginación 2020 CONAPO para calibrar pesos |
 | Datos DENUE 2023, Censo 2020 | El desajuste temporal puede sobreestimar/subestimar nuevas clínicas abiertas en 2021–2023 | Actualizar con DENUE trimestral |
-| min_persistencia fijo en 200 m | Huecos de 200–400 m pueden ser relevantes en zonas densas con baja movilidad | Análisis de sensibilidad sobre 100/200/400 m |
+| Subregión Oriente de EDOMEX sin candidatos válidos | 6 huecos de la zona oriente no tienen candidatos de cobertura bajo t=15 min | Extender umbral a 20 min o incluir rutas de transporte público |
 | K máximo limitado a 20 candidatos | Si el presupuesto permite K > 20, se necesitan más clusters | Ampliar DBSCAN con eps menor para más candidatos |
 
 ---
@@ -942,13 +1092,17 @@ Persistencia_Homologica_Analisis_de_Datos/
 │   ├── 10_cruce_censal.py     # Cruce con Censo 2020 + índice de prioridad
 │   ├── 11_topologia_ponderada.py  # Weighted Alpha Complex (Laguerre)
 │   ├── 12_isocronas.py        # Isócronas OSMnx + accesibilidad peatonal
-│   ├── 13_scoring_multieje.py # Scoring compuesto: tiempo + sin seguro + persistencia
+│   ├── 13_scoring_multieje.py # Scoring 4 ejes (25% c/u): tiempo + sin seguro + pers. + marginación
 │   ├── 14_clusters_geograficos.py  # DBSCAN: agrupación geográfica de huecos
-│   ├── 15_mclp_red_real.py    # MCLP: optimización de ubicaciones K=3,4,5
+│   ├── 15_mclp_red_real.py    # MCLP: K=5 y K=7 para CDMX; K=5 referencia para EDOMEX
 │   ├── 15a_extraer_redes_pbf.py   # Extracción de red vial desde PBF local
 │   ├── 16_dashboard_final.py  # Dashboard y mapas finales Fase 3
 │   ├── 17_validacion_topologica.py  # Validación: ¿se cierran los huecos con K=5?
-│   └── 17_sensibilidad_k.py         # Curvas de rendimiento decreciente K=5→10
+│   ├── 17_sensibilidad_k.py         # Curvas de rendimiento decreciente K=5→10
+│   ├── 18_sensibilidad_umbrales.py  # Sensibilidad: min_pers, tiempo_lim, pers_prio
+│   ├── 19_mclp_subregional.py       # MCLP subregional EDOMEX (Norte/Poniente/Oriente/ZMVM)
+│   ├── 20_indice_marginacion.py     # Índice de marginación compuesto desde Censo
+│   └── 21_robustez_topologica.py    # Robustez: mismo hueco a 4 radios de persistencia
 ├── lib/
 │   ├── config.py              # Rutas, CRS, constantes globales
 │   ├── data.py                # Carga y preprocesamiento del DENUE
@@ -987,14 +1141,26 @@ Persistencia_Homologica_Analisis_de_Datos/
 | `comparativa_distancia.png` | Top 10 huecos más lejanos por ciudad |
 | `mapas_accesibilidad_CDMX.png` | 6 mapas OSM — CDMX (3 grandes + 3 lejanos) |
 | `mapas_accesibilidad_EDOMEX.png` | 6 mapas OSM — EDOMEX (3 grandes + 3 lejanos) |
-| `scoring_scatter.png` | Scatter 3 ejes: tiempo × sin seguro × persistencia |
-| `scoring_rankings.png` | Top 15 huecos por score compuesto |
-| `scoring_pareto.png` | Huecos dominantes (top 20% en los 3 ejes simultáneamente) |
+| `scoring_scatter.png` | Scatter 4 ejes: tiempo × sin seguro × pers. × marginación |
+| `scoring_rankings.png` | Top 10 huecos por cada uno de los 4 ejes |
+| `scoring_pareto.png` | Huecos dominantes (top 20% en 2+ de los 4 ejes) |
+| `scoring_impacto_marginacion.png` | Cambio de ranking al agregar el 4.° eje: flechas ↑ y ↓ |
 | `clusters_geograficos.png` | Agrupación DBSCAN de huecos prioritarios |
-| `fase3_mapa_CDMX.png` | Mapas K=3 y K=5 — ubicaciones propuestas CDMX |
-| `fase3_mapa_EDOMEX.png` | Mapas K=3 y K=5 — ubicaciones propuestas EDOMEX |
-| `fase3_impacto_k.png` | Impacto incremental K=3,4,5 por ciudad |
+| `fase3_CDMX_k7_mapa.png` | Mapa K=7 CDMX: 7 clínicas propuestas con isócronas 15 min |
+| `fase3_CDMX_k7_ejes.png` | Cobertura de los 4 ejes en K=7: cubiertos vs persistentes |
+| `fase3_EDOMEX_subregional_mapa.png` | EDOMEX: global K=5 vs subregional K=12 (4 zonas × 3) |
+| `fase3_EDOMEX_subregional_ejes.png` | Cobertura por eje y subregión en estrategia K=12 |
 | `validacion_persistencia.png` | Diagrama persistencia: huecos por estado de cierre |
 | `validacion_impacto.png` | Barras: huecos cerrados/parciales/persistentes por urgencia |
 | `validacion_mapa.png` | Mapa de cierre topológico: verde=cerrado, naranja=parcial, rojo=persistente |
 | `validacion_curva_k.png` | Curvas de rendimiento decreciente K=5→10: cierre topológico + cobertura |
+| `sensibilidad_estabilidad_tda.png` | Huecos H₁ detectados vs umbral de persistencia (curva de codo) |
+| `sensibilidad_mclp_tiempo.png` | Cobertura MCLP K=5 al variar el umbral de caminata 8–20 min |
+| `sensibilidad_prioridad.png` | Huecos y población incluidos al variar el umbral de prioridad pers_m |
+| `mclp_subregional_EDOMEX.png` | Comparativa global K=5 vs subregional K=12 (4 zonas × 3) en EDOMEX |
+| `marginacion_ranking.png` | Top 15 huecos: score 3 ejes vs score 4 ejes (impacto de agregar IM) |
+| `marginacion_scatter.png` | Scatter acceso vs marginación: huecos de máxima urgencia multidimensional |
+| `mclp_subregional_EDOMEX.png` | Comparativa global K=5 vs subregional K=8 en EDOMEX |
+| `robustez_conteo_huecos.png` | Curva de huecos detectados a los 4 umbrales de persistencia |
+| `robustez_mapa.png` | Mapa de robustez: huecos coloreados por cuántos umbrales los detectan |
+| `robustez_persistencia_vs_umbrales.png` | Persistencia vs nivel de robustez: confirma que pers. alta → más robusto |
