@@ -135,7 +135,7 @@
 // ===========================================================================
 #align(center + horizon, block[
   #text(size: 34pt, weight: "bold", fill: azul)[
-    Persistencia Homológica para\ Detectar Desiertos de Salud
+    Persistencia Homológica para\ Focos de Salud
   ]
   #v(8pt)
   #text(size: 19pt, fill: azul-claro)[Ciudad de México y Estado de México]
@@ -146,7 +146,10 @@
     Análisis Topológico de Datos · DENUE 2023 · Censo 2020 · OpenStreetMap
   ]
   #v(6pt)
-  #text(size: 13pt, fill: gris)[Mario Carlos Gaitan Reyna]
+  #text(size: 13pt, fill: gris)[
+    Mario Carlos Gaitán · Rodrigo Jiménez · Andrés Kiewek\
+    Juan Pablo Moral · Luis Alan Morales
+  ]
 ])
 
 

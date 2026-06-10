@@ -1,7 +1,7 @@
 # Persistencia Homológica para Detectar y Resolver Desiertos de Salud
 ## Ciudad de México y Estado de México
 
-**Autor:** Mario Carlos Gaitan Reyna  
+**Autores:** Mario Carlos Gaitán · Rodrigo Jiménez · Andrés Kiewek · Juan Pablo Moral · Luis Alan Morales  
 **Datos:** DENUE 2023 (INEGI) · Censo de Población y Vivienda 2020 (INEGI) · OpenStreetMap  
 **Región:** Zona Metropolitana del Valle de México
 
