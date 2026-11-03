@@ -1,0 +1,14 @@
+{
+  "CDMX": {
+    "huecos": 71,
+    "prioritarios": 46,
+    "superan_nulo": 3,
+    "prio_superan_nulo": 2
+  },
+  "EDOMEX": {
+    "huecos": 209,
+    "prioritarios": 77,
+    "superan_nulo": 0,
+    "prio_superan_nulo": 0
+  }
+}

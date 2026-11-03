@@ -1,0 +1,20 @@
+{
+  "CDMX": {
+    "laguerre": 118,
+    "uniforme_mismo_radio_medio": 116,
+    "radio_medio": 118.0,
+    "laguerre_en_uniforme_a_500m": 82,
+    "pesos_barajados_media": 115.1,
+    "pesos_barajados_min": 108,
+    "pesos_barajados_max": 125
+  },
+  "EDOMEX": {
+    "laguerre": 241,
+    "uniforme_mismo_radio_medio": 240,
+    "radio_medio": 111.5,
+    "laguerre_en_uniforme_a_500m": 225,
+    "pesos_barajados_media": 239.6,
+    "pesos_barajados_min": 234,
+    "pesos_barajados_max": 247
+  }
+}

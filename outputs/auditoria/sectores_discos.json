@@ -1,0 +1,18 @@
+{
+  "CDMX": {
+    "densidad_tipica_km2": 730.8394986779834,
+    "prioritarios": 46,
+    "con_actividad": 20,
+    "mediana_ratio": 0.19726002210430615,
+    "psin_con_actividad": 53515,
+    "psin_total": 97114
+  },
+  "EDOMEX": {
+    "densidad_tipica_km2": 664.6310423517549,
+    "prioritarios": 77,
+    "con_actividad": 25,
+    "mediana_ratio": 0.17491806525189388,
+    "psin_con_actividad": 94499,
+    "psin_total": 189259
+  }
+}

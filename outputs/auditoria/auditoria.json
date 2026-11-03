@@ -1,0 +1,134 @@
+{
+  "CDMX": {
+    "n_puntos": 21585,
+    "coordenadas_unicas": 17596,
+    "huecos_clasico": 71,
+    "huecos_laguerre": 118,
+    "huecos_pesos_uniformes": 116,
+    "radio_uniforme_m": 118.0,
+    "laguerre_nacimiento_recortado": 42,
+    "filas_huecos_censal": 71,
+    "censal_coincide_con_clasico": 1.0,
+    "censal_coincide_con_laguerre": 0.0,
+    "max_error_disco_vacio_m": 0.0,
+    "baricentro_vs_centro_mediana_m": 122.0,
+    "death_entre_pers_mediana": 1.75,
+    "habitados": 62,
+    "psin_suma_huecos_habitados": 112895,
+    "psin_sin_repetir_agebs": 112895,
+    "psin_por_area_radio_pers2": 7416,
+    "psin_por_area_disco_vacio": 116996,
+    "prioritarios": 46,
+    "psin_prioritarios_suma": 97114,
+    "psin_prioritarios_sin_repetir": 97114,
+    "psin_censo_region": 2477696,
+    "laguerre_habitados_recalculado": 109,
+    "laguerre_psin_recalculado": 205073,
+    "prioritarios_con_hueco_laguerre_a_500m": 42,
+    "modo_candidatos": [
+      "euclidiana"
+    ],
+    "subsectores": {
+      "621": 17717,
+      "624": 3172,
+      "622": 369,
+      "623": 327
+    },
+    "huecos_solo_621_622": 67
+  },
+  "EDOMEX": {
+    "n_puntos": 30787,
+    "coordenadas_unicas": 28306,
+    "huecos_clasico": 209,
+    "huecos_laguerre": 241,
+    "huecos_pesos_uniformes": 240,
+    "radio_uniforme_m": 111.5,
+    "laguerre_nacimiento_recortado": 11,
+    "filas_huecos_censal": 209,
+    "censal_coincide_con_clasico": 1.0,
+    "censal_coincide_con_laguerre": 0.0,
+    "max_error_disco_vacio_m": 0.0,
+    "baricentro_vs_centro_mediana_m": 233.0,
+    "death_entre_pers_mediana": 2.85,
+    "habitados": 99,
+    "psin_suma_huecos_habitados": 216747,
+    "psin_sin_repetir_agebs": 210059,
+    "psin_por_area_radio_pers2": 10405,
+    "psin_por_area_disco_vacio": 225224,
+    "prioritarios": 77,
+    "psin_prioritarios_suma": 189259,
+    "psin_prioritarios_sin_repetir": 182465,
+    "psin_censo_region": 4826890,
+    "laguerre_habitados_recalculado": 131,
+    "laguerre_psin_recalculado": 357293,
+    "prioritarios_con_hueco_laguerre_a_500m": 74,
+    "modo_candidatos": [
+      "euclidiana"
+    ],
+    "subsectores": {
+      "621": 25553,
+      "624": 4327,
+      "622": 516,
+      "623": 391
+    },
+    "huecos_solo_621_622": 191
+  },
+  "MCLP_CDMX": {
+    "seleccion_guardada": [
+      0,
+      1,
+      4,
+      6,
+      7,
+      15,
+      18
+    ],
+    "optimo_por_fuerza_bruta": [
+      0,
+      1,
+      4,
+      6,
+      7,
+      15,
+      18
+    ],
+    "demanda_guardada": 28592.2,
+    "demanda_optima": 28592.2,
+    "psin_cubiertos": 42687,
+    "psin_cubiertos_sin_repetir": 42687,
+    "psin_cubiertos_por_area_disco": 32638,
+    "pct_prioritario": 44.0,
+    "cobertura_igual_a_tiempo_15": true,
+    "radio_efectivo_m": 833.0,
+    "incrementos_K5_K10_pp": [
+      5.6,
+      5.3,
+      5.1,
+      4.0,
+      3.0
+    ]
+  },
+  "EDOMEX_subregional": {
+    "clinicas_guardadas": 8,
+    "huecos_cubiertos": 9,
+    "clinicas_por_zona": {
+      "Poniente": 3,
+      "ZMVM": 3,
+      "Norte": 2
+    },
+    "candidatos_por_zona": {
+      "ZMVM": 14,
+      "Poniente": 4,
+      "Norte": 2
+    },
+    "clusters_por_zona": {
+      "ZMVM": 38,
+      "Poniente": 22,
+      "Norte": 8,
+      "Oriente": 6
+    },
+    "oriente_mejor_rango_cluster": 22,
+    "oriente_psin_top3_clusters": 10160,
+    "oriente_psin_total": 12270
+  }
+}

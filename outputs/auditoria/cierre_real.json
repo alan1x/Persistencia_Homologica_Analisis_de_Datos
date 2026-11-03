@@ -1,0 +1,138 @@
+{
+  "CDMX": {
+    "K": 7,
+    "mclp": {
+      "huecos_total_antes": 71,
+      "huecos_total_despues": 72,
+      "pers_total_antes": 25714.429519020043,
+      "pers_total_despues": 26004.08681335947,
+      "prio_cerrados": 1,
+      "prio_modificados": 13,
+      "prio_mas_chicos": 4,
+      "prio_intactos": 32,
+      "prio_pers_antes": 16013.01127003106,
+      "prio_pers_despues": 15644.769294002806,
+      "prio_reduccion_pct": 2.2996422710164,
+      "personas": {
+        "psin_cubiertos": 42687.0,
+        "dist_media_m": 256.14683707689017,
+        "psin_total": 97114.0,
+        "dist_media_antes_m": 271.0763678511668
+      },
+      "regla_cerrados": 3,
+      "regla_parciales": 4,
+      "regla_persistentes": 39,
+      "regla_reduccion_pct": 14.948784249969183,
+      "cruce_regla_vs_real": {
+        "cerrado": {
+          "Cerrado": 1,
+          "Parcial": 0,
+          "Persistente": 0
+        },
+        "intacto": {
+          "Cerrado": 0,
+          "Parcial": 2,
+          "Persistente": 30
+        },
+        "modificado": {
+          "Cerrado": 2,
+          "Parcial": 2,
+          "Persistente": 9
+        }
+      },
+      "prio_clinica_dentro_disco_vacio": 5
+    },
+    "topologica": {
+      "huecos_total_antes": 71,
+      "huecos_total_despues": 78,
+      "pers_total_antes": 25714.429519020043,
+      "pers_total_despues": 26007.151468148244,
+      "prio_cerrados": 0,
+      "prio_modificados": 13,
+      "prio_mas_chicos": 8,
+      "prio_intactos": 33,
+      "prio_pers_antes": 16013.01127003106,
+      "prio_pers_despues": 13340.283706196446,
+      "prio_reduccion_pct": 16.69097410077218,
+      "personas": {
+        "psin_cubiertos": 15419.0,
+        "dist_media_m": 255.35939940215383
+      }
+    },
+    "azar_reduccion_media": 5.523307467269568,
+    "azar_reduccion_p5": 2.841069580527751,
+    "azar_reduccion_p95": 8.00020988013877,
+    "azar_cerrados_media": 1.34,
+    "azar_psin_media": 22403.26,
+    "azar_psin_p95": 31343.399999999998,
+    "azar_dist_media": 261.4678243939993
+  },
+  "EDOMEX": {
+    "K": 8,
+    "mclp": {
+      "huecos_total_antes": 209,
+      "huecos_total_despues": 210,
+      "pers_total_antes": 141640.81007620486,
+      "pers_total_despues": 140865.34507854396,
+      "prio_cerrados": 2,
+      "prio_modificados": 8,
+      "prio_mas_chicos": 5,
+      "prio_intactos": 67,
+      "prio_pers_antes": 27182.107433846202,
+      "prio_pers_despues": 25159.06121532514,
+      "prio_reduccion_pct": 7.44256575191825,
+      "personas": {
+        "psin_cubiertos": 35868.0,
+        "dist_media_m": 345.89523163659806,
+        "psin_total": 189259.0,
+        "dist_media_antes_m": 358.5411481288377
+      },
+      "regla_cerrados": 6,
+      "regla_parciales": 2,
+      "regla_persistentes": 69,
+      "regla_reduccion_pct": 16.461061871196303,
+      "cruce_regla_vs_real": {
+        "cerrado": {
+          "Cerrado": 2,
+          "Parcial": 0,
+          "Persistente": 0
+        },
+        "intacto": {
+          "Cerrado": 0,
+          "Parcial": 1,
+          "Persistente": 66
+        },
+        "modificado": {
+          "Cerrado": 4,
+          "Parcial": 1,
+          "Persistente": 3
+        }
+      },
+      "prio_clinica_dentro_disco_vacio": 8
+    },
+    "topologica": {
+      "huecos_total_antes": 209,
+      "huecos_total_despues": 216,
+      "pers_total_antes": 141640.81007620486,
+      "pers_total_despues": 142066.13711233134,
+      "prio_cerrados": 1,
+      "prio_modificados": 9,
+      "prio_mas_chicos": 7,
+      "prio_intactos": 67,
+      "prio_pers_antes": 27182.107433846202,
+      "prio_pers_despues": 24379.34283387165,
+      "prio_reduccion_pct": 10.311064389675128,
+      "personas": {
+        "psin_cubiertos": 6575.0,
+        "dist_media_m": 352.9009656893639
+      }
+    },
+    "azar_reduccion_media": 7.434617059336758,
+    "azar_reduccion_p5": 4.999218510717437,
+    "azar_reduccion_p95": 9.545253111512096,
+    "azar_cerrados_media": 2.72,
+    "azar_psin_media": 25707.38,
+    "azar_psin_p95": 37503.4,
+    "azar_dist_media": 348.19225994407185
+  }
+}
