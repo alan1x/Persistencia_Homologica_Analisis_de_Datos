@@ -326,3 +326,71 @@ la ciudad, y los grandes resisten perturbaciones. No basta para decidir dónde d
 eso, medir directamente a quién le queda lejos la oferta es más simple. Con las redes médica y pública
 rinde de 2.5 a 6 veces más que los modelos basados en huecos, y mucho más si cuentan todos los
 establecimientos. La topología puede complementar ese análisis, pero aquí no se demostró que lo mejore.
+
+## 11. Red pública (`notebooks/28_red_publica.py`)
+
+Todo el análisis se repite solo con la red pública: consultorios (6211) y hospitales (622) del sector
+público según DENUE, de ambos estados. La *variante abierta* quita por nombre las unidades de
+seguridad social (IMSS, ISSSTE, ISSEMYM, PEMEX, SEDENA y SEMAR) y conserva IMSS-Bienestar. Los criterios
+están en la cabecera del notebook y se fijaron antes de correr.
+
+**Quién está lejos** (más de 833 m, unos 15 min a pie):
+
+| | Establecimientos | Lejos | Más de 30 min |
+|---|---|---|---|
+| CDMX, pública | 554 | 505,903 (20.4%) | 1.2% |
+| CDMX, abierta | 482 | 609,366 (24.6%) | 1.5% |
+| EDOMEX, pública | 1,099 | 1,667,995 (34.6%) | 5.6% |
+| EDOMEX, abierta | 952 | 1,838,281 (38.1%) | 6.3% |
+
+**La topología como descripción:**
+
+| | Huecos ≥ 200 m (nulo) | Persistencia total contra p95 del nulo | Captura | Enriquecimiento | Spearman |
+|---|---|---|---|---|---|
+| CDMX, pública | 43 (41) | 21,455 contra 20,966 m ✔ | 53% | 1.67 ✔ | 0.67 |
+| CDMX, abierta | 39 (39) | 18,821 contra 19,592 m ✘ | 49% | 1.53 | 0.66 |
+| EDOMEX, pública | 155 (95) | 121,422 contra 83,022 m ✔ | 52% | 1.43 ✘ | 0.22 |
+| EDOMEX, abierta | 148 (88) | 119,294 contra 76,673 m ✔ | 51% | 1.42 ✘ | 0.11 |
+
+- El nulo son 200 submuestras al azar de la red SCIAN 62 completa, del mismo tamaño que la red pública.
+- La captura es la parte de las personas lejos que vive dentro de un disco vacío.
+- El enriquecimiento es cuántas veces más común es estar lejos dentro de los discos que en toda la
+  región.
+- Spearman es la correlación entre la persistencia de cada hueco y las personas lejos dentro de su disco.
+
+**Lectura:**
+
+- EDOMEX tiene huecos propios claros. En CDMX el exceso es mínimo y desaparece con la variante abierta.
+- Los huecos coinciden con la gente lejos solo en CDMX, y apenas: cumple el criterio (captura ≥ 50% y
+  enriquecimiento ≥ 1.5) con la red pública, pero no con la abierta.
+- Casi la mitad de las personas lejos vive dentro de la envolvente de la red pero fuera de cualquier
+  disco. Son zonas ralas que no forman un ciclo.
+- Fuera de la envolvente vive menos del 3%.
+- En EDOMEX los discos son enormes (radio mediano de 2.7 km contra 1.3 km en CDMX) y abarcan mucho
+  terreno sin gente.
+
+**Cobertura medida directo.** Voraz que maximiza las personas lejos que pasan a ≤ 833 m:
+
+| K = 10 | Candidatos libres (exacto) | Solo centros de huecos | Azar p95 | Con K = 30: libres y huecos |
+|---|---|---|---|---|
+| CDMX, pública | 91,263 (91,263) | 70,015 (77%) | 22,405 | 194,811 y 108,792 |
+| CDMX, abierta | 100,605 (100,605) | 62,758 (62%) | 26,540 | 221,080 y 103,275 |
+| EDOMEX, pública | 117,891 (117,891) | 92,593 (79%) | 19,351 | 280,907 y 169,584 |
+| EDOMEX, abierta | 125,737 (127,807) | 100,161 (80%) | 21,152 | 301,614 y 171,526 |
+
+- Los candidatos libres son centros de una rejilla de 500 m con gente. El exacto es el MCLP con los 400
+  candidatos de mayor ganancia individual.
+- El voraz iguala al exacto en tres de cuatro casos y queda 1.6% abajo en el cuarto.
+- Los centros de huecos no alcanzan el 90% fijado como criterio para servir de candidatos, y la brecha
+  crece con K.
+- Aun así, 7 de los 10 sitios libres caen dentro de algún disco vacío: la topología apunta a la zona,
+  pero no al punto.
+
+![Red pública: personas lejos y huecos](../outputs/figuras/red_publica_mapa.png)
+
+![Red pública: personas que ganan acceso según K](../outputs/figuras/red_publica_curva_K.png)
+
+**Conclusión.** El MCLP sigue siendo un modelo pobre del problema: todo o nada a 833 m, sin capacidad y
+en línea recta. Por eso el proyecto cambia de enfoque, del hueco al **acceso medido**. La topología se
+aplica ahora sobre la superficie de acceso, no sobre los puntos de las clínicas. El plan está en
+`PLAN_ACCESO.md`.
