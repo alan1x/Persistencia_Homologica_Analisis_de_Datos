@@ -73,3 +73,33 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 **Qué se agregó:** `notebooks/28_red_publica.py`.
 
 **Dónde está la evidencia:** `outputs/auditoria/red_publica.json`, `outputs/figuras/red_publica_mapa.png` y `outputs/figuras/red_publica_curva_K.png`.
+
+## 2026-11-12 (F3: índice de acceso)
+
+**Qué se quería:** medir el acceso a la atención pública de primer nivel tomando en cuenta distancia y saturación (E2SFCA), y no solo la distancia a la unidad más cercana.
+
+**Qué se aprendió:**
+
+- Promedio metropolitano: 6.4 personas de personal público de primer nivel por cada 1,000 personas sin seguro. CDMX tiene 10.2 y EDOMEX 4.5.
+- Tiene acceso bajo (menos de la mitad del promedio) el 23% de las personas sin seguro en CDMX y el 58% en EDOMEX: 0.56 y 2.82 millones.
+- Del acceso bajo, una parte se explica por saturación (hay unidad a ≤ 833 m, pero satura): 10% en CDMX y 26% en EDOMEX. Eso no se ve midiendo solo la distancia.
+- Lo que más mueve el resultado es cómo se mide la capacidad: si cada unidad vale 1, solo se mantiene el 57-64% del acceso bajo. Hace falta CLUES.
+
+**Qué se agregó:** `lib/acceso.py` y `notebooks/30_acceso_e2sfca.py`.
+
+**Dónde está la evidencia:** `outputs/auditoria/acceso_e2sfca.json`, `outputs/intermedios/acceso_e2sfca_celdas.parquet`, `outputs/figuras/acceso_e2sfca_mapa.png` y `outputs/figuras/acceso_e2sfca_causas.png`.
+
+## 2026-11-12 (cruce con marginación)
+
+**Qué se quería:** cruzar el acceso con la marginación oficial y decidir si CDMX y EDOMEX se separan.
+
+**Qué se aprendió:**
+
+- La prioridad (acceso bajo y marginación Alta o Muy alta, según el índice de CONAPO 2020 por AGEB) abarca 66 mil personas sin seguro en CDMX (3%) y 956 mil en EDOMEX (20%).
+- En CDMX, el acceso baja conforme sube la marginación: la mediana pasa de 1.65 a 0.09 veces el promedio. En EDOMEX el acceso es bajo en todos los grados de marginación.
+- Quitar del índice de CONAPO el % sin derechohabiencia apenas cambia la prioridad: coincide en 87-91%.
+- El acceso se calcula junto porque la cuenca de 1.7 km ya limita la interacción entre zonas. Lo que sí es una decisión es la referencia del acceso bajo. Se usa el promedio metropolitano, para que todos se midan con la misma vara; como sensibilidad se usa el promedio de cada zona.
+
+**Qué se agregó:** `notebooks/30b_cruce_marginacion.py`, `lib/acceso.marginacion_conapo` y `Datos/CONAPO/IMU_2020.xls`, que está fuera de git.
+
+**Dónde está la evidencia:** `outputs/auditoria/acceso_marginacion.json` y `outputs/figuras/acceso_marginacion_mapa.png`.

@@ -1,0 +1,215 @@
+{
+  "promedio_metropolitano_por_1000": 6.432260500458206,
+  "cuenca_m": 1666.6666666666665,
+  "unidades": 1290,
+  "CDMX": {
+    "psin": 2477696.0,
+    "unidades": 410,
+    "capacidad": 25279.0,
+    "razon_cruda_por_1000": 10.20262372785039,
+    "acceso_medio_ponderado": 10.010222524658406,
+    "acceso_medio_sobre_promedio": 1.556252661711279,
+    "acceso_bajo": {
+      "personas": 562274.4880744221,
+      "pct": 22.69344132913893
+    },
+    "sin_acceso": {
+      "personas": 50154.22234617357,
+      "pct": 2.0242282485895595
+    },
+    "bajo_y_cerca_saturacion": {
+      "personas": 249968.1499611157,
+      "pct": 10.088733644527647
+    },
+    "bajo_y_lejos_distancia": {
+      "personas": 312306.33811330644,
+      "pct": 12.604707684611286
+    },
+    "no_bajo_pero_lejos": {
+      "personas": 375187.5856180892,
+      "pct": 15.142599641686841
+    },
+    "percentiles_A_por_persona": {
+      "10": 1.125467692679909,
+      "25": 3.5237640265515764,
+      "50": 7.43852200837517,
+      "75": 13.748403841265564,
+      "90": 22.140649592781
+    }
+  },
+  "EDOMEX": {
+    "psin": 4826890.0,
+    "unidades": 880,
+    "capacidad": 21706.0,
+    "razon_cruda_por_1000": 4.4968913731201665,
+    "acceso_medio_ponderado": 4.583844191921499,
+    "acceso_medio_sobre_promedio": 0.712633481121445,
+    "acceso_bajo": {
+      "personas": 2820531.9930936825,
+      "pct": 58.43373255022763
+    },
+    "sin_acceso": {
+      "personas": 407567.3536951387,
+      "pct": 8.44368431215832
+    },
+    "bajo_y_cerca_saturacion": {
+      "personas": 1236020.8955151741,
+      "pct": 25.606982871272688
+    },
+    "bajo_y_lejos_distancia": {
+      "personas": 1584511.097578508,
+      "pct": 32.82674967895494
+    },
+    "no_bajo_pero_lejos": {
+      "personas": 436637.5623656346,
+      "pct": 9.04593977417415
+    },
+    "percentiles_A_por_persona": {
+      "10": 0.07576464038917638,
+      "25": 0.9291812001965734,
+      "50": 2.5319651310744047,
+      "75": 5.523585861084391,
+      "90": 10.573437493231777
+    }
+  },
+  "Total": {
+    "psin": 7304586.0,
+    "unidades": 1290,
+    "capacidad": 46985.0,
+    "razon_cruda_por_1000": 6.432260500458206,
+    "acceso_medio_ponderado": 6.424457183473505,
+    "acceso_medio_sobre_promedio": 0.9987868468660209,
+    "acceso_bajo": {
+      "personas": 3382806.4811681043,
+      "pct": 46.31072152710782
+    },
+    "sin_acceso": {
+      "personas": 457721.5760413123,
+      "pct": 6.266222015064403
+    },
+    "bajo_y_cerca_saturacion": {
+      "personas": 1485989.0454762897,
+      "pct": 20.34323431165421
+    },
+    "bajo_y_lejos_distancia": {
+      "personas": 1896817.4356918144,
+      "pct": 25.96748721545361
+    },
+    "no_bajo_pero_lejos": {
+      "personas": 811825.1479837238,
+      "pct": 11.1139104664347
+    },
+    "percentiles_A_por_persona": {
+      "10": 0.23471672756145545,
+      "25": 1.3739749095578022,
+      "50": 3.618349041066615,
+      "75": 8.374360868474605,
+      "90": 15.825172098987931
+    }
+  },
+  "razon_unidades_por_1000": {
+    "CDMX": {
+      "count": 410.0,
+      "mean": 5.34,
+      "std": 7.75,
+      "min": 0.1,
+      "10%": 0.21,
+      "50%": 2.2,
+      "90%": 13.88,
+      "max": 61.48
+    },
+    "EDOMEX": {
+      "count": 880.0,
+      "mean": 8.8,
+      "std": 36.04,
+      "min": 0.0,
+      "10%": 0.36,
+      "50%": 2.84,
+      "90%": 15.33,
+      "max": 770.08
+    }
+  },
+  "sensibilidad": {
+    "Cuenca 833 m": {
+      "CDMX": {
+        "pct_bajo": 53.071521158519,
+        "retiene_bajo_principal": 92.95318997665004
+      },
+      "EDOMEX": {
+        "pct_bajo": 70.78553465648142,
+        "retiene_bajo_principal": 89.87705931227636
+      }
+    },
+    "Decaimiento por escalones": {
+      "CDMX": {
+        "pct_bajo": 22.19695760185715,
+        "retiene_bajo_principal": 87.85178145503517
+      },
+      "EDOMEX": {
+        "pct_bajo": 57.69256650000077,
+        "retiene_bajo_principal": 94.15665789902616
+      }
+    },
+    "Capacidad = 1 por unidad": {
+      "CDMX": {
+        "pct_bajo": 27.279269544536927,
+        "retiene_bajo_principal": 63.702152782158336
+      },
+      "EDOMEX": {
+        "pct_bajo": 38.611602455048796,
+        "retiene_bajo_principal": 56.752703993576546
+      }
+    },
+    "Capacidad con tope de 75": {
+      "CDMX": {
+        "pct_bajo": 19.466632594895053,
+        "retiene_bajo_principal": 78.16847971817333
+      },
+      "EDOMEX": {
+        "pct_bajo": 47.95479211167119,
+        "retiene_bajo_principal": 80.81248880269699
+      }
+    },
+    "Sin seguridad social": {
+      "CDMX": {
+        "pct_bajo": 21.826380612726688,
+        "retiene_bajo_principal": 78.28388331929062
+      },
+      "EDOMEX": {
+        "pct_bajo": 54.788854068392666,
+        "retiene_bajo_principal": 84.97993191263153
+      }
+    },
+    "Con hospitales": {
+      "CDMX": {
+        "pct_bajo": 28.828244428112033,
+        "retiene_bajo_principal": 64.45852134676299
+      },
+      "EDOMEX": {
+        "pct_bajo": 62.98753041810211,
+        "retiene_bajo_principal": 80.75754648390391
+      }
+    },
+    "Demanda = población total": {
+      "CDMX": {
+        "pct_bajo": 24.261814286478558,
+        "retiene_bajo_principal": 97.30838278093715
+      },
+      "EDOMEX": {
+        "pct_bajo": 54.29961409829721,
+        "retiene_bajo_principal": 90.85779060868194
+      }
+    },
+    "Acceso bajo = 20% peor": {
+      "CDMX": {
+        "pct_bajo": 9.210284997561846,
+        "retiene_bajo_principal": 40.585669066135054
+      },
+      "EDOMEX": {
+        "pct_bajo": 25.539970115513366,
+        "retiene_bajo_principal": 43.707579510790424
+      },
+      "corte_sobre_promedio": 0.14996618934925784
+    }
+  }
+}
