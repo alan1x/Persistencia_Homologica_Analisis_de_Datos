@@ -103,3 +103,9 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 **Qué se agregó:** `notebooks/30b_cruce_marginacion.py`, `lib/acceso.marginacion_conapo` y `Datos/CONAPO/IMU_2020.xls`, que está fuera de git.
 
 **Dónde está la evidencia:** `outputs/auditoria/acceso_marginacion.json` y `outputs/figuras/acceso_marginacion_mapa.png`.
+
+## 2026-11-12 — F4: persistencia de las zonas de acceso bajo
+- **Qué se aprendió:** filtración por subniveles de una función sobre una rejilla (complejo cúbico, H0). Cada componente nace en un mínimo local del acceso y muere al unirse con una más vieja. Sirve para partir las zonas grandes de acceso bajo en núcleos distintos. Detalle: la componente que nunca muere recibe "el resto" de su región, así que su extensión no es una isla.
+- **Qué se agregó:** `notebooks/31_persistencia_acceso.py` (union-find propio, idéntico a `gudhi.CubicalComplex`: 3,236 pares finitos y 276 esenciales). Se hicieron 100 réplicas sorteando la capacidad dentro de los rangos de DENUE. `lib/acceso.py` ahora contiene el E2SFCA.
+- **Resultado:** 370 islas estables (sin contar el "resto"). Por el criterio fijado, solo 11 de 556 zonas de {f < 0.5} contienen ≥ 2 islas estables. Pero en esas 11 vive el 76% de las personas con acceso bajo (2.58 de 3.38 millones). Ahí la persistencia separa núcleos, por ejemplo el oriente: Iztapalapa, Chicoloapan, Ixtapaluca y Valle de Chalco.
+- **Evidencia:** `outputs/figuras/persistencia_acceso.png`, `outputs/auditoria/persistencia_acceso.json`.

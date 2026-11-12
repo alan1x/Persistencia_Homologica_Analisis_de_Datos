@@ -100,6 +100,45 @@ def demanda(region, columna="PSINDER", con_ageb=False):
     return xy, v, np.array(claves)
 
 
+def peso(d, d0, tipo="gauss"):
+    """Decaimiento con la distancia: gaussiano (1 en d = 0, 0 en d = d0) o por escalones en tercios."""
+    if tipo == "gauss":
+        return np.where(d <= d0, (np.exp(-0.5 * (d / d0) ** 2) - np.exp(-0.5)) / (1 - np.exp(-0.5)), 0.0)
+    return np.select([d <= d0 / 3, d <= 2 * d0 / 3, d <= d0], [1.0, 0.68, 0.22], 0.0)
+
+
+def pares_e2sfca(xy, fxy, d0, tipo="gauss"):
+    """Pares celda-unidad dentro de la cuenca: (i celda, j unidad, peso)."""
+    from scipy.spatial import cKDTree
+
+    arbol = cKDTree(xy)
+    filas, cols, ws = [], [], []
+    for j, idx in enumerate(arbol.query_ball_point(fxy, d0)):
+        if not idx:
+            continue
+        idx = np.asarray(idx)
+        filas.append(idx)
+        cols.append(np.full(len(idx), j))
+        ws.append(peso(np.hypot(*(xy[idx] - fxy[j]).T), d0, tipo))
+    return np.concatenate(filas), np.concatenate(cols), np.concatenate(ws)
+
+
+def e2sfca_pares(i, j, w, dem, cap, n_celdas):
+    """E2SFCA con pares ya calculados. Devuelve (A, R) por persona, sin escalar."""
+    dem_j = np.bincount(j, weights=dem[i] * w, minlength=len(cap))
+    R = np.divide(cap, dem_j, out=np.zeros(len(cap)), where=dem_j > 0)
+    A = np.bincount(i, weights=R[j] * w, minlength=n_celdas)
+    return A, R
+
+
+def e2sfca(xy, dem, fxy, cap, d0=2 * RADIO_15, tipo="gauss"):
+    """Acceso por celda (capacidad por 1,000 personas), razón de cada unidad y si alguna la alcanza."""
+    i, j, w = pares_e2sfca(xy, fxy, d0, tipo)
+    A, R = e2sfca_pares(i, j, w, dem, np.asarray(cap, float), len(xy))
+    alcanza = np.bincount(i, minlength=len(xy)) > 0
+    return A * 1000, R * 1000, alcanza
+
+
 def marginacion_conapo():
     """Índice de Marginación Urbana 2020 de CONAPO por AGEB (CDMX y Estado de México).
 

@@ -63,30 +63,7 @@ REGIONES = ["CDMX", "EDOMEX"]
 CUENCA = 2 * acceso.RADIO_15  # 1,667 m
 
 
-def peso(d, d0, tipo="gauss"):
-    if tipo == "gauss":
-        return np.where(d <= d0, (np.exp(-0.5 * (d / d0) ** 2) - np.exp(-0.5)) / (1 - np.exp(-0.5)), 0.0)
-    return np.select([d <= d0 / 3, d <= 2 * d0 / 3, d <= d0], [1.0, 0.68, 0.22], 0.0)
-
-
-def e2sfca(xy, dem, fxy, cap, d0=CUENCA, tipo="gauss"):
-    """Devuelve el acceso por celda (capacidad por 1,000 personas) y la razón de cada unidad."""
-    arbol = cKDTree(xy)
-    filas, cols, ws = [], [], []
-    for j, idx in enumerate(arbol.query_ball_point(fxy, d0)):
-        if not idx:
-            continue
-        idx = np.asarray(idx)
-        w = peso(np.hypot(*(xy[idx] - fxy[j]).T), d0, tipo)
-        filas.append(idx)
-        cols.append(np.full(len(idx), j))
-        ws.append(w)
-    i, j, w = np.concatenate(filas), np.concatenate(cols), np.concatenate(ws)
-    dem_j = np.bincount(j, weights=dem[i] * w, minlength=len(fxy))
-    R = np.divide(cap, dem_j, out=np.zeros(len(fxy)), where=dem_j > 0)
-    A = np.bincount(i, weights=R[j] * w, minlength=len(xy))
-    alcanza = np.bincount(i, minlength=len(xy)) > 0
-    return A * 1000, R * 1000, alcanza
+peso, e2sfca = acceso.peso, acceso.e2sfca  # definidos en lib/acceso.py
 
 
 # %% [markdown]
