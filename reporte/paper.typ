@@ -35,50 +35,50 @@
   #block(width: 82%)[
     #set text(size: 9pt)
     #set par(justify: true, first-line-indent: 0em)
-    _Resumen_ — Las métricas tradicionales de cobertura sanitaria (densidad por km², radios fijos, conteos municipales) no detectan los _desiertos de salud estructurales_: zonas rodeadas de clínicas por fuera pero vacías por dentro. Aplicamos persistencia homológica sobre los 52,372 establecimientos de salud de CDMX y EDOMEX usando un Alpha Complex ponderado (Laguerre) que incorpora el tamaño de cada establecimiento, y detectamos 118 y 241 huecos topológicos H₁ respectivamente. Cruzando con el Censo 2020, cerca de 270,000 personas sin seguro médico habitan estos vacíos. Un score de cuatro ejes (inaccesibilidad peatonal, inequidad, persistencia topológica y marginación socioeconómica), clustering DBSCAN y un modelo de cobertura máxima (MCLP) producen recomendaciones de inversión: 7 clínicas en CDMX cubren 42,687 personas sin seguro (44.0% del total prioritario) y una estrategia subregional en EDOMEX cubre 35,868 (19.0%). La validación topológica confirma reducciones de 14.9% y 16.5% en la persistencia total.
+    _Resumen_ — Las métricas tradicionales de cobertura sanitaria (densidad por km², radios fijos, conteos municipales) no detectan los _vacíos estructurales_: zonas rodeadas de establecimientos de salud por fuera pero vacías por dentro. Aplicamos persistencia homológica al Alpha Complex clásico de los 52,372 establecimientos de salud de CDMX y EDOMEX y encontramos 71 y 209 huecos H₁ con persistencia de al menos 200 m. Un Alpha ponderado (Laguerre) da 118 y 241, pero casi todo el aumento viene de la escala del peso y no de los hospitales, por lo que lo usamos solo como sensibilidad. Cruzando con el Censo 2020, unas 325,500 personas sin seguro médico viven dentro de los vacíos habitados (62 de 71 y 99 de 209). Un score de cuatro ejes, DBSCAN y un modelo de cobertura máxima (MCLP) proponen 7 clínicas en CDMX y 8 en EDOMEX. Al medir directamente el cierre, las clínicas cierran 1 de 46 y 2 de 77 huecos prioritarios, y su valor está en alcanzar personas, no en cambiar la topología. Además, solo 0.9% y 5.0% de las personas dentro de esos discos están a más de 833 m de un establecimiento: buscar directamente a quienes están lejos da más acceso nuevo que ubicar clínicas según los huecos.
   ]
 ]
 
 = Introducción
 
-Ciudad de México registra 21,585 establecimientos de salud y el Estado de México 30,787: no existe escasez absoluta. Sin embargo, su distribución es profundamente desigual. Las métricas convencionales no pueden detectar el tipo de vacío más peligroso: una zona completamente rodeada de infraestructura médica pero con interior vacío, donde una persona puede estar a 2 km de la clínica más cercana aunque el mapa de densidad de su colonia se vea «verde». A ese vacío lo llamamos _desierto de salud estructural_.
+Ciudad de México registra 21,585 establecimientos de salud y el Estado de México 30,787: no existe escasez absoluta. Sin embargo, su distribución es desigual. Las métricas convencionales no detectan una zona rodeada de infraestructura médica pero con interior vacío, aunque el mapa de densidad de su colonia se vea «verde». A ese vacío lo llamamos _vacío estructural_. Aquí «establecimientos de salud» es el sector SCIAN 62 completo; un tercio son dentistas y también incluye asistencia social.
 
-La topología estudia la _forma_ de los espacios, no sus medidas exactas, y la persistencia homológica [1] detecta precisamente ciclos cerrados de clínicas que rodean un espacio vacío (clases del primer grupo de homología, H₁), sin importar qué tan irregular sea su contorno. La pregunta central del trabajo es: ¿dónde están esos desiertos en CDMX y EDOMEX, cuánta población atrapan y cómo priorizar las inversiones para resolver los más críticos?
+La topología estudia la _forma_ de los espacios, y la persistencia homológica [1] detecta ciclos cerrados de establecimientos que rodean un espacio vacío (clases del primer grupo de homología, H₁), sin importar qué tan irregular sea su contorno. La pregunta central es: ¿dónde están esos vacíos en CDMX y EDOMEX, cuánta población sin seguro hay dentro y qué tan útil es la topología para decidir dónde poner clínicas nuevas?
 
-Las contribuciones del trabajo son cuatro: (i) la detección de desiertos estructurales con un Alpha Complex _ponderado_ que incorpora la capacidad de cada establecimiento; (ii) la traducción de los vacíos geométricos a impacto social mediante el cruce censal a nivel AGEB; (iii) un esquema de priorización de cuatro ejes (acceso, inequidad, topología y marginación) que alimenta un modelo de localización óptima; y (iv) una validación que usa la misma maquinaria topológica para verificar si las clínicas propuestas efectivamente cierran los vacíos que motivaron su ubicación.
+Las contribuciones son cuatro: (i) la detección de vacíos estructurales con el Alpha Complex clásico, con el Alpha ponderado como análisis de sensibilidad; (ii) el cruce censal a nivel AGEB para estimar la población dentro de cada vacío; (iii) un esquema de priorización de cuatro ejes que alimenta un modelo de localización; y (iv) una auditoría que mide directamente si las clínicas propuestas cierran los huecos, prueba la robustez perturbando los datos y compara contra un modelo que busca acceso nuevo sin usar la topología.
 
 = Desarrollo y metodología
 
 == Datos
 
-Del DENUE 2023 (INEGI) tomamos el sector SCIAN 62 (servicios de salud y asistencia social): 21,585 establecimientos en CDMX y 30,787 en EDOMEX, con coordenadas y personal ocupado (`PER_OCU`), convertido de rangos de texto a valores numéricos de capacidad. Del Censo 2020 usamos las AGEB urbanas (unidad mínima censal) con las variables `PSINDER` (personas sin derechohabiencia), `GRAPROES` (escolaridad media), `P60YMAS` (adultos mayores) y `POBTOT`. La derechohabiencia es la variable crítica: una persona sin seguro dentro de un desierto de salud no tiene alternativa de atención.
+Del DENUE 2023 (INEGI) tomamos el sector SCIAN 62 (servicios de salud y asistencia social): 21,585 establecimientos en CDMX y 30,787 en EDOMEX, con coordenadas y personal ocupado (`PER_OCU`), convertido de rangos de texto a valores numéricos. Del Censo 2020 usamos las AGEB urbanas con las variables `PSINDER` (personas sin derechohabiencia), `GRAPROES` (escolaridad media), `P60YMAS` (adultos mayores) y `POBTOT`. `PSINDER` mide falta de afiliación, no falta de atención.
 
 == Detección de vacíos: Alpha Complex y persistencia
 
-Sobre las clínicas como puntos del plano se construye un Alpha Complex: al crecer un disco de radio $alpha$ alrededor de cada punto se forman aristas cuando dos discos se tocan y triángulos cuando tres se solapan. Un hueco H₁ «nace» cuando un vacío queda rodeado y «muere» cuando se triangula; su tamaño real es la
+Sobre los establecimientos como puntos del plano se construye un Alpha Complex: al crecer un disco de radio $alpha$ alrededor de cada punto se forman aristas cuando dos discos se tocan y triángulos cuando tres se solapan. Un hueco H₁ «nace» cuando un vacío queda rodeado y «muere» cuando los discos lo llenan. Su persistencia es
 
 $ "persistencia" = r_"muerte" - r_"nacimiento", $
 
-medida en metros. Los huecos cercanos a la diagonal del diagrama de persistencia son ruido; los alejados son vacíos estructurales. Por su tamaño, los huecos se clasifican en _micro_ (< 200 m, espacio entre consultorios), _medianos_ (200–400 m, varias manzanas), _grandes_ (400–700 m, escala de colonia) y _severos_ (> 700 m, escala zonal de múltiples colonias).
+medida en metros. El radio del disco vacío es la muerte, no la persistencia: en la mediana la muerte es 1.75 veces la persistencia en CDMX y 2.85 en EDOMEX. Los huecos cercanos a la diagonal del diagrama son ruido. Por tamaño se clasifican en _micro_ (< 200 m), _medianos_ (200–400 m), _grandes_ (400–700 m) y _severos_ (> 700 m). Todo el análisis posterior usa el Alpha clásico.
 
-== Ponderación por tamaño: Weighted Alpha (Laguerre)
+== Ponderación por tamaño: sensibilidad con Laguerre
 
-El Alpha clásico trata igual a una farmacia de 2 empleados que a un hospital de 300, de modo que los micro-establecimientos «rellenan» huecos que en realidad no cubren. El Weighted Alpha Complex (diagrama de Laguerre) asigna a cada establecimiento un radio de influencia
+El Alpha ponderado (diagrama de Laguerre) asigna a cada establecimiento un radio de influencia
 
-$ r_i = k dot sqrt("per_ocu"_i), $
+$ r_i = 50 + 30 sqrt("per_ocu"_i), $
 
-y cada punto del plano pertenece al establecimiento que más puede cubrirlo. El efecto es sustancial (@fig-laguerre): los huecos detectados pasan de 71 a 118 en CDMX (+66.2%) y de 209 a 241 en EDOMEX (+15.3%). El cambio es mayor en CDMX por su heterogeneidad (hospitales IMSS/ISSSTE/privados conviviendo con miles de consultorios); en EDOMEX la infraestructura es más homogénea, dominada por micro-establecimientos, y el incremento es menor.
+entre 102 y 570 m en estos datos. Da 118 huecos en CDMX y 241 en EDOMEX, contra 71 y 209 del clásico (+66% y +15%). Ese aumento no se debe a la heterogeneidad de los hospitales (@fig-laguerre): con el mismo peso para todos los establecimientos salen 116 y 240, y con pesos barajados 115.1 y 239.6 en promedio. La persistencia se mide como $sqrt(alpha')$ de muerte menos $sqrt(alpha')$ de nacimiento con $alpha' = alpha - r^2$, y esa diferencia crece al acercarse a cero; además los nacimientos negativos se recortan a 0. La ponderación sí cambia _cuáles_ huecos aparecen (36 de los 118 de CDMX no tienen equivalente a 500 m con pesos iguales), pero no explica _cuántos_ hay. Por eso es una sensibilidad: 42 de 46 y 74 de 77 huecos prioritarios clásicos tienen un hueco de Laguerre a menos de 500 m.
 
 #figure(
   placement: top,
   scope: "parent",
-  image(FIG + "laguerre_comparacion.png", width: 92%),
-  caption: [Impacto de la topología ponderada: huecos H₁ detectados por el Alpha clásico vs el Weighted Alpha (Laguerre) y distribución de persistencias por método.],
+  image(FIG + "auditoria_laguerre_artefacto.png", width: 80%),
+  caption: [Conteo de huecos según el radio. Pesos iguales, que no distinguen hospitales de consultorios, reproducen casi todo el aumento atribuido a Laguerre.],
 ) <fig-laguerre>
 
 == Calibración y robustez
 
-El umbral de persistencia mínima se calibró probando cuatro valores (@tab-umbral). A 100 m dominan micro-brechas entre consultorios adyacentes; a 400 m se pierden huecos medianos reales. Se eligió 200 m, que corresponde a vacíos de al menos una cuadra larga: para el interior del vacío la distancia a la clínica más cercana puede ser de 500 m o más. Como prueba de robustez, los 7 huecos de CDMX y los 58 de EDOMEX con persistencia mayor a 600 m aparecen en los cuatro umbrales (100% de robustez): las señales severas no son artefactos del calibrado.
+El umbral de persistencia mínima se calibró con cuatro valores (@tab-umbral). A 100 m dominan micro-brechas entre consultorios adyacentes; a 400 m se pierden huecos medianos. Se eligió 200 m. La prueba de que los huecos de más de 600 m aparecen en los cuatro umbrales no puede fallar, porque se cumple por definición; no es evidencia de robustez. Por eso perturbamos los _datos_ y recalculamos todo (40 réplicas): con ruido de σ = 100 m sobrevive 93% de los huecos de al menos 400 m, contra cerca de 50% de los menores (Spearman 0.84 y 0.81), así que la persistencia sí predice estabilidad. Pero la lista exacta de prioridades es frágil: con σ = 50 m solo 22 de 46 huecos en CDMX y 50 de 77 en EDOMEX sobreviven en al menos 80% de las réplicas. Un nulo con σ = 1,000 m da 57 y 361 huecos, y casi nunca en los mismos lugares que los reales; es exploratorio y no da valores p.
 
 #figure(
   table(
@@ -86,99 +86,109 @@ El umbral de persistencia mínima se calibró probando cuatro valores (@tab-umbr
     stroke: 0.4pt, inset: 4pt,
     align: (center, center, center, left),
     table.header([Umbral], [CDMX], [EDOMEX], [Interpretación]),
-    [100 m], [482], [742], [micro-brechas (ruido)],
-    [200 m], [118], [241], [señal estructural],
-    [400 m], [17], [91], [solo los más severos],
-    [600 m], [7], [58], [escala de colonia],
+    [100 m], [286], [544], [micro-brechas (ruido)],
+    [200 m], [71], [209], [señal estructural],
+    [400 m], [16], [90], [solo los más severos],
+    [600 m], [6], [57], [escala de colonia],
   ),
-  caption: [Huecos H₁ detectados según el umbral de persistencia mínima. El análisis usa 200 m.],
+  caption: [Huecos H₁ del Alpha clásico según el umbral de persistencia mínima. El análisis usa 200 m.],
 ) <tab-umbral>
 
 == Cruce censal y marginación
 
-Cada hueco se cruza con las AGEB que caen dentro de su radio: 62 de los 118 huecos de CDMX y 180 de los 241 de EDOMEX están habitados (el resto cae en zonas industriales, parques o despobladas; este filtro descarta también los vacíos periurbanos de persistencia extrema). Para capturar la barrera de _uso_ además de la geográfica se construye un Índice de Marginación normalizado a $[0,1]$:
+Cada hueco se cruza con las AGEB bajo su disco vacío (radio igual a la muerte, centro exacto), repartiendo la población de cada AGEB por área, es decir, suponiendo población uniforme dentro de la AGEB. Resultan habitados 62 de los 71 huecos de CDMX y 99 de los 209 de EDOMEX; el resto cae en zonas industriales, parques o despobladas. Para incluir la barrera de _uso_ se construye un Índice de Marginación (IM) normalizado a $[0,1]$:
 
 $ "IM" = 0.35 p_"ss" + 0.25 d_"esc" + 0.25 p_"60+" + 0.15 rho_"ss", $
 
-con $p_"ss"$ la proporción sin seguro, $d_"esc"$ el déficit de escolaridad, $p_"60+"$ la proporción de adultos mayores y $rho_"ss"$ la densidad de personas sin seguro. Los pesos privilegian la barrera directa de acceso al sistema de salud (35%), seguida de la alfabetización en salud y la vulnerabilidad etaria (25% cada una).
+con $p_"ss"$ la proporción sin seguro, $d_"esc"$ el déficit de escolaridad, $p_"60+"$ la proporción de adultos mayores y $rho_"ss"$ la densidad de personas sin seguro. Como incluye la proporción sin seguro (Spearman 0.55 y 0.75 con esa variable), en parte repite otro eje; es un índice propio, no el de CONAPO.
 
-== Accesibilidad peatonal
+== Accesibilidad: tiempos estimados
 
-La distancia euclidiana subestima el costo real de traslado: vías rápidas y barrancas crean rodeos que pueden casi duplicar el trayecto. Con la red peatonal de OpenStreetMap (OSMnx [3]) se calculan isócronas y tiempos de caminata a 4.5 km/h desde el centroide de cada hueco a la clínica más cercana. El umbral de intervención es 15 minutos, respaldado por literatura de salud pública sobre consulta preventiva. Los huecos más inaccesibles de CDMX requieren 20–35 minutos (poniente y sur: Álvaro Obregón, Magdalena Contreras, Xochimilco, Tláhuac); en EDOMEX algunos superan los 40 minutos en el oriente y norte del estado (@fig-scatter).
+Los tiempos de caminata se estiman con la distancia euclidiana multiplicada por 1.35, desde el baricentro del hueco al establecimiento más cercano, a 4.5 km/h; no se usó la red vial. El umbral de 15 minutos equivale a un radio efectivo de 833 m. En CDMX la mediana es 7.6 min, el máximo 23.9 y 4 de 62 huecos pasan de 15 min; en EDOMEX la mediana es 9.6, el máximo 41.2 y 16 de 99 pasan de 15 min (@fig-scatter). Solo 3 huecos por ciudad tienen mapa con red OSM real (OSMnx [3]), como ilustración.
 
 #figure(
   placement: bottom,
   scope: "parent",
-  image(FIG + "scatter_accesibilidad.png", width: 86%),
-  caption: [Persistencia topológica vs tiempo de caminata a la clínica más cercana por hueco habitado. La esquina superior derecha (vacíos grandes _y_ lejanos) concentra los candidatos de máxima prioridad.],
+  image(FIG + "scatter_accesibilidad.png", width: 80%),
+  caption: [Persistencia vs tiempo estimado (euclidiana × 1.35) al establecimiento más cercano, por hueco habitado.],
 ) <fig-scatter>
 
 == Priorización: score, DBSCAN y MCLP
 
-Cada hueco recibe un score de cuatro ejes con pesos iguales y ranking por percentil interno a cada ciudad:
+Cada hueco recibe un score de cuatro ejes con pesos iguales y ranking por percentil dentro de cada ciudad:
 
 $ "score" = 0.25 (r_"tiempo" + r_"sin seguro" + r_"persist" + r_"marg"). $
 
-El percentil evita que un eje con valores grandes domine a los demás: un hueco con 5,000 personas sin seguro no aplasta automáticamente a uno con 1,000 si este último tiene la mayor persistencia y marginación de su ciudad. La selección usa un filtro OR (basta un eje severo): tiempo mayor a 10 min, personas sin seguro sobre el percentil 60, persistencia mayor a 400 m o IM sobre el percentil 60, resultando 46 huecos prioritarios en CDMX y 77 en EDOMEX. Los descartados son micro-brechas bajas en los cuatro ejes simultáneamente.
-
-Los huecos a menos de 1,500 m se agrupan con DBSCAN [4], pues dos huecos cercanos se resuelven con una sola clínica bien ubicada: resultan 39 clusters en CDMX y 74 en EDOMEX (casi todos unitarios, un hallazgo en sí mismo sobre la dispersión mexiquense). Cada cluster es una decisión de inversión. Finalmente, el Maximum Coverage Location Problem (MCLP) [2] se resuelve por programación lineal entera:
+La selección usa un filtro OR (basta un eje severo): tiempo mayor a 10 min, personas sin seguro sobre el percentil 60, persistencia mayor a 400 m o IM sobre el percentil 60. Resultan 46 huecos prioritarios en CDMX y 77 en EDOMEX. Los huecos a menos de 1,500 m se agrupan con DBSCAN [4]: 39 clusters en CDMX y 74 en EDOMEX, casi todos unitarios en EDOMEX. Cada cluster es un candidato. El MCLP [2] se resuelve por programación lineal entera:
 
 $ max sum_i d_i y_i quad "s.t." quad sum_j x_j = K, quad y_i <= sum_j C_(i j) x_j, $
 
-donde $d_i = "score"_i times "pob_sin_salud"_i$ es la demanda ponderada, $x_j in {0,1}$ indica si se construye el candidato $j$ y $C_(i j) = 1$ si $j$ alcanza el hueco $i$ en ≤ 15 min por la red peatonal. La demanda ponderada integra los cuatro ejes automáticamente: cubrir un hueco con score 0.9 y 5,000 personas sin seguro tiene un orden de magnitud más impacto que cubrir uno con score 0.3 y 500 personas.
+donde $x_j in {0,1}$ indica si se construye el candidato $j$ y $C_(i j) = 1$ si $j$ alcanza el hueco $i$ a una distancia euclidiana × 1.35 de a lo más 15 min (833 m). En CDMX $d_i = "score"_i times "personas"_i$. En la estrategia subregional de EDOMEX y en la curva de $K$, $d_i$ son solo las personas sin seguro, aunque el título de algunas figuras diga otra cosa.
 
 = Resultados
 
 == Magnitud del problema
 
-Con el umbral de 200 m sobre el complejo ponderado se detectan 118 huecos en CDMX y 241 en EDOMEX. Los conteos no son comparables directamente entre sí: EDOMEX cubre un territorio 3–4 veces mayor, con vacíos periurbanos de escala rural que el cruce censal descarta, por lo que cada ciudad se analiza por separado con percentiles internos. En los huecos habitados viven cerca de 88,000 personas sin seguro en CDMX y 182,000 en EDOMEX: alrededor de 270,000 en total, equivalente a la población de una ciudad media mexicana. Los casos extremos: un cluster de CDMX concentra 7,525 personas sin seguro a más de 12 min de caminata; uno de EDOMEX, 23,869 (33.7% de la población de la zona).
+Con el umbral de 200 m y el Alpha clásico se detectan 71 huecos en CDMX y 209 en EDOMEX. Los conteos no son comparables entre sí: EDOMEX cubre un territorio mucho mayor, así que cada ciudad se analiza por separado. En los discos vacíos de los huecos habitados viven unas 325,500 personas sin seguro (115,390 en CDMX y 210,153 en EDOMEX), bajo población uniforme por AGEB. Dos casos: un cluster de CDMX con 7,525 personas sin seguro (31.9% de la población de la zona, tiempo máximo 10.2 min) y uno de EDOMEX con 23,869 (33.0%, máximo 13.8 min).
 
-El cuarto eje cambia la asignación. El Top 10 de urgencia es estable (9 de 10 huecos mantienen posición en ambas ciudades), pero al incluir marginación 11 huecos de CDMX (IM medio 0.37) y 38 de EDOMEX (IM medio 0.49) suben tres o más posiciones en el ranking: una capa de vulnerabilidad que el análisis de acceso puro subestimaba, especialmente profunda en el Estado de México.
+La topología describe bien la forma de la red, pero los huecos no son donde la gente está lejos: dentro de los discos prioritarios solo 784 de 91,632 personas (0.9%) en CDMX y 8,900 de 179,612 (5.0%) en EDOMEX están a más de 833 m de cualquier establecimiento, porque casi todos los discos son más chicos que ese radio. Las prioridades también dependen de qué se cuenta: solo 19 de 46 y 34 de 77 huecos prioritarios tienen un hueco de la red de consultorios médicos y hospitales dentro de su disco, y 7 y 19 de la red pública.
 
 == CDMX: solución K=7
 
-El MCLP se ejecutó para $K = 5, dots, 10$. La cobertura de población prioritaria crece de 33.0% (K=5) a 38.6%, 44.0%, 49.1%, 53.1% y 56.1% (K=10): los incrementos marginales caen de +5.6 y +5.3 puntos porcentuales en los primeros saltos a +4.0 (K=8→9) y +3.0 (K=9→10). K=7 es el punto donde la cobertura cruza el 44% antes de la caída sostenida de rendimientos. La solución selecciona los clusters C1, C2, C5, C7 y C8 (núcleo estable presente en toda la curva $K=5 arrow 10$, primera fase de inversión) más C16 y C19 (segunda fase), cubre 11 de 46 huecos prioritarios y 42,687 personas sin seguro, el 44.0% del total prioritario (@fig-cdmx).
+El MCLP se ejecutó para $K = 5, dots, 10$. Con solo personas, la cobertura crece de 33.0% a 38.6%, 44.0%, 49.1%, 53.1% y 56.1%. El incremento cae de +5.1 a +4.0 puntos en K=8→9, así que un codo sugeriría K=8; K=7 es una decisión de presupuesto, no un codo. Con K=7 la selección es la misma con score × personas y con solo personas, y es el óptimo exacto (se comprobaron las 77,520 combinaciones). Selecciona los clusters C1, C2, C5, C7 y C8 (el núcleo estable con score × personas, primera fase) más C16 y C19 (segunda fase). Alcanza 42,687 personas sin seguro contando una persona una vez por cada hueco que la contiene; contando cada persona una sola vez son 26,281, contra un azar con p95 de 18,363 (@fig-cdmx).
 
 #figure(
   placement: top,
-  image(FIG + "fase3_CDMX_k7_mapa.png", width: 84%),
-  caption: [CDMX, solución K=7: clínicas propuestas, isócronas de 15 min y huecos cubiertos (borde blanco).],
+  image(FIG + "modelo_ubicaciones.png", width: 92%),
+  caption: [Ubicaciones propuestas por cada modelo para CDMX y EDOMEX.],
 ) <fig-cdmx>
 
-La comparación de los cuatro ejes entre huecos cubiertos y persistentes muestra que el MCLP prioriza correctamente: los cubiertos tienen en promedio 2.5 veces más personas sin seguro (3,881 contra 1,555) y mayor marginación (IM de 0.35 contra 0.29), de modo que el cuarto eje efectivamente redirige la inversión hacia zonas más vulnerables. Los vacíos geométricamente más grandes (364 m de persistencia media contra 296 m de los cubiertos) tienden a quedar fuera porque son periféricos y con poca población; análogamente, los cubiertos tienen menor tiempo medio de caminata (7.89 contra 9.27 min) porque los huecos muy lejanos suelen estar despoblados y el algoritmo racionalmente los pospone.
+Los huecos cubiertos tienen en promedio 2.5 veces más personas sin seguro que los persistentes (3,881 contra 1,555) y menor tiempo medio (7.89 contra 9.27 min); los vacíos de mayor persistencia (364 m contra 296 m) quedan fuera por periféricos y con poca población. El cuarto eje sí cambia a quién se invierte en CDMX K=7: 2 de las 7 clínicas son otras (C16 y C19 en vez de C3 y C17), con 42,687 contra 39,974 personas. En EDOMEX K=8 global no cambia ninguna.
 
 == EDOMEX: estrategia subregional
 
-La curva $K = 5 arrow 10$ de EDOMEX es casi lineal: la cobertura pasa de 17.6% a 26.7% a razón de unos 2 puntos porcentuales por clínica. No hay codo ni K óptimo global, porque 74 de los clusters son prácticamente unitarios y se reparten en cuatro zonas que no se comunican en 15 min: ninguna zona concentra suficiente impacto para justificar concentrar ahí la inversión. Se adoptó por ello una estrategia subregional de 3 clínicas por zona (12 presupuestadas, 9 ubicables), que cubre 35,868 personas sin seguro (19.0%) y garantiza presencia en Norte, Poniente y ZMVM-Centro (@tab-edomex). Frente al MCLP global de K=5 (32,683 personas, solo ZMVM y Poniente), la ventaja principal no es numérica sino de equidad geográfica: atiende zonas que el óptimo global nunca tocaría. La zona Oriente (12,270 personas sin seguro) carece de candidatos válidos al umbral de 15 min y requiere estrategia complementaria (umbral extendido de 20–30 min o clínicas móviles).
+La curva $K = 5 arrow 10$ de EDOMEX es casi lineal (de 17.6% a 26.7%) y no hay K óptimo global. Se adoptó una estrategia subregional con hasta 3 clínicas por zona. Resultan 8 clínicas: Norte 2 (solo tiene 2 candidatos), Poniente 3, ZMVM-Centro 3 y Oriente 0. Cubren 35,868 personas sin seguro según el conteo del reporte (19.0%) y 17,082 contando cada persona una vez, por debajo del azar con p95 de 18,674. Frente al MCLP global de K=5 son 3 clínicas más. Oriente quedó sin clínicas porque sus 6 clusters quedaron fuera del corte de 20 candidatos, no por falta de candidatos válidos (@tab-edomex).
 
 #figure(
   table(
     columns: (1fr, auto, auto, auto),
     stroke: 0.4pt, inset: 4pt,
     align: (left, center, center, center),
-    table.header([Zona], [K], [Sin seguro cub.], [% local]),
-    [Norte], [3], [1,182], [13.9%],
+    table.header([Zona], [Clínicas], [Sin seguro cub.], [% local]),
+    [Norte], [2], [1,182], [13.9%],
     [Poniente], [3], [10,243], [23.0%],
     [ZMVM-Centro], [3], [24,443], [19.7%],
-    [Oriente], [3], [sin candidatos], [—],
-    [Total], [9 ubic.], [35,868], [19.0%],
+    [Oriente], [0], [corte de 20 candidatos], [—],
+    [Total], [8], [35,868], [19.0%],
   ),
-  caption: [EDOMEX: cobertura de la estrategia subregional 4 × 3.],
+  caption: [EDOMEX: estrategia subregional, conteo del reporte.],
 ) <tab-edomex>
 
-== Validación topológica
+== Cierre medido de los huecos
 
-La misma metodología TDA verifica el efecto de las clínicas propuestas: un hueco con centroide $c$ y persistencia $r$ queda _cerrado_ si la clínica nueva cae a distancia $d < r$, _parcial_ si $r <= d < 2r$ y _persistente_ en otro caso. En CDMX (K=7) resultan 3 huecos cerrados, 4 parciales y 39 persistentes, con una reducción de 14.9% en la persistencia total; en EDOMEX (subregional) 6, 2 y 69, con reducción de 16.5% — mayor cierre geométrico que la estrategia global K=5, que solo cerraba 3 huecos. El contraste con la cobertura poblacional (44% y 19%) refleja que el MCLP optimiza _acceso_ (≤ 15 min) mientras el cierre topológico exige un criterio geométrico mucho más estricto ($d < r$ al centroide exacto): un hueco puede estar «cubierto» con una clínica a 800 m del centroide que llega en 12 min por la red vial sin quedar topológicamente cerrado. Los tres huecos cerrados de CDMX son precisamente los de mayor score compuesto, que el MCLP colocó con precisión dentro del radio topológico.
+Para saber si las clínicas cierran los huecos, se agregan a la nube de puntos, se recalcula la persistencia con el Alpha clásico y se sigue cada hueco prioritario. Un hueco queda _cerrado_ si no queda ninguno de al menos 200 m en su lugar. En CDMX (K=7) se cierra 1 de 46 huecos (13 modificados y 32 intactos) y en EDOMEX 2 de 77 (8 y 67). La persistencia total baja 2.3% y 7.4%. Con selección al azar baja 5.5% (p5 a p95: 2.8 a 8.0) y 7.4% (5.0 a 9.5): el MCLP no supera al azar en persistencia. Una clínica no cierra un hueco grande sino que lo parte, y los más grandes de CDMX (1,510 y 1,292 m) quedan intactos. La regla geométrica anterior ($d < r$ al centroide) daba 3 y 6 cerrados y reducciones de 14.9% y 16.5%; no se sostiene al medir. Las clínicas se justifican por acceso de personas, no por cierre de huecos.
+
+== Modelo revisado y acceso nuevo
+
+Definimos dos medidas con una sola regla de conteo (cada persona una vez, rejilla de 100 m): _vacío alcanzado_, personas sin seguro dentro de discos prioritarios a ≤ 833 m de una clínica, y _acceso nuevo_, personas hoy a más de 833 m que quedarían a ≤ 833 m. El modelo «Personas» maximiza solo las personas alcanzadas: con K=7 en CDMX alcanza 28,418 (contra 26,281 del reporte) y con K=8 en EDOMEX 30,033 (contra 17,082). Con 3 clínicas por zona (K=12) alcanza 31,413 e incluye Oriente, donde sus 3 clínicas llegan a 4,911 de 10,413 personas. Repartir 3 por zona cuesta 10,056 personas frente a no restringir las zonas (41,469). Los pesos de robustez y actividad no mejoran el resultado (diferencia de −920 en CDMX, con intervalo de −1,458 a 32), así que se recomienda «Personas».
+
+Para acceso nuevo, un modelo voraz «sin topología» que busca directamente a quienes están lejos obtiene 4,346 personas en CDMX y 12,124 en EDOMEX, contra 319 y 2,248 de la solución del reporte (@fig-acceso). Con la red médica y la red pública el contraste crece: de 2.5 a 6 veces más acceso nuevo que los modelos basados en huecos.
+
+#figure(
+  placement: top,
+  image(FIG + "modelo_acceso_nuevo.png", width: 92%),
+  caption: [Acceso nuevo por modelo: personas sin seguro que pasan de más de 833 m a 833 m o menos de una clínica.],
+) <fig-acceso>
 
 = Discusión
 
-Un mapa de densidad concluiría que el acceso en CDMX está garantizado: tiene un orden de magnitud más establecimientos por km² que las zonas rurales. La persistencia homológica revela que, aun con 21,585 clínicas, existen decenas de vacíos estructurales con cerca de 88,000 personas sin seguro atrapadas dentro. La diferencia es cualitativa: los métodos de densidad miden _cuánto_ hay; la topología mide la _forma_ de lo que hay, y la forma importa precisamente cuando la distribución es heterogénea — el caso de todas las zonas metropolitanas de América Latina. El análisis de robustez (cuatro umbrales) y la validación de cierre dan a las recomendaciones una trazabilidad metodológica que los rankings ad hoc no ofrecen.
+La persistencia homológica describe bien la _forma_ de la red y encuentra vacíos relativos dentro de la ciudad, y los grandes resisten perturbaciones de los datos. No basta para decidir dónde dar acceso nuevo: para eso, medir directamente a quién le queda lejos la oferta es más simple y rinde más. La topología puede complementar ese análisis, pero aquí no se demostró que lo mejore. Tampoco es específica de la salud: con el mismo número de puntos, salud es el sector con menos huecos en CDMX, y muchos huecos reflejan la forma de la ciudad.
 
 = Conclusiones
 
-El problema es estructural, no de escasez: con más de 52,000 establecimientos existen 359 vacíos topológicos genuinos, y su _forma_ importa tanto como la cantidad. La ponderación por tamaño cambia la geografía del riesgo: Laguerre revela 47 huecos adicionales en CDMX (+66%) invisibles para el Alpha clásico. El impacto es medible: cerca de 270,000 personas sin seguro habitan estos desiertos. Las recomendaciones son accionables: 7 clínicas en CDMX (fases C1–C2–C5–C7–C8 y luego C16–C19) cubren el 44.0% de la población prioritaria; en EDOMEX la estrategia subregional 4 × 3 cubre el 19.0% y garantiza equidad geográfica. El cuarto eje de marginación redirige la inversión hacia zonas socioeconómicamente vulnerables que el análisis de acceso puro subestimaba.
+Los vacíos estructurales existen (71 en CDMX y 209 en EDOMEX con el Alpha clásico) y unas 325,500 personas sin seguro viven dentro de los habitados, pero la mayoría está a menos de 833 m de algún establecimiento. Laguerre aumenta el conteo por la escala del peso, no por los hospitales. Las 7 clínicas de CDMX y las 8 de EDOMEX alcanzan personas, pero cierran solo 1 de 46 y 2 de 77 huecos, y en EDOMEX no superan al azar. Un modelo que optimiza directamente personas, o acceso nuevo, rinde más. La marginación cambia 2 de 7 clínicas en CDMX y ninguna en EDOMEX K=8.
 
-Las principales limitaciones son cuatro. Primera, los tiempos masivos por hueco se aproximaron con distancia euclidiana multiplicada por 1.35, con error estimado de ±15% en zonas de topografía irregular; la mejora natural es extender la red peatonal OSMnx completa a cada subregión. Segunda, existe un desfase temporal de 2–3 años entre el Censo 2020 y el DENUE 2023, corregible con la actualización trimestral del DENUE. Tercera, el índice de marginación es propio y no está calibrado contra el índice oficial de CONAPO, con el que convendría cruzarlo. Cuarta, la zona Oriente de EDOMEX queda sin candidatos al umbral de 15 minutos y exige instrumentos complementarios (umbrales extendidos, unidades móviles o telemedicina). Con todo, la metodología es replicable en cualquier zona metropolitana que cuente con datos censales y de establecimientos georreferenciados.
+Las limitaciones son: tiempos euclidianos × 1.35 y no red vial; población uniforme por AGEB y solo AGEB urbanas; `PSINDER` es falta de afiliación y la red pública incluye IMSS e ISSSTE, que atienden sobre todo a sus afiliados; DENUE no indica capacidad; desfase de 2–3 años entre Censo 2020 y DENUE 2023; IM propio no calibrado contra CONAPO; y prioridades que dependen de contar o no dentistas y asistencia social. Estos modelos no prueban que una clínica en esos puntos mejore la salud de nadie.
 
 #v(0.8em)
 #{

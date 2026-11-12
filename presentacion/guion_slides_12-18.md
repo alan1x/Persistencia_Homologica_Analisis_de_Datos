@@ -1,16 +1,16 @@
 # Guion: diapositivas 12–18 (2:30 min)
 
 **[Slide 12 — Cruce con Censo 2020 · 0:00–0:25]**
-«Ya tenemos los huecos geométricos, pero un vacío sin gente no es un problema de política pública. Por eso cruzamos cada hueco con el Censo 2020 a nivel de AGEB. De los 118 huecos de CDMX, 62 están habitados; de los 241 del EDOMEX, 180 — el resto cae en zonas industriales o parques. El resultado importante es este: **cerca de 270 mil personas sin seguro médico viven dentro de estos desiertos**. Es la población de una ciudad media mexicana.»
+«Ya tenemos los huecos geométricos, pero un vacío sin gente no es un problema de política pública. Por eso cruzamos cada hueco con el Censo 2020 a nivel de AGEB. De los 71 huecos de CDMX, 62 están habitados; de los 209 del EDOMEX, 99 — el resto cae en zonas industriales o parques. El resultado es este: **unas 325 mil personas sin seguro médico viven dentro de estos vacíos**, suponiendo población uniforme dentro de cada AGEB. Ojo: casi todas están a menos de 833 metros de algún establecimiento, y eso lo retomamos más adelante.»
 
 **[Slide 13 — Impacto demográfico · 0:25–0:45]**
-«Aquí ordenamos los huecos de dos formas: por tamaño del vacío y por población sin seguro. Los que aparecen en **ambas listas** son los de máxima urgencia. Por ejemplo, en CDMX un solo cluster concentra 7,525 personas sin seguro; en EDOMEX hay una zona con casi 24 mil, donde una de cada tres personas no tiene derechohabiencia.»
+«Aquí comparamos los 10 huecos más grandes y los 10 más lejanos de un establecimiento. Un hueco grande no siempre está lejos ni tiene gente. Por ejemplo, el hueco más grande de CDMX tiene solo 55 personas. En cambio, en CDMX un cluster concentra 7,525 personas sin seguro; en EDOMEX hay una zona con casi 24 mil, donde una de cada tres personas no tiene derechohabiencia.»
 
-**[Slide 14 — Accesibilidad real · 0:45–1:10]**
-«Tercera dimensión: el tiempo real de caminata. No usamos línea recta, porque vías rápidas y barrancas crean rodeos; calculamos sobre la red de calles a 4.5 km/h, con un umbral de intervención de 15 minutos que viene de la literatura de salud pública. En este scatter, la esquina superior derecha es la crítica: huecos **grandes y además lejanos** de cualquier clínica.»
+**[Slide 14 — Accesibilidad: tiempos estimados · 0:45–1:10]**
+«Tercera dimensión: el tiempo de caminata. Es una estimación, no red vial: distancia en línea recta por 1.35, a 4.5 km/h, con un umbral de 15 minutos, que equivale a 833 metros. En CDMX solo 4 de 62 huecos pasan de 15 minutos; en EDOMEX, 16 de 99. En este scatter, la esquina superior derecha es la crítica: huecos **grandes y además lejanos** de cualquier establecimiento.»
 
 **[Slide 15 — Marginación · 1:10–1:35]**
-«Y la cuarta dimensión: una clínica cercana resuelve la barrera geográfica, pero no la de uso. Construimos un índice de marginación que pondera población sin seguro, déficit educativo y adultos mayores. Al incluirlo, 11 huecos en CDMX y 38 en EDOMEX suben de prioridad. Sin este eje, parte de la inversión se habría ido a zonas menos vulnerables.»
+«Y la cuarta dimensión: una clínica cercana resuelve la barrera geográfica, pero no la de uso. Construimos un índice de marginación que pondera población sin seguro, déficit educativo y adultos mayores. Su efecto es acotado: en CDMX cambia 2 de las 7 clínicas, y en EDOMEX con K=8 no cambia ninguna. Además el índice incluye el porcentaje sin seguro, así que en parte repite otro eje.»
 
 **[Slide 16 — Scoring 4 ejes · 1:35–2:00]**
 «Integramos todo en un score con pesos iguales, usando percentiles dentro de cada ciudad para que ningún eje domine. Y para seleccionar usamos un filtro tipo OR: basta ser severo en **uno** de los cuatro ejes para entrar. Quedan **46 huecos prioritarios en CDMX y 77 en EDOMEX**.»

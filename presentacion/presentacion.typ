@@ -159,20 +159,20 @@
 #slide("El problema: desiertos que los mapas no ven")[
   #grid(columns: (1.2fr, 1fr), column-gutter: 28pt, align: (left + top, center + horizon),
     [
-      - *52,372 clínicas* entre CDMX y EDOMEX: no hay escasez absoluta.
+      - *52,372 establecimientos de salud* entre CDMX y EDOMEX (un tercio son dentistas): no hay escasez absoluta.
       - Las métricas tradicionales son ciegas al vacío estructural:
         - Densidad de clínicas por km² ✗  · Radio de 500 m ✗  · Conteo por municipio ✗
       #v(6pt)
-      - *Desierto estructural*: zona rodeada de clínicas por fuera, vacía por dentro. Una persona adentro puede estar a 2 km aunque el mapa se vea «verde».
+      - *Desierto estructural*: zona rodeada de clínicas por fuera, vacía por dentro. El mapa de su colonia se ve «verde» aunque el interior esté vacío.
       #v(10pt)
       #text(fill: azul, weight: "bold", size: 16pt)[
-        ¿Dónde están esos desiertos, cuánta población atrapan y cómo priorizamos la inversión?
+        ¿Dónde están esos vacíos, cuánta población hay dentro y qué tan útil es la topología para decidir dónde poner clínicas?
       ]
     ],
     [
-      #big("270k", "personas sin seguro en desiertos topológicos")
+      #big("≈325k", "personas sin seguro dentro de vacíos habitados")
       #v(12pt)
-      #big("≥ 2 km", "a la clínica más cercana en colonias aparentemente cubiertas")
+      #big("< 1% y 5%", "de las personas en discos prioritarios (CDMX y EDOMEX) están a más de 833 m de un establecimiento")
     ],
   )
 ]
@@ -186,16 +186,16 @@
     columns: (auto, 1fr, auto),
     stroke: none, inset: (x: 10pt, y: 7pt),
     fill: (_, row) => if calc.odd(row) { rgb("#eaf1f8") } else { white },
-    [#kpi[① DATOS]],      [DENUE 2023 (SCIAN 62) + Censo 2020 (AGEBs) + OpenStreetMap],  [21 k / 30 k estab.],
-    [#kpi[② TDA]],        [Alpha Complex ponderado (Laguerre) · persist. > 200 m],         [118 / 241 huecos H₁],
-    [#kpi[③ CENSO]],      [AGEBs habitadas · PSINDER · Índice de Marginación],             [62/180 · ~270 k sin seguro],
-    [#kpi[④ RED VIAL]],   [Red peatonal real 4.5 km/h · isócronas · umbral 15 min],       [Tiempos por hueco],
-    [#kpi[⑤ SCORING]],    [Score 4 ejes (percentiles) · filtro OR · DBSCAN · MCLP/PuLP],  [46 / 77 prioritarios],
-    [#kpi[⑥ VALIDACIÓN]], [Cierre topológico · robustez 4 umbrales],                       [−14.9% / −16.5%],
+    [#kpi[① DATOS]],      [DENUE 2023 (SCIAN 62) + Censo 2020 (AGEBs) + OpenStreetMap],            [21 k / 30 k estab.],
+    [#kpi[② TDA]],        [Alpha Complex clásico · persist. > 200 m (Laguerre solo sensibilidad)],  [71 / 209 huecos H₁],
+    [#kpi[③ CENSO]],      [AGEBs habitadas · PSINDER · Índice de Marginación],                      [62/99 · ≈325 k sin seguro],
+    [#kpi[④ TIEMPOS]],    [Euclidiana × 1.35 a 4.5 km/h (no red vial) · 15 min = 833 m],           [Tiempos estimados],
+    [#kpi[⑤ SCORING]],    [Score 4 ejes (percentiles) · filtro OR · DBSCAN · MCLP/PuLP],            [46 / 77 prioritarios],
+    [#kpi[⑥ MEDICIÓN]],   [Cierre medido · robustez perturbando datos · modelo revisado],           [cierra 1/46 · 2/77],
   )
   #v(14pt)
   #nota[
-    *Resultado*: K=7 clínicas en CDMX → #kpi[42,687 personas] (44.0%) · 9 ubicables en EDOMEX → #kpi[35,868 personas] (19.0%)
+    *Resultado*: K=7 en CDMX → #kpi[42,687 personas] (26,281 contando cada una vez) · 8 clínicas en EDOMEX → #kpi[35,868] (17,082 contando una vez)
   ]
 ]
 
@@ -220,7 +220,7 @@
       [> 300 pers.], [Hospital general],
     )
     #v(6pt)
-    #nota[La *mayoría* son micro-estab. Los hospitales son minoría pero con radio 5–10× mayor.]
+    #nota[La *mayoría* son micro-estab. Los hospitales son minoría y tienen mucho más personal ocupado.]
   ],
   "eda_CDMX.png",
   "eda_EDOMEX.png",
@@ -233,7 +233,7 @@
 // ===========================================================================
 #splitslide("Los datos: Censo 2020 — AGEBs urbanas",
   [
-    El *AGEB urbana* es la unidad geoespacial mínima (~manzanas). Permite cruzar cada hueco topológico con la población real que lo habita.
+    El *AGEB urbana* es la unidad geoespacial mínima (≈ manzanas). Permite cruzar cada hueco topológico con la población real que lo habita.
     #v(8pt)
     #table(
       columns: (auto, auto, 1fr),
@@ -245,7 +245,7 @@
       [POBTOT],   [15%], [Densidad de personas sin seguro],
     )
     #v(8pt)
-    #nota[*PSINDER = variable crítica*: sin seguro = sin alternativa cuando la clínica está lejos. #kred[270,000 personas] en esa situación.]
+    #nota[*PSINDER = variable crítica*: sin seguro = sin alternativa cuando la clínica está lejos. #kred[≈325,000 personas] sin seguro dentro de vacíos habitados.]
   ],
   "matriz_riesgo_CDMX.png",
   ratio: 48%,
@@ -268,9 +268,9 @@
 // ===========================================================================
 // 7. TDA: DIAGRAMAS DE PERSISTENCIA CDMX Y EDOMEX
 // ===========================================================================
-#figslide2("Diagramas de persistencia: CDMX (118 huecos) y EDOMEX (241 huecos)",
+#figslide2("Diagramas de persistencia: CDMX (71 huecos) y EDOMEX (209 huecos)",
   [
-    Cada punto = un hueco H₁. *Distancia a la diagonal = persistencia* (tamaño del vacío). Lejos de la diagonal = desiertos estructurales; sobre la diagonal = ruido filtrado (min_persistencia = 200 m).
+    Cada punto = un hueco H₁. *Distancia a la diagonal = persistencia* (tamaño del vacío). Lejos de la diagonal = vacíos estructurales; sobre la diagonal = ruido (min_persistencia = 200 m, Alpha clásico).
   ],
   "persistencia_CDMX.png",
   "persistencia_EDOMEX.png",
@@ -280,34 +280,33 @@
 // ===========================================================================
 // 8. WEIGHTED ALPHA / LAGUERRE
 // ===========================================================================
-#splitslide("Weighted Alpha (Laguerre): el tamaño de la clínica importa",
+#splitslide("Weighted Alpha (Laguerre): solo como sensibilidad",
   [
-    Alpha clásico: farmacia de 2 empleados ≡ hospital de 300.
-
-    *Laguerre*: radio proporcional al tamaño:
-    $ r_i = k dot sqrt("per_ocu"_i) $
+    Alpha clásico: todos los establecimientos pesan igual. *Laguerre*: radio por tamaño
+    $ r_i = 50 + 30 dot sqrt("per_ocu"_i) $
+    (de 102 a 570 m).
     #v(6pt)
     #table(
       columns: (1fr, auto, auto, auto),
       stroke: none, inset: 7pt, fill: tf,
-      [#th[Métrica]], [#th[Clásico]], [#th[Laguerre]], [#th[Δ]],
-      [Huecos CDMX],   [71],  [*118*], [#kpi[+66%]],
-      [Huecos EDOMEX], [209], [*241*], [#kpi[+15%]],
+      [#th[Huecos]], [#th[Clásico]], [#th[Pesos iguales]], [#th[Laguerre]],
+      [CDMX],   [*71*],  [116], [118],
+      [EDOMEX], [*209*], [240], [241],
     )
     #v(8pt)
-    *¿Por qué subieron los huecos?* El clásico «rellenaba» vacíos con micro-consultorios que no tienen capacidad real de cubrir ese radio. Al ponderar, esos puntos pierden alcance y el vacío real aparece. CDMX +66%: mayor heterogeneidad de tamaños (IMSS + privados + micro-consultorios conviven).
+    *¿Por qué sube el conteo?* No por los hospitales: con el *mismo* peso para todos ya salen 116 y 240. La persistencia se mide como $sqrt(alpha')$ y esa diferencia crece al acercarse a cero. Laguerre sí cambia *cuáles* huecos aparecen, no *cuántos*. El análisis usa el clásico.
   ],
-  "laguerre_comparacion.png",
+  "auditoria_laguerre_artefacto.png",
   ratio: 52%,
 )
 
 
 // ===========================================================================
-// 9. LAGUERRE: MAPAS DE BIFILTRACIÓN
+// 9. MAPAS DE BIFILTRACIÓN (ALPHA CLÁSICO)
 // ===========================================================================
-#figslide2("Laguerre — Mapas de huecos ponderados: CDMX y EDOMEX",
+#figslide2("Mapas de huecos del Alpha clásico: CDMX y EDOMEX",
   [
-    Cada círculo = un hueco H₁, radio ∝ persistencia. Muchos eran invisibles sin la ponderación por tamaño.
+    Cada círculo = un hueco H₁ del Alpha *clásico* (notebook 09), radio ∝ persistencia; la densidad es solo de establecimientos de salud. No son huecos de Laguerre.
   ],
   "bifiltracion_CDMX.png",
   "bifiltracion_EDOMEX.png",
@@ -317,24 +316,25 @@
 // ===========================================================================
 // 10. CALIBRACIÓN min_persistencia = 200 m
 // ===========================================================================
-#splitslide2("Calibración: ¿por qué min_persistencia = 200 m?",
+#splitslide2("Calibración y robustez real de los huecos",
   [
     #table(
       columns: (auto, auto, auto),
-      stroke: none, inset: 7pt,
+      stroke: none, inset: 6pt,
       fill: (_, row) => if row == 0 { azul } else if row == 2 { rgb("#d4edda") } else if calc.odd(row) { rgb("#eaf1f8") } else { white },
       [#th[Umbral]], [#th[CDMX]], [#th[EDOMEX]],
-      [100 m],    [482],  [742],
-      [*200 m* ✓],[*118*],[*241*],
-      [400 m],    [17],   [91],
-      [600 m],    [7],    [58],
+      [100 m],    [286],  [544],
+      [*200 m* ✓],[*71*], [*209*],
+      [400 m],    [16],   [90],
+      [600 m],    [6],    [57],
     )
-    #v(8pt)
-    - La pendiente se *aplana* entre 200 m y 400 m: señal estructural sin el ruido de 100 m.
-    - *Robustez 100%*: los huecos de persist. > 600 m (7 CDMX · 58 EDOMEX) aparecen en los 4 umbrales.
+    #v(6pt)
+    - La antigua «robustez 100%» no podía fallar: era cierta por definición.
+    - Perturbando los *datos* (σ = 100 m): sobrevive *93%* de los huecos ≥ 400 m, contra ≈ 50% de los menores.
+    - Pero con σ = 50 m solo 22/46 y 50/77 prioritarios sobreviven ≥ 80% de las veces.
   ],
-  "robustez_conteo_huecos.png",
-  "robustez_persistencia_vs_umbrales.png",
+  "robustez_real_supervivencia.png",
+  "robustez_real_nulo.png",
   ratio: 56%,
 )
 
@@ -342,13 +342,13 @@
 // ===========================================================================
 // 11. HUECOS DETECTADOS + DBSCAN
 // ===========================================================================
-#splitslide("118 + 241 huecos detectados — y cómo los agrupamos",
+#splitslide("71 + 209 huecos detectados — y cómo los agrupamos",
   [
-    Cada círculo = hueco H₁, radio ∝ persistencia. *Color = en cuántos umbrales aparece*: rojo oscuro = 4/4 = desierto sólido.
+    Mapa de los clusters de huecos prioritarios: cada color es un cluster, es decir, una decisión de inversión.
     #v(8pt)
-    *¿Por qué agrupar?* Dos huecos a 800 m se resuelven con *una sola clínica* bien ubicada. Una clínica por hueco desaprovecha presupuesto.
+    *¿Por qué agrupar?* Dos huecos a 800 m se resuelven con *una sola clínica* bien ubicada.
     #v(8pt)
-    *DBSCAN* (eps = 1,500 m): huecos a ≤ 1.5 km forman un cluster = *una decisión de inversión*.
+    *DBSCAN* (eps = 1,500 m): huecos a ≤ 1.5 km forman un cluster.
     #v(8pt)
     #table(
       columns: (1fr, auto, auto),
@@ -358,7 +358,7 @@
       [EDOMEX], [77], [74],
     )
   ],
-  "robustez_mapa.png",
+  "clusters_geograficos.png",
   ratio: 54%,
 )
 
@@ -368,7 +368,7 @@
 // ===========================================================================
 #figslide2("Cruce con Censo 2020: ¿sobre qué población caen los huecos?",
   [
-    *~270,000 personas sin seguro* viven dentro de desiertos topológicos habitados.
+    *≈325,000 personas sin seguro* viven dentro de vacíos habitados (62 de 71 huecos en CDMX, 99 de 209 en EDOMEX), suponiendo población uniforme por AGEB.
   ],
   "matriz_riesgo_CDMX.png",
   "matriz_riesgo_EDOMEX.png",
@@ -378,22 +378,22 @@
 // ===========================================================================
 // 13. IMPACTO DEMOGRÁFICO
 // ===========================================================================
-#figslide2("Impacto demográfico: huecos por persistencia y población sin seguro",
+#figslide2("Los huecos más grandes y los más lejanos",
   [
-    Los huecos que destacan en *ambas* métricas (vacío grande + mucha población sin seguro) son los de máxima urgencia compuesta.
+    Izquierda: los 10 huecos más grandes (el número es el tiempo estimado: 4/10 en CDMX y 8/10 en EDOMEX pasan de 15 min). Derecha: los 10 más lejanos de un establecimiento, con su persistencia. Un hueco grande no siempre está lejos ni tiene gente.
   ],
-  "impacto_censal_CDMX.png",
-  "impacto_censal_EDOMEX.png",
+  "comparativa_tamano.png",
+  "comparativa_distancia.png",
 )
 
 
 // ===========================================================================
 // 14. ACCESIBILIDAD REAL
 // ===========================================================================
-#figslide("Accesibilidad real: tiempo de caminata por la red de calles",
+#figslide("Accesibilidad: tiempos estimados de caminata",
   [
-    Tiempo calculado sobre la *red de calles real* (no línea recta) a *4.5 km/h*; vías rápidas y barrancas crean rodeos que la distancia euclidiana ignora. Umbral de intervención: *15 min*. \
-    Eje X = tiempo a la clínica más cercana · Eje Y = persistencia. *Esquina superior derecha* = vacíos grandes #kpi[y] lejanos = máxima prioridad.
+    Tiempo *estimado* con distancia euclidiana × 1.35 a *4.5 km/h* (no es red vial); 15 min = 833 m. CDMX: mediana 7.6 min, 4 de 62 huecos pasan de 15. EDOMEX: mediana 9.6, 16 de 99. \
+    Eje X = tiempo al establecimiento más cercano · Eje Y = persistencia. *Esquina superior derecha* = vacíos grandes #kpi[y] lejanos.
   ],
   "scatter_accesibilidad.png",
 )
@@ -409,16 +409,16 @@
     $ "IM" = 0.35 dot p_"sin salud" + 0.25 dot "def. escol." \ + 0.25 dot p_"mayores" + 0.15 dot rho_"sin salud" $
     #v(6pt)
     #table(
-      columns: (1fr, auto),
+      columns: (auto, 1fr),
       stroke: none, inset: 7pt, fill: tf,
-      [#th[Región]], [#th[Huecos que suben ≥ 3 pos.]],
-      [CDMX],   [11 (IM medio 0.37)],
-      [EDOMEX], [38 (IM medio 0.49)],
+      [#th[Solución]], [#th[Clínicas que cambian]],
+      [CDMX K=7],   [2 de 7 (C16 y C19 en vez de C3 y C17)],
+      [EDOMEX K=8], [ninguna],
     )
     #v(6pt)
-    Sin este eje, parte de la inversión habría ido a zonas menos vulnerables.
+    En CDMX: 42,687 contra 39,974 personas. El IM incluye % sin seguro (Spearman 0.55 y 0.75), así que en parte repite otro eje.
   ],
-  "scoring_impacto_marginacion.png",
+  "fase3_CDMX_k7_ejes.png",
   ratio: 56%,
 )
 
@@ -483,18 +483,18 @@
       $ max sum_i d_i dot y_i $
       $ "s.t." quad sum_j x_j = K $
       $ y_i <= sum_j C_(i j) dot x_j quad forall i $
-      - $d_i = "score"_i times "pob\_sin\_salud"_i$
+      - $d_i = "score"_i times "personas"_i$ en CDMX; en EDOMEX subregional, solo personas
       - $x_j in {0,1}$ — ¿se construye clínica $j$?
-      - $C_(i j) = 1$ si $j$ alcanza hueco $i$ en ≤ 15 min
+      - $C_(i j) = 1$ si $j$ alcanza hueco $i$ en ≤ 15 min (833 m)
     ],
     [
       *¿Por qué demanda ponderada $d_i$?*
 
-      El score ya integra los 4 ejes. Cubrir un hueco con score 0.9 y 5,000 personas sin seguro tiene *10× más impacto* que uno con score 0.3 y 500.
+      En CDMX el score integra los 4 ejes. Cubrir un hueco con score 0.9 y 5,000 personas sin seguro tiene *10× más impacto* que uno con score 0.3 y 500.
       #v(8pt)
-      *Candidatos*: centroides de clusters DBSCAN, con tiempos sobre la red de calles real.
+      *Candidatos*: centroides de clusters DBSCAN, con tiempos euclidiana × 1.35.
       #v(8pt)
-      #nota[MCLP optimiza *acceso* (≤ 15 min). La validación topológica posterior verifica si la clínica *cierra geométricamente* el hueco — criterio más estricto.]
+      #nota[MCLP optimiza *acceso* (≤ 15 min). La medición posterior muestra que no *cierra* los huecos: 1 de 46 y 2 de 77.]
     ],
   )
 ]
@@ -503,11 +503,10 @@
 // ===========================================================================
 // 20. CDMX: CURVA DE RENDIMIENTO DECRECIENTE
 // ===========================================================================
-#figslide2("CDMX — Justificando K=7: curva de rendimiento decreciente",
+#figslide("CDMX — K=7 es una decisión, no un codo",
   [
-    K=7 es el último punto con > 5 pp de ganancia marginal; K=8→9 cae −1.1 pp. *Núcleo estable* (C1, C2, C5, C7, C8) presente en toda la curva = primera fase de inversión.
+    Con solo personas el incremento marginal cae de +5.1 pp a +4.0 pp en K=8→9: un codo sugeriría K=8. K=7 es una decisión de presupuesto y es el óptimo exacto (77,520 combinaciones). *Núcleo estable* con score × personas: C1, C2, C5, C7, C8. La figura muestra el impacto incremental de las primeras clínicas.
   ],
-  "validacion_curva_k.png",
   "fase3_impacto_k.png",
 )
 
@@ -518,17 +517,17 @@
 #splitslide("CDMX — Solución óptima K=7: ubicaciones y cobertura",
   [
     #table(
-      columns: (1fr, auto),
+      columns: (auto, 1fr),
       stroke: none, inset: 8pt, fill: tf,
       [#th[Métrica]], [#th[Resultado]],
-      [Clínicas ubicadas],    [7 (C1, C2, C5, C7, C8, C16, C19)],
-      [Huecos cubiertos],     [11 / 46 (24%)],
-      [Personas sin seguro],  [*42,687*],
-      [Cobertura poblacional],[*44.0%*],
+      [Clínicas],    [7 (C1, C2, C5, C7, C8, C16, C19)],
+      [Huecos cubiertos], [11 / 46 (24%)],
+      [Sin seguro],  [*42,687* (26,281 contando una vez)],
+      [Cobertura (reporte)],[*44.0%*],
     )
   ],
   "fase3_CDMX_k7_mapa.png",
-  ratio: 58%,
+  ratio: 52%,
 )
 
 
@@ -548,7 +547,7 @@
     [Tiempo (min)],       [7.89],  [9.27],  [MCLP cubre los más accesibles con mayor población],
     [Sin seguro (pers.)], [3,881], [1,555], [Priorización correcta por inequidad (×2.5)],
     [Persistencia (m)],   [296],   [364],   [Vacíos más grandes son periféricos sin candidatos],
-    [Marginación (IM)],   [0.35],  [0.29],  [4.° eje redirige inversión a zonas más vulnerables],
+    [Marginación (IM)],   [0.35],  [0.29],  [IM incluye % sin seguro: en parte repite el eje 2],
   )
 ]
 
@@ -556,23 +555,23 @@
 // ===========================================================================
 // 23. EDOMEX: ESTRATEGIA SUBREGIONAL
 // ===========================================================================
-#splitslide("EDOMEX — Estrategia subregional: K=3 por zona",
+#splitslide("EDOMEX — Estrategia subregional: 8 clínicas",
   [
     #table(
       columns: (1fr, auto, auto, auto),
       stroke: none, inset: 7pt, fill: tf,
-      [#th[Zona]], [#th[K]], [#th[Sin seguro cub.]], [#th[% local]],
-      [Norte],         [3], [1,182],                 [13.9%],
+      [#th[Zona]], [#th[Clínicas]], [#th[Sin seguro cub.]], [#th[% local]],
+      [Norte],         [2], [1,182],                 [13.9%],
       [Poniente],      [3], [10,243],                [23.0%],
       [ZMVM-Centro],   [3], [24,443],                [19.7%],
-      [#kred[Oriente]],[3], [#kred[Sin candidatos]], [#kred[—]],
-      [*Total*],       [*9 ubic.*],[*35,868*],       [*19.0%*],
+      [#kred[Oriente]],[0], [#kred[—]], [#kred[—]],
+      [*Total*],       [*8*],[*35,868*],             [*19.0%*],
     )
     #v(8pt)
-    - Curva *lineal* (~+2 pp/clínica): no hay K óptimo único → K=3 por zona (equidad geográfica).
-    - #kred[Oriente]: 12,270 personas sin seguro; requiere umbral 20–30 min o clínicas móviles.
+    - Contando cada persona una vez: *17,082*, bajo el azar (p95 18,674). Norte tiene solo 2 candidatos.
+    - #kred[Oriente] quedó fuera por el corte de 20 candidatos, no por falta de candidatos: en el modelo revisado, 3 clínicas alcanzan 4,911 de 10,413 personas.
   ],
-  "fase3_EDOMEX_subregional_mapa.png",
+  "modelo_ubicaciones.png",
   ratio: 54%,
 )
 
@@ -588,64 +587,80 @@
 
 
 // ===========================================================================
-// 25. VALIDACIÓN TOPOLÓGICA
+// 25. MEDICIÓN DIRECTA
 // ===========================================================================
-#splitslide2("Validación topológica: ¿se cerraron realmente los huecos?",
+#splitslide2("Medición directa: ¿se cerraron los huecos?",
   [
-    Hueco con centroide $c$ y persistencia $r$:
+    Se agregan las clínicas a los puntos, se recalcula la persistencia (Alpha clásico) y se sigue cada hueco prioritario:
     #v(4pt)
     #table(
       columns: (1fr, auto, auto),
       stroke: none, inset: 6pt, fill: tf,
-      [#th[Estado]], [#th[CDMX K=7]], [#th[EDOMEX K=12]],
-      [Cerrado ($d < r$)],       [3/46 (7%)],  [6/77 (8%)],
-      [Parcial ($r <= d < 2r$)], [4/46 (9%)],  [2/77 (3%)],
-      [Persistente ($d >= 2r$)], [39/46 (85%)],[69/77 (90%)],
-      [*Δ persist. total*],      [*−14.9%*],   [*−16.5%*],
+      [#th[Medido]], [#th[CDMX K=7]], [#th[EDOMEX K=8]],
+      [Cerrados],   [1/46],  [2/77],
+      [Modificados], [13],   [8],
+      [Intactos],   [32],    [67],
+      [*Δ persist. total*],  [*−2.3%*], [*−7.4%*],
+      [Azar (media)],        [−5.5%],   [−7.4%],
     )
     #v(6pt)
-    *MCLP ≠ cierre topológico*: MCLP optimiza acceso (≤ 15 min); el cierre exige $d < r$ del centroide — criterio geométrico más estricto.
+    Una clínica *parte* un hueco grande, no lo cierra. Antes: «−14.9% y −16.5%» con una regla geométrica que no se sostiene.
   ],
-  "validacion_mapa.png",
-  "validacion_persistencia.png",
+  "cierre_real_antes_despues.png",
+  "cierre_real_lineas_base.png",
   ratio: 52%,
 )
 
 
 // ===========================================================================
-// 26. CONCLUSIONES
+// 26. MODELO REVISADO
 // ===========================================================================
-#slide("Conclusiones y recomendaciones de política pública")[
-  #grid(columns: (1fr, 1fr), column-gutter: 24pt, row-gutter: 12pt,
+#figslide2("Modelo revisado: personas y acceso nuevo",
+  [
+    «Personas» (solo maximizar personas alcanzadas): CDMX 28,418 y EDOMEX 30,033, sobre el reporte (26,281 y 17,082). Para *acceso nuevo* (de > 833 m a ≤ 833 m), un modelo sin topología logra 4,346 y 12,124 personas, contra 319 y 2,248 del reporte. Los pesos de robustez no mejoran.
+  ],
+  "modelo_acceso_nuevo.png",
+  "modelo_personas_vs_azar.png",
+)
+
+
+// ===========================================================================
+// 27. CONCLUSIONES
+// ===========================================================================
+#slide("Conclusiones y limitaciones")[
+  #set text(size: 13.5pt)
+  #grid(columns: (1fr, 1fr), column-gutter: 24pt, row-gutter: 10pt,
     [
-      #kpi[Problema estructural, no de escasez.]
-      21k + 30k clínicas con 118 + 241 vacíos. La *forma* de la distribución importa tanto como la cantidad.
+      #kpi[Hay vacíos, pero no donde la gente está lejos.]
+      71 + 209 huecos y ≈325,000 personas sin seguro dentro; solo 0.9% y 5.0% están a más de 833 m.
     ],
     [
-      #kpi[El 4.° eje cambia quién recibe inversión.]
-      IM medio cubiertos 0.35 vs persistentes 0.29. Sin marginación, la inversión habría ido a zonas menos vulnerables.
+      #kpi[Las clínicas no cierran los huecos.]
+      Cierran 1 de 46 y 2 de 77; no superan al azar en persistencia. Su valor es alcanzar personas.
     ],
     [
-      #kpi[CDMX: 7 clínicas → 42,687 personas (44.0%).]
-      C1–C5–C7–C8 (fase 1) + C2–C16–C19 (fase 2). K=7 maximiza retorno antes de la caída en K=8→9.
+      #kpi[CDMX: 7 clínicas → 42,687 personas (26,281 contando una vez).]
+      Fase 1: C1, C2, C5, C7, C8; fase 2: C16, C19. Supera al azar (p95 18,363).
     ],
     [
-      #kpi[EDOMEX: 9 ubicables → 35,868 personas (19.0%).]
-      K=3 por zona (equidad). Oriente (12,270 personas) requiere umbral 20–30 min o clínicas móviles.
+      #kpi[EDOMEX: 8 clínicas → 35,868 (17,082 contando una vez).]
+      Norte 2, Poniente 3, ZMVM 3, Oriente 0. No supera al azar (p95 18,674).
     ],
   )
-  #v(10pt)
+  #v(6pt)
+  #nota[La topología describe bien la *forma* de la red, pero no basta para decidir dónde dar *acceso nuevo*: medir directamente a quién le queda lejos la oferta rinde de 2.5 a 6 veces más.]
+  #v(6pt)
   #table(
-    columns: (1fr, 1fr, 1fr),
-    stroke: none, inset: 6pt,
+    columns: (1fr, 1fr),
+    stroke: none, inset: 5pt,
     fill: (_, row) => if calc.odd(row) { rgb("#eaf1f8") } else { white },
-    [*Limitación*], [*Impacto*], [*Mejora propuesta*],
-    [Tiempos euclidiana × 1.35], [Error ±15% en zonas con barrancos], [Red vial completa por subregión],
-    [Censo 2020 vs DENUE 2023],  [Desajuste temporal 2–3 años],      [DENUE trimestral],
-    [Oriente sin candidatos],    [12,270 personas sin cobertura],     [Umbral 20–30 min o clínicas móviles],
+    [*Limitación*], [*Detalle*],
+    [Euclidiana × 1.35, no red vial],  [Radio efectivo de 833 m; tiempos estimados],
+    [Población uniforme por AGEB],     [Solo AGEB urbanas; PSINDER es afiliación, no atención],
+    [Depende de qué se cuenta],        [Solo 19/46 y 34/77 prioritarios tienen hueco en la red médica],
   )
   #v(4pt)
   #align(center, text(fill: azul-claro, size: 12pt)[
-    DENUE 2023 · Censo 2020 · OpenStreetMap — Zona Metropolitana del Valle de México
+    DENUE 2023 · Censo 2020 — Zona Metropolitana del Valle de México
   ])
 ]

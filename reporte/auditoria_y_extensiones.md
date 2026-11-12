@@ -3,9 +3,9 @@
 **Fecha:** 2026-11-02. **Rama:** `mejoras/tda-avanzado`.
 
 Revisa `reporte/trabajo_final.md` y `reporte/paper.typ` contra el código y los archivos
-intermedios, y agrega tres experimentos. No modifica el reporte, el paper ni la
-presentación, que son de cinco autores. Se puede reproducir con los notebooks `22` a
-`25`; los resultados numéricos están en `outputs/auditoria/`.
+intermedios, y agrega experimentos nuevos. Se puede reproducir con los notebooks `22` a
+`27`; los resultados numéricos están en `outputs/auditoria/`. Las secciones 8 a 10 son la
+fuente de las correcciones del reporte, el paper y la presentación.
 
 ## Resumen
 
@@ -41,10 +41,11 @@ presentación, que son de cinco autores. Se puede reproducir con los notebooks `
 **Cómo se cuenta la población.** Un hueco recibe toda la población de cualquier AGEB que
 toque un disco de radio `pers/2`. Si solo se cuenta la parte de cada AGEB dentro de ese
 disco, quedan 7,416 personas en CDMX, no 112,895. El disco de `pers/2` tampoco es el vacío
-real. Usando el disco vacío verdadero (radio = muerte) y repartiendo la población de cada
-AGEB por área, salen 116,996 en CDMX y 225,224 en EDOMEX. Así que el orden de magnitud
-de unas 330,000 personas es defendible, pero por una razón distinta a la del reporte, y
-supone población uniforme dentro de cada AGEB.
+real. Usando el disco vacío verdadero (radio = muerte, con su centro exacto) y repartiendo
+la población de cada AGEB por área, salen **115,390 en CDMX y 210,153 en EDOMEX, en total
+unas 325,500**. Una versión anterior de esta auditoría daba 116,996 y 225,224 porque usó el
+baricentro como centro; el notebook 26 lo corrige. El orden de magnitud se sostiene, pero por
+una razón distinta a la del reporte, y supone población uniforme dentro de cada AGEB.
 
 **Medida del hueco.** El radio del disco vacío es la muerte, no la persistencia. En la
 mediana, la muerte es 1.75 veces la persistencia en CDMX y 2.85 en EDOMEX. Por eso
@@ -207,7 +208,7 @@ personas sin seguro.
 
 ## 7. Correcciones sugeridas al reporte y al paper
 
-Las deben decidir los autores. En orden de importancia:
+Mario pidió aplicarlas el 2026-11-03 en la rama `mejoras/tda-avanzado`. En orden de importancia:
 
 1. Decir que los huecos prioritarios salen del Alpha clásico, y presentar Laguerre como
    análisis de sensibilidad.
@@ -217,3 +218,111 @@ Las deben decidir los autores. En orden de importancia:
 5. Decir que la cobertura usa euclidiana × 1.35 con radio de 833 m.
 6. Corregir a 8 clínicas en EDOMEX, la causa de Oriente, la fórmula del radio y las cifras
    de la sección 1. Lo de las 8 clínicas también afecta a `linkedin_3_resultados*.png`.
+
+## 8. Otras cifras verificadas (`notebooks/27_verificaciones.py`)
+
+| Tema | Reporte | Verificado |
+|---|---|---|
+| Huecos por umbral 100, 200, 400, 600 m (clásico, el que se usa) | 482/118/17/7 y 742/241/91/58 (esos son de Laguerre) | CDMX 286/71/16/6; EDOMEX 544/209/90/57 |
+| Qué son las "clínicas" (52,372, SCIAN 62) | "clínicas" | Dentistas 16,890; otros ambulatorios 13,907; consultorios y clínicas médicas 12,473; asistencia social 8,217; hospitales 885. Decir "establecimientos de salud" |
+| Tiempo a la clínica más cercana | "red vial real"; 10 huecos de CDMX con 20–35 min | Euclidiana × 1.35 desde el baricentro. CDMX: mediana 7.6 min, máximo 23.9, solo 4 de 62 > 15 min. EDOMEX: mediana 9.6, máximo 41.2, 16 de 99 > 15 min. Solo 3 + 3 huecos por ciudad tienen mapa con red OSM real (`mapas_accesibilidad_*`), como ilustración |
+| Alcaldías nombradas como las más lejanas | Álvaro Obregón, etc. | No verificado; retirar |
+| Error de la aproximación euclidiana | ±15% | Sin respaldo en el repositorio; retirar la cifra |
+| Niveles de urgencia | Crítico 16/26, Alto 15/24; IM 0.29/0.37 | Crítico 16/26, Alto 16/24, Moderado 14/25, Bajo 16/24. IM de los críticos 0.33/0.44; 0.29/0.37 es la media global |
+| Cluster 1 CDMX | 7,525 personas, más de 12 min | 7,525, 2 huecos, tiempo máximo 10.2 min, 31.9% |
+| Cluster 5 EDOMEX | 23,869, 33.7% | 23,869, 3 huecos, 33.0%, tiempo máximo 13.8 min |
+| Solución EDOMEX por zona | K=3 en cada zona | Norte 2 (solo tiene 2 candidatos), Poniente 3, ZMVM 3, Oriente 0 = 8. Frente al global K=5 son 3 clínicas más, no 7 |
+| Función objetivo | score × personas en todo | Solo en CDMX K=5 y 7 (notebook 15). El subregional de EDOMEX y la curva K=5→10 usan solo personas (notebooks 17 y 19), aunque el título de la figura diga otra cosa |
+| Curva de K en CDMX | 33.0, 38.6, 44.0, 49.1, 53.1, 56.1% | Corresponde a solo personas. Con score × personas: 32.0, 37.9, 44.0, 48.0, 53.1, 56.1%. K=7 da la misma selección con ambos |
+| Núcleo estable C1, C2, C5, C7, C8 | Presente en toda la curva | Cierto con score × personas; con solo personas el núcleo es C1, C2, C5, C16, C19. La presentación además decía otra fase 1 (C1–C5–C7–C8) |
+| Cuarto eje: 11 y 38 huecos suben; 9 de 10 estables | Efecto de agregar marginación | No se reproduce: la comparación 40/40/20 contra 25/25/25/25 mezcla pesos y da 25 y 45 huecos, top 10 comunes 9 y 5. Con 3 ejes iguales, 25 y 43, top 10 comunes 7 y 6. `20_indice_marginacion.py` es además circular: su score "original" ya incluye marginación |
+| Cuarto eje: cambia quién recibe inversión | Sí | CDMX K=7: cambian 2 de 7 clínicas (C16 y C19 en vez de C3 y C17), 42,687 contra 39,974 personas, IM cubiertos 0.346 contra 0.317. EDOMEX K=8 global: no cambia ninguna. El subregional no usa el score. El filtro sí amplía de 39 a 46 y de 72 a 77 huecos. El IM incluye % sin seguro (Spearman 0.55 y 0.75 con esa variable), así que en parte repite ese eje |
+| 0.35 contra 0.29 | "Por el cuarto eje" | Es descriptivo; la prueba es la fila anterior |
+| Figuras `matriz_riesgo_*` e `impacto_censal_*` | Se presentan como distintas | Son archivos idénticos |
+| Figura `laguerre_comparacion.png` | | Sus anotaciones dicen "−−47 huecos (−66% absorbidos)" y su título pregunta cuántos desaparecen, cuando el conteo sube. Sustituir por `auditoria_laguerre_artefacto.png` |
+| Figuras `bifiltracion_*` en la diapositiva de Laguerre | "Huecos ponderados" | Salen del Alpha clásico (notebook 09); su "densidad" es solo de salud. No son Laguerre |
+| `validacion_*`, `robustez_conteo/mapa/persistencia_*` | Validación y robustez | Reflejan la regla de distancia y el filtro que no puede fallar. Sustituir por `cierre_real_*` y `robustez_real_*` |
+| Validación OSM de `16_resultados_fase3.py` (tiempos de 63 y 58 min) | No se reporta | Solución K=1 anterior, valores escritos a mano y red limitada a 2 km alrededor del hueco. No sirve como evidencia en ningún sentido |
+
+**La red importa.** Con solo consultorios médicos y hospitales hay 61 huecos en CDMX y 182 en
+EDOMEX; con solo públicos, 43 y 155. De los prioritarios, solo 19 de 46 y 34 de 77 tienen un
+hueco de la red médica dentro de su disco, y 7 y 19 de la red pública. Las prioridades dependen
+mucho de contar o no a dentistas y asistencia social.
+
+## 9. Modelo revisado (`notebooks/26_modelo_revisado.py`)
+
+Los criterios se fijaron antes de correr y están al inicio del notebook. Después de ver los
+primeros resultados se agregó el análisis por tipo de red y el cálculo exacto de población;
+además se corrigió el filtro de red pública, que al principio omitía los códigos 621114 y 621116.
+
+**Definición única de personas.** `PSINDER` se reparte uniforme por AGEB en una rejilla de 100 m
+y cada celda se cuenta una vez (difiere menos de 1% del cálculo exacto).
+
+- **Vacío alcanzado:** personas sin seguro dentro de los discos prioritarios y a ≤ 833 m.
+- **Acceso nuevo:** personas sin seguro que hoy están a > 833 m y quedarían a ≤ 833 m.
+
+| Modelo | K | Conteo del reporte | Vacío alcanzado | Azar p95 | Con ruido σ=50 m | Acceso nuevo |
+|---|---|---|---|---|---|---|
+| CDMX Reporte | 7 | 42,687 | 26,281 | 18,363 | 20,807 | 319 |
+| CDMX Personas | 7 | | **28,418** | 18,363 | 23,668 | 5 |
+| CDMX Ponderado | 7 | | 27,650 | 18,363 | 22,748 | 0 |
+| CDMX Sin topología | 7 | | 0 | | 0 | **4,346** |
+| EDOMEX Reporte | 8 | 35,868 | 17,082 | 18,674 | 15,221 | 2,248 |
+| EDOMEX Personas | 8 | | **30,033** | 18,674 | 26,517 | 0 |
+| EDOMEX Ponderado | 8 | | 28,999 | 18,674 | 28,025 | 1,553 |
+| EDOMEX Sin topología | 8 | | 2,938 | | 2,900 | **12,124** |
+| EDOMEX Personas, sin zonas | 12 | | 41,469 | 26,429 | 34,470 | 0 |
+| EDOMEX Personas, 3 por zona | 12 | | **31,413** | 21,198 | 27,055 | 2,064 |
+| EDOMEX Ponderado, 3 por zona | 12 | | 28,625 | 21,198 | 24,896 | 1,625 |
+
+![Personas alcanzadas](../outputs/figuras/modelo_personas_vs_azar.png)
+
+**Respuestas:**
+
+1. **¿Supera al azar?** Sí, pero "Personas" optimiza esa medida, así que es un mínimo exigible. La
+   solución del reporte supera al azar en CDMX y no en EDOMEX.
+2. **¿Los pesos de robustez y actividad dan prioridades más firmes? No hay evidencia.** Con ruido
+   nuevo, Ponderado menos Personas da −920 en CDMX (intervalo −1,458 a 32), +1,508 en EDOMEX K=8
+   (−1,980 a 4,797) y −2,160 en 3 por zona (−5,341 a 1,748). No se cumple el criterio, así que se
+   recomienda "Personas".
+3. **¿Oriente tiene solución? Sí.** Sus 3 clínicas alcanzan 4,911 de 10,413 personas en sus discos,
+   más que las de Norte (4,864 de 15,418). No hacen falta umbrales extendidos ni clínicas móviles
+   para ubicarlas: el problema era el corte de 20 candidatos.
+4. **Equidad.** Repartir 3 por zona cuesta 10,056 personas (41,469 contra 31,413).
+
+**Resultado principal: los huecos no son donde la gente está lejos.** Solo 784 de 91,632 personas
+(0.9%) en discos de CDMX y 8,900 de 179,612 (5.0%) en EDOMEX están a más de 833 m de cualquier
+establecimiento. Casi todos los discos son más chicos que ese radio. Con el mismo K, buscar
+directamente a quienes están lejos da mucho más acceso nuevo:
+
+| Oferta que cuenta | Personas lejos (región) | En discos prioritarios | Reporte | Personas | Sin topología |
+|---|---|---|---|---|---|
+| CDMX, todos los establecimientos | 9,980 (0.4%) | 0.9% | 319 | 5 | 4,346 |
+| CDMX, médicos y hospitales | 67,689 (2.7%) | 8.9% | 1,776 | 3,607 | 17,139 |
+| CDMX, solo públicos | 505,903 (20.4%) | 41.8% | 25,028 | 27,966 | 69,145 |
+| EDOMEX, todos | 104,597 (2.2%) | 5.0% | 2,248 | 0 | 12,124 |
+| EDOMEX, médicos y hospitales | 372,295 (7.7%) | 17.8% | 6,362 | 4,926 | 29,338 |
+| EDOMEX, solo públicos | 1,667,995 (34.6%) | 49.9% | 16,202 | 19,099 | 96,448 |
+
+(K=7 en CDMX y K=8 en EDOMEX.)
+
+![Acceso nuevo](../outputs/figuras/modelo_acceso_nuevo.png)
+
+![Ubicaciones](../outputs/figuras/modelo_ubicaciones.png)
+
+**Límites:**
+
+- Línea recta × 1.35, no red vial.
+- "Sin topología" usa un método voraz, así que su valor es un mínimo de lo que se puede lograr.
+- Población uniforme dentro de cada AGEB y solo AGEB urbanas: la población rural no está contada.
+- `PSINDER` es falta de afiliación, no de atención. La red pública incluye IMSS e ISSSTE, que atienden
+  sobre todo a sus afiliados, y DENUE no indica capacidad.
+- Estos modelos no prueban que una clínica en esos puntos mejore la salud de nadie.
+
+## 10. Conclusión para el reporte
+
+La persistencia homológica describe bien la **forma** de la red y encuentra vacíos relativos dentro de
+la ciudad, y los grandes resisten perturbaciones. No basta para decidir dónde dar **acceso nuevo**: para
+eso, medir directamente a quién le queda lejos la oferta es más simple. Con las redes médica y pública
+rinde de 2.5 a 6 veces más que los modelos basados en huecos, y mucho más si cuentan todos los
+establecimientos. La topología puede complementar ese análisis, pero aquí no se demostró que lo mejore.

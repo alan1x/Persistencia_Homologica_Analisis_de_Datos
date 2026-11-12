@@ -1,0 +1,282 @@
+{
+  "CDMX": {
+    "celdas": 78056,
+    "psin_region": 2477696.0,
+    "psin_discos_habitados": 116468.31119303896,
+    "psin_discos_prioritarios": 91632.46724414453,
+    "psin_sin_acceso_833m": 9979.917839440372,
+    "psin_sin_acceso_en_discos_prio": 783.9233559254095,
+    "psin_discos_firmes": 22284.743048484597,
+    "discos_firmes": 7,
+    "discos_prio_con_establecimiento_del_otro_estado": 0,
+    "candidatos_por_zona": {
+      "ZMVM": 39
+    },
+    "azar": {
+      "K=7, libre": {
+        "vacio_media": 12896.743282048328,
+        "vacio_p5": 7867.608762444629,
+        "vacio_p95": 18363.495248665928,
+        "acceso_media": 73.80345287833156,
+        "acceso_p95": 341.7805170916706
+      }
+    },
+    "psin_exacta_discos_habitados": 115389.50320108516,
+    "psin_exacta_discos_prioritarios": 90735.89557343708,
+    "diferencia_con_ruido": {
+      "Ponderado (K=7) − Personas (K=7)": {
+        "media": -919.8559192514919,
+        "ic95": [
+          -1457.5699976966644,
+          32.11292374958015
+        ]
+      }
+    },
+    "sensibilidad_pesos": {
+      "S con σ=100": {
+        "clinicas_en_comun": 6,
+        "vacio": 26240.082201013185,
+        "acceso_nuevo": 0.0
+      },
+      "A con umbral 0.10": {
+        "clinicas_en_comun": 6,
+        "vacio": 27444.1724333887,
+        "acceso_nuevo": 5.014925373134329
+      },
+      "A con umbral 0.50": {
+        "clinicas_en_comun": 6,
+        "vacio": 27213.95697960364,
+        "acceso_nuevo": 0.0
+      }
+    },
+    "por_zona": {},
+    "psin_discos_por_zona": {},
+    "sensibilidad_red": {
+      "Todos los establecimientos": {
+        "psin_lejos": 9979.917839440372,
+        "pct_region": 0.40279024704565736,
+        "psin_lejos_en_discos_prio": 783.9233559254095,
+        "pct_discos_prio_lejos": 0.855508292532092,
+        "alcance": {
+          "Reporte (K=7)": 318.8641535320162,
+          "Personas (K=7)": 5.014925373134329,
+          "Ponderado (K=7)": 0.0,
+          "Sin topología (K=7)": 4345.773628000222
+        }
+      },
+      "Consultorios médicos y hospitales": {
+        "psin_lejos": 67689.2449032809,
+        "pct_region": 2.731943099689425,
+        "psin_lejos_en_discos_prio": 8119.760931832989,
+        "pct_discos_prio_lejos": 8.861227003960057,
+        "alcance": {
+          "Reporte (K=7)": 1775.8402514412378,
+          "Personas (K=7)": 3606.676121269181,
+          "Ponderado (K=7)": 3556.526867537838,
+          "Sin topología (K=7)": 17138.852580896055
+        }
+      },
+      "Solo públicos (consultorios y hospitales)": {
+        "psin_lejos": 505902.95731577225,
+        "pct_region": 20.41828203765806,
+        "psin_lejos_en_discos_prio": 38303.896891942204,
+        "pct_discos_prio_lejos": 41.80166489448082,
+        "alcance": {
+          "Reporte (K=7)": 25028.044059883126,
+          "Personas (K=7)": 27966.441285190944,
+          "Ponderado (K=7)": 24800.552281989258,
+          "Sin topología (K=7)": 69144.63280066548
+        }
+      }
+    }
+  },
+  "EDOMEX": {
+    "celdas": 244167,
+    "psin_region": 4826890.0,
+    "psin_discos_habitados": 212062.1047307903,
+    "psin_discos_prioritarios": 179612.24351149047,
+    "psin_sin_acceso_833m": 104597.17194593462,
+    "psin_sin_acceso_en_discos_prio": 8900.316207516329,
+    "psin_discos_firmes": 27917.403529340063,
+    "discos_firmes": 9,
+    "discos_prio_con_establecimiento_del_otro_estado": 0,
+    "candidatos_por_zona": {
+      "ZMVM": 38,
+      "Poniente": 22,
+      "Norte": 8,
+      "Oriente": 6
+    },
+    "azar": {
+      "K=8, libre": {
+        "vacio_media": 13779.416703533281,
+        "vacio_p5": 9136.90452765184,
+        "vacio_p95": 18674.052843437858,
+        "acceso_media": 581.2323012906776,
+        "acceso_p95": 1952.1141462507649
+      },
+      "K=12, libre": {
+        "vacio_media": 20778.290539993133,
+        "vacio_p5": 15115.08696257069,
+        "vacio_p95": 26429.177024400768,
+        "acceso_media": 863.2043150647293,
+        "acceso_p95": 2260.398814478672
+      },
+      "K=12, 3 por zona": {
+        "vacio_media": 16804.169034112812,
+        "vacio_p5": 12434.877436782872,
+        "vacio_p95": 21198.163130125213,
+        "acceso_media": 1022.3166620736109,
+        "acceso_p95": 2388.819934277983
+      }
+    },
+    "psin_exacta_discos_habitados": 210153.40484106255,
+    "psin_exacta_discos_prioritarios": 178368.19514525458,
+    "diferencia_con_ruido": {
+      "Ponderado (K=8) − Personas (K=8)": {
+        "media": 1507.810462036936,
+        "ic95": [
+          -1979.6891110606073,
+          4797.106085123729
+        ]
+      },
+      "Ponderado (K=12, 3 por zona) − Personas (K=12, 3 por zona)": {
+        "media": -2159.7848269077576,
+        "ic95": [
+          -5341.010042127041,
+          1747.8122901379932
+        ]
+      }
+    },
+    "sensibilidad_pesos": {
+      "S con σ=100": {
+        "clinicas_en_comun": 7,
+        "vacio": 28327.24860524433,
+        "acceso_nuevo": 1552.9355454167007
+      },
+      "A con umbral 0.10": {
+        "clinicas_en_comun": 7,
+        "vacio": 28327.24860524433,
+        "acceso_nuevo": 1552.9355454167007
+      },
+      "A con umbral 0.50": {
+        "clinicas_en_comun": 7,
+        "vacio": 29410.7032672212,
+        "acceso_nuevo": 1552.9355454167007
+      }
+    },
+    "por_zona": {
+      "Personas (K=12, 3 por zona)": {
+        "Norte": {
+          "clinicas": 3,
+          "vacio": 4863.5627540831465,
+          "acceso_nuevo": 490.168956080352
+        },
+        "Poniente": {
+          "clinicas": 3,
+          "vacio": 7751.6101407265905,
+          "acceso_nuevo": 1552.9355454167007
+        },
+        "ZMVM": {
+          "clinicas": 3,
+          "vacio": 13886.740552592144,
+          "acceso_nuevo": 0.0
+        },
+        "Oriente": {
+          "clinicas": 3,
+          "vacio": 4911.200125717645,
+          "acceso_nuevo": 21.151960784313726
+        }
+      },
+      "Ponderado (K=12, 3 por zona)": {
+        "Norte": {
+          "clinicas": 3,
+          "vacio": 4467.052586247406,
+          "acceso_nuevo": 31.536737235367372
+        },
+        "Poniente": {
+          "clinicas": 3,
+          "vacio": 7444.8698474569555,
+          "acceso_nuevo": 1552.9355454167007
+        },
+        "ZMVM": {
+          "clinicas": 3,
+          "vacio": 12481.103759407844,
+          "acceso_nuevo": 0.0
+        },
+        "Oriente": {
+          "clinicas": 3,
+          "vacio": 4231.816050483566,
+          "acceso_nuevo": 40.30196078431372
+        }
+      }
+    },
+    "psin_discos_por_zona": {
+      "Norte": {
+        "huecos": 8,
+        "psin_discos": 15418.472627982828
+      },
+      "Poniente": {
+        "huecos": 22,
+        "psin_discos": 46324.2238874613
+      },
+      "ZMVM": {
+        "huecos": 41,
+        "psin_discos": 107456.5910234268
+      },
+      "Oriente": {
+        "huecos": 6,
+        "psin_discos": 10412.955972619544
+      }
+    },
+    "sensibilidad_red": {
+      "Todos los establecimientos": {
+        "psin_lejos": 104597.17194593462,
+        "pct_region": 2.166968212367272,
+        "psin_lejos_en_discos_prio": 8900.316207516329,
+        "pct_discos_prio_lejos": 4.955294824846916,
+        "alcance": {
+          "Reporte (K=8)": 2247.733000486915,
+          "Personas (K=8)": 0.0,
+          "Ponderado (K=8)": 1552.9355454167007,
+          "Personas (K=12, sin zonas)": 0.0,
+          "Personas (K=12, 3 por zona)": 2064.2564622813666,
+          "Ponderado (K=12, 3 por zona)": 1624.7742434363818,
+          "Sin topología (K=8)": 12124.321175522084,
+          "Sin topología (K=12)": 16221.341050288167
+        }
+      },
+      "Consultorios médicos y hospitales": {
+        "psin_lejos": 372295.12925865815,
+        "pct_region": 7.712939993632715,
+        "psin_lejos_en_discos_prio": 31970.02834524519,
+        "pct_discos_prio_lejos": 17.799470526183782,
+        "alcance": {
+          "Reporte (K=8)": 6362.413088306286,
+          "Personas (K=8)": 4926.396054216936,
+          "Ponderado (K=8)": 4821.419329389216,
+          "Personas (K=12, sin zonas)": 4943.184786611302,
+          "Personas (K=12, 3 por zona)": 5537.298601732697,
+          "Ponderado (K=12, 3 por zona)": 5095.504627865599,
+          "Sin topología (K=8)": 29337.54031093089,
+          "Sin topología (K=12)": 39953.70748811118
+        }
+      },
+      "Solo públicos (consultorios y hospitales)": {
+        "psin_lejos": 1667995.4801576617,
+        "pct_region": 34.55631846090675,
+        "psin_lejos_en_discos_prio": 89560.56622329514,
+        "pct_discos_prio_lejos": 49.86328574954057,
+        "alcance": {
+          "Reporte (K=8)": 16202.499049768112,
+          "Personas (K=8)": 19099.23677127388,
+          "Ponderado (K=8)": 21383.03949109736,
+          "Personas (K=12, sin zonas)": 31538.42828627419,
+          "Personas (K=12, 3 por zona)": 24568.283001546337,
+          "Ponderado (K=12, 3 por zona)": 21138.598643561712,
+          "Sin topología (K=8)": 96447.97882850189,
+          "Sin topología (K=12)": 136653.22418330333
+        }
+      }
+    }
+  }
+}

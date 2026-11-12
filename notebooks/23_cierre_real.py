@@ -9,7 +9,7 @@
 # Se usa el Alpha clásico porque de ahí salen los huecos prioritarios (notebook 22).
 #
 # Comparaciones con el mismo número de clínicas:
-# - **MCLP:** la solución del reporte (7 en CDMX, 9 en EDOMEX).
+# - **MCLP:** la solución del reporte (7 en CDMX, 8 en EDOMEX).
 # - **Al azar:** K candidatos del mismo MCLP, elegidos al azar.
 # - **Topológica:** una clínica en el centro del disco vacío de los K huecos prioritarios
 #   más persistentes.

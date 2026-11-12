@@ -1,0 +1,450 @@
+{
+  "eje4_CDMX": {
+    "reporte_40_40_20": {
+      "suben_3_o_mas": 25,
+      "im_medio_suben": 0.351,
+      "top10_comunes": 9
+    },
+    "tres_ejes_iguales": {
+      "suben_3_o_mas": 25,
+      "im_medio_suben": 0.356,
+      "top10_comunes": 7
+    },
+    "prioritarios_sin_filtro_im": 39,
+    "prioritarios_con_filtro_im": 46,
+    "K7_con_4_ejes": [
+      1,
+      2,
+      5,
+      7,
+      8,
+      16,
+      19
+    ],
+    "K7_con_3_ejes": [
+      1,
+      2,
+      3,
+      5,
+      7,
+      8,
+      17
+    ],
+    "K7_solo_personas": [
+      1,
+      2,
+      5,
+      7,
+      8,
+      16,
+      19
+    ],
+    "clinicas_que_cambian_3_vs_4": 2,
+    "correlacion_im_con_pct_sin_seguro": 0.546,
+    "psin_cubierta_4_ejes": 42687,
+    "psin_cubierta_3_ejes": 39974,
+    "im_medio_cubiertos_4_ejes": 0.346,
+    "im_medio_cubiertos_3_ejes": 0.317,
+    "im_medio_no_cubiertos_4_ejes": 0.291
+  },
+  "eje4_EDOMEX": {
+    "reporte_40_40_20": {
+      "suben_3_o_mas": 45,
+      "im_medio_suben": 0.44,
+      "top10_comunes": 5
+    },
+    "tres_ejes_iguales": {
+      "suben_3_o_mas": 43,
+      "im_medio_suben": 0.451,
+      "top10_comunes": 6
+    },
+    "prioritarios_sin_filtro_im": 72,
+    "prioritarios_con_filtro_im": 77,
+    "K8_con_4_ejes": [
+      1,
+      5,
+      7,
+      10,
+      11,
+      13,
+      16,
+      20
+    ],
+    "K8_con_3_ejes": [
+      1,
+      5,
+      7,
+      10,
+      11,
+      13,
+      16,
+      20
+    ],
+    "K8_solo_personas": [
+      1,
+      5,
+      7,
+      10,
+      11,
+      13,
+      16,
+      20
+    ],
+    "clinicas_que_cambian_3_vs_4": 0,
+    "correlacion_im_con_pct_sin_seguro": 0.753,
+    "psin_cubierta_4_ejes": 44883,
+    "psin_cubierta_3_ejes": 44883,
+    "im_medio_cubiertos_4_ejes": 0.432,
+    "im_medio_cubiertos_3_ejes": 0.432,
+    "im_medio_no_cubiertos_4_ejes": 0.383
+  },
+  "curva_K_CDMX": {
+    "5": {
+      "solo_personas": [
+        1,
+        2,
+        5,
+        16,
+        19
+      ],
+      "pct_solo_personas": 33.0,
+      "score_por_personas": [
+        1,
+        2,
+        5,
+        7,
+        8
+      ],
+      "pct_score_por_personas": 32.0
+    },
+    "6": {
+      "solo_personas": [
+        1,
+        2,
+        5,
+        7,
+        16,
+        19
+      ],
+      "pct_solo_personas": 38.6,
+      "score_por_personas": [
+        1,
+        2,
+        5,
+        7,
+        8,
+        16
+      ],
+      "pct_score_por_personas": 37.9
+    },
+    "7": {
+      "solo_personas": [
+        1,
+        2,
+        5,
+        7,
+        8,
+        16,
+        19
+      ],
+      "pct_solo_personas": 44.0,
+      "score_por_personas": [
+        1,
+        2,
+        5,
+        7,
+        8,
+        16,
+        19
+      ],
+      "pct_score_por_personas": 44.0
+    },
+    "8": {
+      "solo_personas": [
+        1,
+        2,
+        5,
+        7,
+        8,
+        16,
+        17,
+        19
+      ],
+      "pct_solo_personas": 49.1,
+      "score_por_personas": [
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        16,
+        19
+      ],
+      "pct_score_por_personas": 48.0
+    },
+    "9": {
+      "solo_personas": [
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        16,
+        17,
+        19
+      ],
+      "pct_solo_personas": 53.1,
+      "score_por_personas": [
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        16,
+        17,
+        19
+      ],
+      "pct_score_por_personas": 53.1
+    },
+    "10": {
+      "solo_personas": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        16,
+        17,
+        19
+      ],
+      "pct_solo_personas": 56.1,
+      "score_por_personas": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        16,
+        17,
+        19
+      ],
+      "pct_score_por_personas": 56.1
+    }
+  },
+  "nucleo_solo_personas": [
+    1,
+    2,
+    5,
+    16,
+    19
+  ],
+  "nucleo_score_por_personas": [
+    1,
+    2,
+    5,
+    7,
+    8
+  ],
+  "seleccion_guardada_K7": [
+    1,
+    2,
+    5,
+    7,
+    8,
+    16,
+    19
+  ],
+  "seleccion_guardada_K5": [
+    1,
+    2,
+    5,
+    7,
+    8
+  ],
+  "EDOMEX_objetivo_por_zona": {
+    "Norte": {
+      "huecos": 8,
+      "candidatos": 2,
+      "psin_conteo_reporte": 8478,
+      "solo_personas": [
+        4,
+        8
+      ],
+      "cubre": 1182,
+      "score_por_personas": [
+        4,
+        8
+      ],
+      "cubre_con_score": 1182
+    },
+    "Poniente": {
+      "huecos": 22,
+      "candidatos": 4,
+      "psin_conteo_reporte": 44614,
+      "solo_personas": [
+        1,
+        6,
+        20
+      ],
+      "cubre": 10243,
+      "score_por_personas": [
+        1,
+        6,
+        20
+      ],
+      "cubre_con_score": 10243
+    },
+    "ZMVM": {
+      "huecos": 41,
+      "candidatos": 14,
+      "psin_conteo_reporte": 123897,
+      "solo_personas": [
+        5,
+        7,
+        10
+      ],
+      "cubre": 24443,
+      "score_por_personas": [
+        5,
+        7,
+        10
+      ],
+      "cubre_con_score": 24443
+    },
+    "Oriente": {
+      "huecos": 6,
+      "candidatos": 0,
+      "psin_conteo_reporte": 12270
+    }
+  },
+  "composicion_scian62": {
+    "Dentistas": 16890,
+    "Otros servicios ambulatorios": 13907,
+    "Consultorios y clínicas médicas": 12473,
+    "Asistencia social": 8217,
+    "Hospitales": 885
+  },
+  "redes_CDMX": {
+    "médicos y hospitales": {
+      "establecimientos": 3997,
+      "huecos_200m": 61,
+      "persistencia_max_m": 1536,
+      "mediana_pers_m": 285,
+      "prioritarios_con_hueco_de_esta_red_dentro_del_disco": 19,
+      "prioritarios": 46
+    },
+    "solo públicos": {
+      "establecimientos": 548,
+      "huecos_200m": 43,
+      "persistencia_max_m": 1915,
+      "mediana_pers_m": 372,
+      "prioritarios_con_hueco_de_esta_red_dentro_del_disco": 7,
+      "prioritarios": 46
+    }
+  },
+  "redes_EDOMEX": {
+    "médicos y hospitales": {
+      "establecimientos": 6259,
+      "huecos_200m": 182,
+      "persistencia_max_m": 11758,
+      "mediana_pers_m": 382,
+      "prioritarios_con_hueco_de_esta_red_dentro_del_disco": 34,
+      "prioritarios": 77
+    },
+    "solo públicos": {
+      "establecimientos": 1094,
+      "huecos_200m": 155,
+      "persistencia_max_m": 10793,
+      "mediana_pers_m": 392,
+      "prioritarios_con_hueco_de_esta_red_dentro_del_disco": 19,
+      "prioritarios": 77
+    }
+  },
+  "cifras_CDMX": {
+    "habitados": 62,
+    "tiempo_top10_min": [
+      23.9,
+      20.3,
+      16.3,
+      15.3,
+      14.4,
+      14.2,
+      13.9,
+      13.7,
+      12.8,
+      11.6
+    ],
+    "mas_de_15_min": 4,
+    "mediana_min": 7.6,
+    "urgencia": {
+      "Crítico": 16,
+      "Alto": 16,
+      "Bajo": 16,
+      "Moderado": 14
+    },
+    "im_medio_por_urgencia": {
+      "Alto": 0.3,
+      "Bajo": 0.26,
+      "Crítico": 0.33,
+      "Moderado": 0.29
+    },
+    "im_medio_global": 0.29,
+    "cluster_mayor": {
+      "rank": 1,
+      "huecos": 2,
+      "psin": 7525,
+      "pob": 23565,
+      "pct": 31.9,
+      "tiempo_max": 10.2
+    }
+  },
+  "cifras_EDOMEX": {
+    "habitados": 99,
+    "tiempo_top10_min": [
+      41.2,
+      36.5,
+      33.2,
+      27.9,
+      26.6,
+      24.9,
+      21.8,
+      21.5,
+      20.6,
+      20.2
+    ],
+    "mas_de_15_min": 16,
+    "mediana_min": 9.6,
+    "urgencia": {
+      "Crítico": 26,
+      "Moderado": 25,
+      "Alto": 24,
+      "Bajo": 24
+    },
+    "im_medio_por_urgencia": {
+      "Alto": 0.37,
+      "Bajo": 0.29,
+      "Crítico": 0.44,
+      "Moderado": 0.37
+    },
+    "im_medio_global": 0.37,
+    "cluster_mayor": {
+      "rank": 5,
+      "huecos": 3,
+      "psin": 23869,
+      "pob": 72268,
+      "pct": 33.0,
+      "tiempo_max": 13.8
+    }
+  },
+  "figuras_identicas": {
+    "matriz_riesgo_CDMX.png == impacto_censal_CDMX.png": true,
+    "matriz_riesgo_EDOMEX.png == impacto_censal_EDOMEX.png": true
+  }
+}
