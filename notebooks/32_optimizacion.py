@@ -153,8 +153,8 @@ class Brecha:
 class Peor10(Brecha):
     nombre = "Peor 10%"
 
-    def __init__(self):
-        super().__init__(mascara=S10)
+    def __init__(self, delta=DELTA):
+        super().__init__(mascara=S10, delta=delta)
 
 
 class Combinado:
@@ -199,10 +199,10 @@ def voraz(obj, K):
 ISL_CELDA = isl["celda"].to_numpy()
 
 
-def evaluar(sel):
+def evaluar(sel, delta=DELTA):
     sel = list(sel)
     s = np.concatenate([np.arange(PTR[k], PTR[k + 1]) for k in sel]) if sel else np.array([], int)
-    f = F0 + np.bincount(I[s], weights=DELTA[s], minlength=N)
+    f = F0 + np.bincount(I[s], weights=delta[s], minlength=N)
     d = np.minimum(D0, CUENCA)
     np.minimum.at(d, I[s], DIST[s])
     cub = D0 <= R15
@@ -306,6 +306,30 @@ res["brecha_sin_peso_marginacion"] = {"sitios_iguales_500m": int((d_sin <= 500).
 print(res["brecha_sin_peso_marginacion"]["sitios_iguales_500m"])
 
 # %% [markdown]
+# ## Sensibilidad: unidades de 40 personas
+#
+# Cobertura y p-mediana no dependen de la capacidad, así que eligen los mismos sitios y solo
+# cambia su evaluación. Peor 10% y brecha se vuelven a optimizar.
+
+# %%
+CAP40 = 40.0
+DELTA40 = DELTA * CAP40 / CAP
+sol40 = {"cobertura": sol["cobertura"], "pmediana": sol["pmediana"],
+         "peor10": voraz(Peor10(delta=DELTA40), K_MAX)[0], "brecha": voraz(Brecha(delta=DELTA40), K_MAX)[0]}
+tabla40 = {n: {K: evaluar(s[:K], DELTA40) for K in KS} for n, s in sol40.items()}
+mismos = {n: int((cKDTree(CXY[sol40[n][:K_MAIN]]).query(CXY[sol[n][:K_MAIN]])[0] <= 500).sum()) for n in ["peor10", "brecha"]}
+red40 = {n: 1 - tabla40[n][K_MAIN]["brecha"] / BASE["brecha"] for n in sol40}
+cob40 = tabla40["brecha"][K_MAIN]["cobertura_nueva_peso"] / tabla40["cobertura"][K_MAIN]["cobertura_nueva_peso"]
+res["capacidad_40"] = {"evaluacion": tabla40, "sitios_iguales_a_cap14_K20": mismos,
+                       "criterio": {"reduccion_brecha": red40, "cobertura_brecha_vs_mclp": cob40,
+                                    "brecha_gana": bool(red40["brecha"] >= 1.10 * red40["cobertura"] and cob40 >= 0.90)}}
+print(pd.DataFrame({n: tabla40[n][K_MAIN] for n in sol40}).T.round(1).to_string())
+print(mismos, res["capacidad_40"]["criterio"])
+for n in sol40:
+    print(n, [(K, round((1 - tabla40[n][K]["brecha"] / BASE["brecha"]) * 100, 1), round(tabla40[n][K]["salen_de_bajo_psin"] / 1000, 1),
+               tabla40[n][K]["islas_atendidas"]) for K in KS])
+
+# %% [markdown]
 # ## Frontera eficiencia–equidad (K = 20)
 
 # %%
@@ -380,3 +404,24 @@ ve.titulo(fig, "Eficiencia contra equidad al abrir unidades nuevas",
           "Brecha: Σ peso · max(0, 0.5 − acceso relativo). Distancia y brecha ponderadas con ×2 en marginación alta.")
 fig.subplots_adjust(top=0.82, wspace=0.25)
 ve.guardar(fig, FIG / "optimizacion_frontera.png")
+
+fig, axes = plt.subplots(1, 3, figsize=(16, 5.5))
+for ax, (clave, etiqueta) in zip(axes, [("brecha", "Reducción de la brecha (%)"),
+                                       ("salen_de_bajo_psin", "Personas que salen de acceso bajo (miles)"),
+                                       ("islas_atendidas", f"Islas de F4 atendidas (de {len(isl)})")]):
+    for n in sol:
+        for tab, ls, cap in [(tabla, "--", CAP), (tabla40, "-", CAP40)]:
+            v = [tab[n][K][clave] for K in KS]
+            v = [(1 - x / BASE["brecha"]) * 100 for x in v] if clave == "brecha" else (
+                [x / 1000 for x in v] if clave == "salen_de_bajo_psin" else v)
+            ax.plot(KS, v, c=COLOR[n], ls=ls, lw=2 if ls == "-" else 1.3, marker="o", ms=4,
+                    label=f"{NOMBRE[n]} ({cap:.0f})")
+    ax.set_xscale("log")
+    ax.set_xticks(KS, [str(k) for k in KS])
+    ax.set_xlabel("Unidades nuevas K")
+    ax.set_title(etiqueta, fontsize=10.5)
+axes[0].legend(fontsize=8, frameon=False, ncol=1)
+ve.titulo(fig, "Unidades de 40 personas frente a unidades de 14",
+          "Línea continua: 40 personas por unidad. Punteada: 14 (la mediana actual). Mismos candidatos y mismos pesos.")
+fig.subplots_adjust(top=0.8, wspace=0.22)
+ve.guardar(fig, FIG / "optimizacion_capacidad40.png")
