@@ -253,6 +253,8 @@ cols = ["NOM_MUN", "region", "tipo", "b", "d", "pers", "frecuencia", "psin", "ps
 res["islas_estables"] = est.sort_values("psin_bajo", ascending=False)[cols].replace({np.inf: None}).round(3).to_dict(orient="records")
 print(json.dumps({k: v for k, v in res.items() if k != "islas_estables"}, indent=1, ensure_ascii=False))
 print(est.sort_values("psin_bajo", ascending=False)[cols].head(25).to_string())
+isl[["celda", "x", "y", "b", "d", "pers", "frecuencia", "estable", "tipo", "NOM_MUN", "region", "psin_bajo"]].to_parquet(
+    config.INTERMEDIOS_DIR / "islas_acceso.parquet")
 (SALIDA / "persistencia_acceso.json").write_text(json.dumps(res, indent=2, ensure_ascii=False, default=float), encoding="utf-8")
 
 # %% [markdown]
