@@ -10,3 +10,6 @@
 
 ## 2026-11-03
 - HITO: modelo revisado (`notebooks/26` y `27`) y corrección del reporte, el paper y la presentación en la rama `mejoras/tda-avanzado`. El hallazgo central es que los huecos topológicos casi no coinciden con las personas que están lejos de la oferta de salud.
+
+## 2026-11-13
+- HITO: el proyecto pasó de huecos topológicos a acceso medido (`PLAN_ACCESO.md`, `notebooks/30` a `33`). Incluye E2SFCA con cruce de marginación CONAPO, persistencia H0 por subniveles de las zonas de acceso bajo, optimización con cuatro objetivos y distancias por la red peatonal de OpenStreetMap. Falta F7 (escritura) y, opcional, transporte público con r5py.

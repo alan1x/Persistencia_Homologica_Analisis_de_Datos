@@ -13,3 +13,6 @@ outputs/intermedios/*.pkl
 /reporte/walkthrough.md
 .md
 /outputs/redes
+outputs/intermedios/*.npz
+outputs/intermedios/*.npy
+outputs/*.log
