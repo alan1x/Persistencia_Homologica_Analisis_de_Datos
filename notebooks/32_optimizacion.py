@@ -38,10 +38,22 @@
 #     reaparece cada sitio de la brecha a ≤ 500 m.
 # - **Frontera:** α · p-mediana + (1 − α) · brecha, cada una normalizada por su mejor valor
 #   con K = 20, con α de 0 a 1.
+#
+# ## Versión por calle (`DISTANCIA=calle`)
+#
+# Desde F6 la versión principal mide por la red peatonal de OSM (decisión en
+# `PLAN_ACCESO.md`). Con `DISTANCIA=calle`:
+# - se usan el acceso por calle de hoy y las islas estables por calle (notebook 34);
+# - la cobertura es ≤ 1,125 m de calle (15 min) y la cuenca, 2,250 m (30 min);
+# - los candidatos son los nodos de 500 m más los mínimos de las islas estables por calle,
+#   con pares por la red (caché en `pares_red_candidatos_calle.parquet`);
+# - las salidas llevan el sufijo `_calle` y se comparan los sitios con los de la recta.
+# Los criterios son los mismos.
 
 # %%
 import heapq
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -59,22 +71,37 @@ from lib import acceso, config, viz_eval as ve
 ve.aplicar()
 SALIDA = config.OUTPUTS_DIR / "auditoria"
 FIG = config.FIGURAS_DIR
-CUENCA, R15 = 2 * acceso.RADIO_15, acceso.RADIO_15
+INT = config.INTERMEDIOS_DIR
+CALLE = os.environ.get("DISTANCIA", "recta") == "calle"
+SUF = "_calle" if CALLE else ""
+if CALLE:
+    CUENCA, R15 = 30 * 4500 / 60, 15 * 4500 / 60  # 2,250 y 1,125 m de calle
+else:
+    CUENCA, R15 = 2 * acceso.RADIO_15, acceso.RADIO_15
 UMBRAL, K_MAIN, K_MAX, KS = 0.5, 20, 50, [5, 10, 20, 50]
 RANGOS = {"0 a 5 personas": (1, 5), "6 a 10 personas": (6, 10), "11 a 30 personas": (11, 30),
           "31 a 50 personas": (31, 50), "51 a 100 personas": (51, 100), "101 a 250 personas": (101, 250),
           "251 y más personas": (251, 350)}
 
-c = pd.read_parquet(config.INTERMEDIOS_DIR / "acceso_e2sfca_celdas.parquet")
+c = pd.read_parquet(INT / "acceso_e2sfca_celdas.parquet")
 o = acceso.oferta()
-isl = pd.read_parquet(config.INTERMEDIOS_DIR / "islas_acceso.parquet")
+isl = pd.read_parquet(INT / f"islas_acceso{SUF}.parquet")
 isl = isl[isl["estable"] & (isl["tipo"] != "resto de región")].reset_index(drop=True)
 XY, PSIN = c[["x", "y"]].to_numpy(), c["psin"].to_numpy()
 N = len(c)
 ALTA = c["alta_marg"].to_numpy(bool)
 PESO = PSIN * np.where(ALTA, 2.0, 1.0)
-F0 = c["acceso_rel"].to_numpy()
-D0 = c["d_min"].to_numpy()
+if CALLE:
+    F0 = pd.read_parquet(INT / "acceso_calle.parquet")["acceso_rel_calle"].to_numpy()
+    pu = pd.read_parquet(INT / "pares_red_unidades.parquet")
+    Io, Jo, Do = pu["i"].to_numpy(), pu["j"].to_numpy(), pu["d"].to_numpy(float)
+    Wo = acceso.peso(Do, CUENCA)
+    D0 = np.full(N, np.inf)
+    np.minimum.at(D0, Io, Do)
+else:
+    F0 = c["acceso_rel"].to_numpy()
+    D0 = c["d_min"].to_numpy()
+    Io, Jo, Wo = acceso.pares_e2sfca(XY, o[["x", "y"]].to_numpy(), CUENCA)
 PROM = o["cap"].sum() / PSIN.sum()
 CAP = float(o["cap"].median())
 print(f"capacidad nueva: {CAP}, unidades actuales: {len(o)}")
@@ -87,10 +114,26 @@ nodo = np.isclose(c["x"] % 500, 0) & np.isclose(c["y"] % 500, 0)
 CXY = np.vstack([XY[nodo], isl[["x", "y"]].to_numpy()])
 CXY = np.unique(CXY, axis=0)
 M = len(CXY)
-I, J, W = acceso.pares_e2sfca(XY, CXY, CUENCA)
-orden = np.argsort(J, kind="stable")
-I, J, W = I[orden], J[orden], W[orden]
-DIST = np.hypot(*(XY[I] - CXY[J]).T)
+if CALLE:
+    ruta = INT / "pares_red_candidatos_calle.parquet"
+    if not ruta.exists():
+        from lib import red_peatonal as rp
+
+        z = np.load(INT / "red_peatonal.npz")
+        i_, j_, d_, _ = rp.Red(z["xy"], z["u"], z["v"], z["largo"]).pares(XY, CXY, CUENCA, cada=2000)
+        pd.DataFrame({"i": i_.astype(np.int32), "j": j_.astype(np.int32), "d": d_.astype(np.float32),
+                      "cx": CXY[j_, 0], "cy": CXY[j_, 1]}).to_parquet(ruta)
+    pc = pd.read_parquet(ruta)
+    assert np.allclose(pc[["cx", "cy"]].to_numpy(), CXY[pc["j"].to_numpy()])  # mismos candidatos
+    I, J, DIST = pc["i"].to_numpy(), pc["j"].to_numpy(), pc["d"].to_numpy(float)
+    W = acceso.peso(DIST, CUENCA)
+    orden = np.argsort(J, kind="stable")
+    I, J, W, DIST = I[orden], J[orden], W[orden], DIST[orden]
+else:
+    I, J, W = acceso.pares_e2sfca(XY, CXY, CUENCA)
+    orden = np.argsort(J, kind="stable")
+    I, J, W = I[orden], J[orden], W[orden]
+    DIST = np.hypot(*(XY[I] - CXY[J]).T)
 PTR = np.searchsorted(J, np.arange(M + 1))
 DEN = np.bincount(J, weights=PSIN[I] * W, minlength=M)
 DELTA = CAP / np.maximum(DEN[J], 1e-9) * W / PROM  # aumento de f en la celda I por el candidato J
@@ -281,7 +324,6 @@ res["aleatorio_K20_reduccion_brecha"] = {"media": float(np.mean(alea)), "p95": f
 print(res["aleatorio_K20_reduccion_brecha"])
 
 # Réplicas de la capacidad actual: cambia f de hoy y el promedio de referencia.
-Io, Jo, Wo = acceso.pares_e2sfca(XY, o[["x", "y"]].to_numpy(), CUENCA)
 lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
 hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
 principal = CXY[sol["brecha"][:K_MAIN]]
@@ -345,8 +387,15 @@ print(pd.DataFrame(frontera).round(3).to_string())
 
 sitios = pd.concat([pd.DataFrame({"objetivo": n, "orden": np.arange(1, K_MAX + 1), "x": CXY[s][:, 0], "y": CXY[s][:, 1]})
                     for n, s in sol.items()], ignore_index=True)
-sitios.to_csv(SALIDA / "optimizacion_sitios.csv", index=False)
-(SALIDA / "optimizacion.json").write_text(json.dumps(res, indent=2, ensure_ascii=False, default=float), encoding="utf-8")
+sitios.to_csv(SALIDA / f"optimizacion_sitios{SUF}.csv", index=False)
+if CALLE:
+    # Sitios por calle frente a los de la recta: cuántos de los K = 20 se repiten a ≤ 500 m.
+    s0 = pd.read_csv(SALIDA / "optimizacion_sitios.csv")
+    res["sitios_iguales_a_recta_K20_500m"] = {
+        n: int((cKDTree(s0.loc[(s0["objetivo"] == n) & (s0["orden"] <= K_MAIN), ["x", "y"]].to_numpy())
+                .query(CXY[sol[n][:K_MAIN]])[0] <= 500).sum()) for n in sol}
+    print(res["sitios_iguales_a_recta_K20_500m"])
+(SALIDA / f"optimizacion{SUF}.json").write_text(json.dumps(res, indent=2, ensure_ascii=False, default=float), encoding="utf-8")
 
 # %% [markdown]
 # ## Figuras
@@ -368,11 +417,11 @@ for ax, (n, s) in zip(axes.ravel(), sol.items()):
                  f"{e['islas_atendidas']} islas atendidas", fontsize=10)
     ax.set_aspect("equal")
     ax.set_axis_off()
-ve.titulo(fig, f"Dónde abrir {K_MAIN} unidades según cada objetivo",
+ve.titulo(fig, f"Dónde abrir {K_MAIN} unidades según cada objetivo" + (" (distancias por calle)" if CALLE else ""),
           f"Unidades de {CAP:.0f} personas. Gris oscuro: acceso bajo hoy (f < 0.5). "
           "Personas en marginación Alta o Muy alta pesan ×2.")
 fig.subplots_adjust(top=0.86, hspace=0.14, wspace=0.02)
-ve.guardar(fig, FIG / "optimizacion_mapas.png")
+ve.guardar(fig, FIG / f"optimizacion_mapas{SUF}.png")
 
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(14, 6))
 fr = pd.DataFrame(frontera)
@@ -384,7 +433,7 @@ for n in sol:
     e = tabla[n][K_MAIN]
     a1.scatter(e["distancia_media_m"], (1 - e["brecha"] / BASE["brecha"]) * 100, s=70, c=COLOR[n], zorder=3,
                edgecolor=ve.FONDO, lw=1.2, label=NOMBRE[n])
-a1.set_xlabel("Distancia media a la unidad más cercana (m, truncada en 1,667)")
+a1.set_xlabel(f"Distancia media a la unidad más cercana (m{' por calle' if CALLE else ''}, truncada en {CUENCA:,.0f})")
 a1.set_ylabel("Reducción de la brecha (%)")
 a1.set_title(f"Frontera con K = {K_MAIN}: α·p-mediana + (1 − α)·brecha", fontsize=10.5)
 a1.legend(fontsize=9, frameon=False)
@@ -400,10 +449,10 @@ a2.set_xlabel("Unidades nuevas K")
 a2.set_ylabel("Reducción de la brecha (%)")
 a2.set_title("Cuánto cierra la brecha cada objetivo", fontsize=10.5)
 a2.legend(fontsize=9, frameon=False)
-ve.titulo(fig, "Eficiencia contra equidad al abrir unidades nuevas",
+ve.titulo(fig, "Eficiencia contra equidad al abrir unidades nuevas" + (" (por calle)" if CALLE else ""),
           "Brecha: Σ peso · max(0, 0.5 − acceso relativo). Distancia y brecha ponderadas con ×2 en marginación alta.")
 fig.subplots_adjust(top=0.82, wspace=0.25)
-ve.guardar(fig, FIG / "optimizacion_frontera.png")
+ve.guardar(fig, FIG / f"optimizacion_frontera{SUF}.png")
 
 fig, axes = plt.subplots(1, 3, figsize=(16, 5.5))
 for ax, (clave, etiqueta) in zip(axes, [("brecha", "Reducción de la brecha (%)"),
@@ -421,7 +470,7 @@ for ax, (clave, etiqueta) in zip(axes, [("brecha", "Reducción de la brecha (%)"
     ax.set_xlabel("Unidades nuevas K")
     ax.set_title(etiqueta, fontsize=10.5)
 axes[0].legend(fontsize=8, frameon=False, ncol=1)
-ve.titulo(fig, "Unidades de 40 personas frente a unidades de 14",
+ve.titulo(fig, "Unidades de 40 personas frente a unidades de 14" + (" (por calle)" if CALLE else ""),
           "Línea continua: 40 personas por unidad. Punteada: 14 (la mediana actual). Mismos candidatos y mismos pesos.")
 fig.subplots_adjust(top=0.8, wspace=0.22)
-ve.guardar(fig, FIG / "optimizacion_capacidad40.png")
+ve.guardar(fig, FIG / f"optimizacion_capacidad40{SUF}.png")
