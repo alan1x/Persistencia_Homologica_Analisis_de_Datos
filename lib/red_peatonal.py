@@ -20,8 +20,11 @@ from scipy.spatial import cKDTree
 from lib import config
 
 URL_PBF = "https://download.geofabrik.de/north-america/mexico-latest.osm.pbf"
+# Se incluye trunk: en México muchas avenidas urbanas con banqueta (Av. Central, Primero de Mayo)
+# están etiquetadas así y sin foot=no. Excluirlas las volvía muros (ver notebook 35).
+# motorway (autopistas de cuota) sigue fuera.
 CAMINABLES = {
-    "footway", "pedestrian", "path", "track", "steps", "corridor", "living_street", "residential",
+    "trunk", "trunk_link", "footway", "pedestrian", "path", "track", "steps", "corridor", "living_street", "residential",
     "service", "unclassified", "road", "tertiary", "tertiary_link", "secondary", "secondary_link",
     "primary", "primary_link", "cycleway",
 }

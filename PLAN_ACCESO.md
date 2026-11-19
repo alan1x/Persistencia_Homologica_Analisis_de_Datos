@@ -117,6 +117,20 @@ Se comparan, con los mismos candidatos y el mismo K:
   RTP y tren ligero. EDOMEX casi no tiene GTFS, porque sus combis no están mapeadas, así que
   ahí solo habrá caminata.
 - Se recalculan F3 a F5 con tiempos reales y se mide cuánto cambian los resultados.
+- **Decisión (2026-11-19): la versión por calle es la principal**, por ser más realista. La
+  línea recta con rodeo 1.35 queda como comparación.
+  - La regla fijada (≤ 80% de islas que reaparecen → calle principal) se cumplió con la
+    prueba por distancia entre mínimos (77%). Esa prueba falla con mesetas de acceso 0
+    (`notebooks/35_ceros_calle.py`). Con la prueba por cuenca reaparece el 84%, así que las
+    dos versiones coinciden en la geografía de F4. La elección de la versión por calle es
+    por realismo, no porque la de recta esté mal.
+  - Limitación conocida: la red de OSM tiene huecos de cruces peatonales. Por ejemplo, en el
+    corredor Gran Canal / Av. Central de Ecatepec no hay cruces mapeados en ~4 km. Las
+    celdas "sospechosas" (acceso 0 por calle pero con unidad a ≤ 1,667 m en recta) suman
+    175 mil personas y se reportan aparte. Con el acceso en recta en esas celdas sobrevive
+    90% de las islas.
+  - Archivos principales: `acceso_calle.parquet`, `islas_acceso_calle.parquet`,
+    `persistencia_calle.json` y la sección F5 de `red_real.json`.
 
 ### F7. Escritura
 

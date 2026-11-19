@@ -1,60 +1,60 @@
 {
   "red": {
-    "nodos": 4567569,
-    "aristas": 4900761
+    "nodos": 4582012,
+    "aristas": 4919824
   },
   "anclaje": {
-    "celdas_mas_300m": 2836,
-    "psin_mas_300m": 6940.360359093316,
-    "mediana_m": 32.80417917119596
+    "celdas_mas_300m": 2826,
+    "psin_mas_300m": 6852.297374116128,
+    "mediana_m": 32.65714416575299
   },
   "rodeo": {
-    "mediana": 1.330670070001051,
-    "p25": 1.223918165750054,
-    "p75": 1.4665682036211312,
+    "mediana": 1.3300397329126332,
+    "p25": 1.2234679574526193,
+    "p75": 1.465532465661164,
     "por_zona": {
-      "CDMX": 1.315338511890749,
-      "EDOMEX poniente (Toluca)": 1.3484059411570124,
-      "EDOMEX resto": 1.3394342987054342
+      "CDMX": 1.3141956415217402,
+      "EDOMEX poniente (Toluca)": 1.3485591245474864,
+      "EDOMEX resto": 1.339105369503968
     },
     "valido_1_35": true
   },
   "f3": {
-    "spearman": 0.9231198661254195,
+    "spearman": 0.9288570441518881,
     "psin_bajo_recta": 3382806.4811681043,
-    "psin_bajo_calle": 3406002.022694407,
-    "siguen_bajo_pct": 92.01258503748616,
-    "nuevos_bajo": 293394.3325560114,
-    "salen_bajo": 270198.79102970875,
-    "psin_sin_acceso_calle": 581842.6012318194,
+    "psin_bajo_calle": 3386088.8970963224,
+    "siguen_bajo_pct": 92.10475656238738,
+    "nuevos_bajo": 270363.22263977723,
+    "salen_bajo": 267080.8067115593,
+    "psin_sin_acceso_calle": 560772.2394209902,
     "por_region": {
       "CDMX": {
         "pct_bajo_recta": 22.69344132913893,
-        "pct_bajo_calle": 23.14615726456891
+        "pct_bajo_calle": 22.777243739340904
       },
       "EDOMEX": {
         "pct_bajo_recta": 58.43373255022763,
-        "pct_bajo_calle": 58.68189683204865
+        "pct_bajo_calle": 58.45871855493749
       }
     }
   },
   "f4": {
-    "islas_calle": 1025,
+    "islas_calle": 1050,
     "estables_recta": 370,
-    "estables_que_reaparecen_pct": 77.83783783783784,
-    "psin_bajo_en_las_que_reaparecen_pct": 63.512713497494076
+    "estables_que_reaparecen_pct": 77.29729729729729,
+    "psin_bajo_en_las_que_reaparecen_pct": 72.44779793384156
   },
   "robusto": false,
   "f5": {
-    "brecha_base_calle": 1361106.9962099236,
+    "brecha_base_calle": 1346916.560268793,
     "cap_14": {
-      "reduccion_calle_optimo": 0.06248514397039806,
-      "reduccion_calle_con_sitios_recta": 0.061959688839987814,
+      "reduccion_calle_optimo": 0.063142606095407,
+      "reduccion_calle_con_sitios_recta": 0.06261197597520063,
       "sitios_iguales_500m": 17
     },
     "cap_40": {
-      "reduccion_calle_optimo": 0.1445430355998818
+      "reduccion_calle_optimo": 0.14616113768440486
     }
   },
-  "minutos": 19.002815465132397
+  "minutos": 7.846333034833273
 }

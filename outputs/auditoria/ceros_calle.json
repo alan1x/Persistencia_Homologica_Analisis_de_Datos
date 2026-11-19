@@ -1,0 +1,220 @@
+{
+  "criterio": "sospechosa = acceso 0 por calle y unidad a ≤ 1,667 m en recta",
+  "clases": {
+    "lejos de verdad": {
+      "celdas": 18741.0,
+      "psin": 172626.2,
+      "psin_marg_alta": 68322.3,
+      "pct_psin": 30.8
+    },
+    "zona gris": {
+      "celdas": 18724.0,
+      "psin": 213874.2,
+      "psin_marg_alta": 69886.5,
+      "pct_psin": 38.1
+    },
+    "rodeo moderado": {
+      "celdas": 7456.0,
+      "psin": 93275.5,
+      "psin_marg_alta": 25600.7,
+      "pct_psin": 16.6
+    },
+    "rodeo > 2": {
+      "celdas": 7209.0,
+      "psin": 79516.0,
+      "psin_marg_alta": 15571.3,
+      "pct_psin": 14.2
+    },
+    "red desconectada": {
+      "celdas": 0.0,
+      "psin": 0.0,
+      "psin_marg_alta": 0.0,
+      "pct_psin": 0.0
+    },
+    "sin calle a 300 m": {
+      "celdas": 554.0,
+      "psin": 1480.3,
+      "psin_marg_alta": 453.2,
+      "pct_psin": 0.3
+    }
+  },
+  "islas_b0": {
+    "n": 371,
+    "psin_bajo": 1391457.1355902506,
+    "psin_bajo_en_sospechosas": 30735.04065510918,
+    "islas_con_mayoria_sospechosa": 76
+  },
+  "sensibilidad_hibrido": {
+    "islas_hibrido": 1062,
+    "cuenca_estables_calle_que_sobreviven_pct": 89.7742363877822,
+    "cuenca_psin_bajo_en_las_que_sobreviven_pct": 92.98015624187677,
+    "estables_calle_que_sobreviven_pct": 88.57901726427623,
+    "psin_bajo_en_las_que_sobreviven_pct": 54.84800552108935,
+    "b0_que_sobreviven_pct": 76.81940700808624,
+    "b_pos_que_sobreviven_pct": 100.0,
+    "psin_bajo_hibrido": 3370105.0345476177,
+    "geografia_robusta": true
+  },
+  "comparacion_recta_por_cuenca": {
+    "recta_en_cuenca_calle_pct": 83.51351351351352,
+    "psin_bajo_recta_en_esas_pct": 94.92551241327497,
+    "calle_en_cuenca_recta_pct": 59.22974767596282,
+    "psin_bajo_calle_en_esas_pct": 74.42054987396138,
+    "por_distancia_500m_nb34": {
+      "recta_con_estable_calle_pct": 69.5,
+      "calle_con_estable_recta_pct": 35.7
+    }
+  },
+  "grupos_sospechosos": [
+    {
+      "grupo": 294,
+      "psin": 17746.0,
+      "celdas": 1769,
+      "x": 473232.2,
+      "y": 2141953.9,
+      "anclaje_med": 32.6,
+      "rodeo_med": 2.6,
+      "NOM_MUN": "Álvaro Obregón"
+    },
+    {
+      "grupo": 762,
+      "psin": 9956.6,
+      "celdas": 265,
+      "x": 494086.4,
+      "y": 2171049.1,
+      "anclaje_med": 33.4,
+      "rodeo_med": 2.6,
+      "NOM_MUN": "Ecatepec de Morelos"
+    },
+    {
+      "grupo": 747,
+      "psin": 9068.4,
+      "celdas": 194,
+      "x": 496902.6,
+      "y": 2170000.0,
+      "anclaje_med": 27.0,
+      "rodeo_med": 1.9,
+      "NOM_MUN": "Ecatepec de Morelos"
+    },
+    {
+      "grupo": 394,
+      "psin": 4367.6,
+      "celdas": 376,
+      "x": 469780.3,
+      "y": 2144990.7,
+      "anclaje_med": 41.5,
+      "rodeo_med": 3.0,
+      "NOM_MUN": "Huixquilucan"
+    },
+    {
+      "grupo": 710,
+      "psin": 3771.9,
+      "celdas": 82,
+      "x": 498713.4,
+      "y": 2167987.8,
+      "anclaje_med": 24.3,
+      "rodeo_med": 1.8,
+      "NOM_MUN": "Ecatepec de Morelos"
+    },
+    {
+      "grupo": 353,
+      "psin": 3756.6,
+      "celdas": 103,
+      "x": 465293.2,
+      "y": 2140376.7,
+      "anclaje_med": 22.2,
+      "rodeo_med": 2.3,
+      "NOM_MUN": "Huixquilucan"
+    },
+    {
+      "grupo": 565,
+      "psin": 2810.7,
+      "celdas": 89,
+      "x": 480622.5,
+      "y": 2157837.1,
+      "anclaje_med": 28.2,
+      "rodeo_med": 1.8,
+      "NOM_MUN": "Tlalnepantla de Baz"
+    },
+    {
+      "grupo": 150,
+      "psin": 2522.0,
+      "celdas": 88,
+      "x": 491183.0,
+      "y": 2128918.2,
+      "anclaje_med": 38.7,
+      "rodeo_med": 1.9,
+      "NOM_MUN": "Xochimilco"
+    },
+    {
+      "grupo": 1025,
+      "psin": 2436.4,
+      "celdas": 75,
+      "x": 498662.7,
+      "y": 2187557.3,
+      "anclaje_med": 24.8,
+      "rodeo_med": 2.5,
+      "NOM_MUN": "Tecámac"
+    },
+    {
+      "grupo": 306,
+      "psin": 2369.3,
+      "celdas": 233,
+      "x": 503738.6,
+      "y": 2138515.5,
+      "anclaje_med": 34.2,
+      "rodeo_med": 2.0,
+      "NOM_MUN": "La Paz"
+    },
+    {
+      "grupo": 369,
+      "psin": 2358.7,
+      "celdas": 72,
+      "x": 422162.5,
+      "y": 2141534.7,
+      "anclaje_med": 30.2,
+      "rodeo_med": 2.7,
+      "NOM_MUN": "Almoloya de Juárez"
+    },
+    {
+      "grupo": 497,
+      "psin": 2303.4,
+      "celdas": 206,
+      "x": 471360.7,
+      "y": 2153001.0,
+      "anclaje_med": 36.4,
+      "rodeo_med": 1.9,
+      "NOM_MUN": "Naucalpan de Juárez"
+    },
+    {
+      "grupo": 254,
+      "psin": 1933.8,
+      "celdas": 133,
+      "x": 490144.4,
+      "y": 2135015.0,
+      "anclaje_med": 67.3,
+      "rodeo_med": 2.1,
+      "NOM_MUN": NaN
+    },
+    {
+      "grupo": 198,
+      "psin": 1888.1,
+      "celdas": 187,
+      "x": 488896.8,
+      "y": 2132104.8,
+      "anclaje_med": 75.0,
+      "rodeo_med": 2.3,
+      "NOM_MUN": NaN
+    },
+    {
+      "grupo": 368,
+      "psin": 1591.0,
+      "celdas": 73,
+      "x": 438916.4,
+      "y": 2141404.1,
+      "anclaje_med": 104.0,
+      "rodeo_med": 2.0,
+      "NOM_MUN": "Toluca"
+    }
+  ]
+}

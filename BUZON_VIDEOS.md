@@ -128,3 +128,13 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 - **Qué se agregó:** `notebooks/34_persistencia_calle.py`, que guarda `islas_acceso_calle.parquet`.
 - **Resultado:** comparando estables contra estables, 69% de las 370 estables en recta tienen una estable por calle a ≤ 500 m, y ahí está el 53% de su gente con acceso bajo. 51 zonas de {f < 0.5} tienen ≥ 2 islas estables y concentran 2.77 de 3.41 millones de personas con acceso bajo. Por calle aparecen núcleos nuevos grandes, como Acolman (236 mil), Tlalpan y Toluca.
 - **Evidencia:** `outputs/figuras/persistencia_calle.png`, `outputs/auditoria/persistencia_calle.json`.
+
+## 2026-11-19 — ¿Los ceros por calle son reales? Mesetas y huecos de OSM
+- **Qué se aprendió:**
+  - Cuando una función tiene mesetas (acceso = 0 en miles de celdas), el mínimo de cada isla cae en un punto arbitrario de la meseta. Comparar islas por la distancia entre mínimos falla. Se cambió por una prueba de cuenca: el mínimo de A cae en el territorio {f < d} de alguna isla de B.
+  - En OSM de México muchas avenidas urbanas son `trunk` (Av. Central, Primero de Mayo), y excluirlas las volvía muros. Se agregaron.
+  - Aun así, en Ecatepec una celda a 133 m de una unidad del ISSSTE queda a 8.5 km por calle: el corredor Gran Canal / Av. Central no tiene cruces peatonales mapeados en ~4 km. Probablemente es un hueco de OSM.
+- **Qué se agregó:** `notebooks/35_ceros_calle.py`, `Rejilla.en_cuencas` en `lib/topo_rejilla.py`, y `trunk` en `lib/red_peatonal.py`. Se volvieron a correr 33 y 34.
+- **Resultado:** de las 561 mil personas con acceso 0 por calle, 173 mil están lejos de verdad, 214 mil en zona gris y 175 mil son sospechosas (80 mil con rodeo > 2: barrancas de Álvaro Obregón y Huixquilucan, y el corredor de Ecatepec). Con la prueba de cuenca, 84% de las islas estables en recta reaparecen por calle (con 95% de su gente con acceso bajo). Con el acceso en recta en las celdas sospechosas sobrevive 90% de las islas por calle. La geografía de F4 es robusta a usar calles.
+- **Evidencia:** `outputs/figuras/ceros_calle.png`, `outputs/auditoria/ceros_calle.json`, más `red_real.json` y `persistencia_calle.json` actualizados.
+- **Decisión:** Mario eligió la versión por calle como principal por realismo. Quedó anotado en `PLAN_ACCESO.md` (F6), junto con la limitación de los cruces faltantes en OSM.

@@ -66,5 +66,34 @@ class Rejilla:
         return pares, etiqueta
 
 
+    def en_cuencas(self, f, isl, tope=1.0):
+        """Para cada celda, ¿cae dentro de la cuenca de alguna isla de `isl`?
+
+        Cuenca = componente de {f < d} que contiene el mínimo de la isla: su territorio justo
+        antes de fusionarse. Para islas esenciales se usa {f < tope}, y se descartan si esa
+        cuenca contiene el mínimo de otra isla (son el "resto de región", no una isla).
+        Sirve para comparar islas cuando el mínimo cae en una meseta (p. ej. acceso = 0) y su
+        ubicación exacta es arbitraria.
+        """
+        from scipy import ndimage
+
+        val = np.full(self.ras.shape, np.inf)
+        val[self.ras >= 0] = f[self.ras[self.ras >= 0]]
+        cubre = np.zeros(self.ras.shape, bool)
+        mins = set(isl["celda"])
+        for celda, d in zip(isl["celda"], isl["d"]):
+            lab, _ = ndimage.label(val < (d if np.isfinite(d) else tope), structure=np.ones((3, 3)))
+            k = lab[self.fr[celda], self.cr[celda]]
+            if k == 0:
+                continue
+            reg = lab == k
+            if not np.isfinite(d) and any(reg[self.fr[m], self.cr[m]] for m in mins - {celda}):
+                continue
+            cubre |= reg
+        out = np.zeros(self.n, bool)
+        out[self.activa] = cubre[self.fr[self.activa], self.cr[self.activa]]
+        return out
+
+
 def islas(pares, umbral_b=0.5, umbral_p=0.25):
     return pares[(pares["b"] < umbral_b) & (pares["pers"] >= umbral_p)]
