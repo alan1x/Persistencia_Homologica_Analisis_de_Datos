@@ -122,3 +122,9 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 - **Qué se agregó:** `notebooks/33_red_real.py`, `lib/red_peatonal.py` (PBF → grafo disperso → pares por calle) y `lib/topo_rejilla.py` (H0 de F4 reutilizable).
 - **Resultado:** 92% de las personas con acceso bajo siguen igual. Spearman 0.92. Porcentaje bajo casi idéntico (CDMX 23.1%, EDOMEX 58.7%). Pero solo 78% de las islas estables de F4 reaparecen (criterio: 80%), así que por la regla fijada la versión por calle pasa a ser la principal. F5 casi no cambia: 17 de 20 sitios iguales y los sitios de línea recta rinden 99% de los óptimos por calle.
 - **Evidencia:** `outputs/figuras/red_real.png`, `outputs/auditoria/red_real.json`.
+
+## 2026-11-18 — F4 repetida por calle, con estabilidad
+- **Qué se aprendió:** por calle hay 1,025 islas y 736 son estables en las réplicas de capacidad. Pero 360 de esas 736 tienen nacimiento b = 0: son zonas sin ninguna unidad a 30 min de caminata. Ahí el acceso vale 0 sin importar la capacidad, así que esas islas salen estables por construcción. Las réplicas solo prueban la incertidumbre de capacidad, no la de la red de OSM.
+- **Qué se agregó:** `notebooks/34_persistencia_calle.py`, que guarda `islas_acceso_calle.parquet`.
+- **Resultado:** comparando estables contra estables, 69% de las 370 estables en recta tienen una estable por calle a ≤ 500 m, y ahí está el 53% de su gente con acceso bajo. 51 zonas de {f < 0.5} tienen ≥ 2 islas estables y concentran 2.77 de 3.41 millones de personas con acceso bajo. Por calle aparecen núcleos nuevos grandes, como Acolman (236 mil), Tlalpan y Toluca.
+- **Evidencia:** `outputs/figuras/persistencia_calle.png`, `outputs/auditoria/persistencia_calle.json`.
