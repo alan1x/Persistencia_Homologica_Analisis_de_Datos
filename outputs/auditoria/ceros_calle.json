@@ -8,21 +8,21 @@
       "pct_psin": 30.8
     },
     "zona gris": {
-      "celdas": 18724.0,
-      "psin": 213874.2,
+      "celdas": 18722.0,
+      "psin": 213849.7,
       "psin_marg_alta": 69886.5,
-      "pct_psin": 38.1
+      "pct_psin": 38.2
     },
     "rodeo moderado": {
-      "celdas": 7456.0,
-      "psin": 93275.5,
-      "psin_marg_alta": 25600.7,
+      "celdas": 7453.0,
+      "psin": 92891.7,
+      "psin_marg_alta": 25637.5,
       "pct_psin": 16.6
     },
     "rodeo > 2": {
-      "celdas": 7209.0,
-      "psin": 79516.0,
-      "psin_marg_alta": 15571.3,
+      "celdas": 7201.0,
+      "psin": 79297.3,
+      "psin_marg_alta": 15534.6,
       "pct_psin": 14.2
     },
     "red desconectada": {
@@ -39,35 +39,24 @@
     }
   },
   "islas_b0": {
-    "n": 371,
-    "psin_bajo": 1391457.1355902506,
-    "psin_bajo_en_sospechosas": 30735.04065510918,
-    "islas_con_mayoria_sospechosa": 76
+    "n": 335,
+    "psin_bajo": 2579288.1097624395,
+    "psin_bajo_en_sospechosas": 129268.36385089581,
+    "islas_con_mayoria_sospechosa": 68
   },
   "sensibilidad_hibrido": {
-    "islas_hibrido": 1062,
-    "cuenca_estables_calle_que_sobreviven_pct": 89.7742363877822,
-    "cuenca_psin_bajo_en_las_que_sobreviven_pct": 92.98015624187677,
-    "estables_calle_que_sobreviven_pct": 88.57901726427623,
-    "psin_bajo_en_las_que_sobreviven_pct": 54.84800552108935,
-    "b0_que_sobreviven_pct": 76.81940700808624,
-    "b_pos_que_sobreviven_pct": 100.0,
-    "psin_bajo_hibrido": 3370105.0345476177,
+    "islas_hibrido": 1064,
+    "jaccard_emparejado_resumen": 0.6676137666973684,
+    "estables_calle_que_sobreviven_pct": 86.07038123167156,
+    "psin_bajo_en_las_que_sobreviven_pct": 96.19434100648635,
+    "b0_que_sobreviven_pct": 73.73134328358208,
+    "b_pos_que_sobreviven_pct": 97.98270893371757,
+    "psin_bajo_hibrido": 3369261.0423117075,
     "geografia_robusta": true
-  },
-  "comparacion_recta_por_cuenca": {
-    "recta_en_cuenca_calle_pct": 83.51351351351352,
-    "psin_bajo_recta_en_esas_pct": 94.92551241327497,
-    "calle_en_cuenca_recta_pct": 59.22974767596282,
-    "psin_bajo_calle_en_esas_pct": 74.42054987396138,
-    "por_distancia_500m_nb34": {
-      "recta_con_estable_calle_pct": 69.5,
-      "calle_con_estable_recta_pct": 35.7
-    }
   },
   "grupos_sospechosos": [
     {
-      "grupo": 294,
+      "grupo": 293,
       "psin": 17746.0,
       "celdas": 1769,
       "x": 473232.2,
@@ -77,7 +66,7 @@
       "NOM_MUN": "Álvaro Obregón"
     },
     {
-      "grupo": 762,
+      "grupo": 761,
       "psin": 9956.6,
       "celdas": 265,
       "x": 494086.4,
@@ -87,17 +76,17 @@
       "NOM_MUN": "Ecatepec de Morelos"
     },
     {
-      "grupo": 747,
-      "psin": 9068.4,
-      "celdas": 194,
-      "x": 496902.6,
-      "y": 2170000.0,
-      "anclaje_med": 27.0,
+      "grupo": 746,
+      "psin": 8443.3,
+      "celdas": 183,
+      "x": 496828.4,
+      "y": 2169945.9,
+      "anclaje_med": 27.2,
       "rodeo_med": 1.9,
       "NOM_MUN": "Ecatepec de Morelos"
     },
     {
-      "grupo": 394,
+      "grupo": 393,
       "psin": 4367.6,
       "celdas": 376,
       "x": 469780.3,
@@ -107,7 +96,7 @@
       "NOM_MUN": "Huixquilucan"
     },
     {
-      "grupo": 710,
+      "grupo": 709,
       "psin": 3771.9,
       "celdas": 82,
       "x": 498713.4,
@@ -117,7 +106,7 @@
       "NOM_MUN": "Ecatepec de Morelos"
     },
     {
-      "grupo": 353,
+      "grupo": 352,
       "psin": 3756.6,
       "celdas": 103,
       "x": 465293.2,
@@ -127,7 +116,7 @@
       "NOM_MUN": "Huixquilucan"
     },
     {
-      "grupo": 565,
+      "grupo": 564,
       "psin": 2810.7,
       "celdas": 89,
       "x": 480622.5,
@@ -147,7 +136,7 @@
       "NOM_MUN": "Xochimilco"
     },
     {
-      "grupo": 1025,
+      "grupo": 1023,
       "psin": 2436.4,
       "celdas": 75,
       "x": 498662.7,
@@ -157,7 +146,7 @@
       "NOM_MUN": "Tecámac"
     },
     {
-      "grupo": 306,
+      "grupo": 305,
       "psin": 2369.3,
       "celdas": 233,
       "x": 503738.6,
@@ -167,7 +156,7 @@
       "NOM_MUN": "La Paz"
     },
     {
-      "grupo": 369,
+      "grupo": 368,
       "psin": 2358.7,
       "celdas": 72,
       "x": 422162.5,
@@ -177,7 +166,7 @@
       "NOM_MUN": "Almoloya de Juárez"
     },
     {
-      "grupo": 497,
+      "grupo": 496,
       "psin": 2303.4,
       "celdas": 206,
       "x": 471360.7,
@@ -187,14 +176,14 @@
       "NOM_MUN": "Naucalpan de Juárez"
     },
     {
-      "grupo": 254,
+      "grupo": 253,
       "psin": 1933.8,
       "celdas": 133,
       "x": 490144.4,
       "y": 2135015.0,
       "anclaje_med": 67.3,
       "rodeo_med": 2.1,
-      "NOM_MUN": NaN
+      "NOM_MUN": null
     },
     {
       "grupo": 198,
@@ -204,10 +193,10 @@
       "y": 2132104.8,
       "anclaje_med": 75.0,
       "rodeo_med": 2.3,
-      "NOM_MUN": NaN
+      "NOM_MUN": null
     },
     {
-      "grupo": 368,
+      "grupo": 367,
       "psin": 1591.0,
       "celdas": 73,
       "x": 438916.4,

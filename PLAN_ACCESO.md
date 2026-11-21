@@ -91,6 +91,11 @@ E2SFCA es el método de cuenca flotante en dos pasos, en su versión mejorada.
   - estabilidad ante los parámetros de F3;
   - estabilidad ante ruido en la ubicación de las unidades;
   - comparación con un nulo que permuta el acceso entre celdas con correlación espacial.
+  - **Estado (2026-11-21):** solo está hecha la estabilidad ante la capacidad de las
+    unidades (100 réplicas, ahora por cuenca con Jaccard ≥ 0.5). Faltan las otras tres. Las
+    islas que nacen en 0 (335 de 682 por calle, con 2.58 de los 2.75 M de personas de acceso
+    bajo en islas estables) son estables ante la capacidad por construcción, así que el nulo
+    espacial es la validación que más falta hace.
 - **Pregunta clave:** ¿las islas persistentes contienen a la mayoría de las personas con
   peor acceso, y lo hacen mejor que un umbral simple sobre el mapa?
 
@@ -119,18 +124,29 @@ Se comparan, con los mismos candidatos y el mismo K:
 - Se recalculan F3 a F5 con tiempos reales y se mide cuánto cambian los resultados.
 - **Decisión (2026-11-19): la versión por calle es la principal**, por ser más realista. La
   línea recta con rodeo 1.35 queda como comparación.
-  - La regla fijada (≤ 80% de islas que reaparecen → calle principal) se cumplió con la
-    prueba por distancia entre mínimos (77%). Esa prueba falla con mesetas de acceso 0
-    (`notebooks/35_ceros_calle.py`). Con la prueba por cuenca reaparece el 84%, así que las
-    dos versiones coinciden en la geografía de F4. La elección de la versión por calle es
-    por realismo, no porque la de recta esté mal.
+  - La regla fijada (≥ 80% de islas que reaparecen; si no, calle principal) se aplicó con
+    la distancia entre mínimos (77%). Esa prueba falla con mesetas de acceso 0. El "84% por
+    cuenca" que se usó después tampoco sirve: no tenía línea base (una celda cualquiera con
+    acceso bajo caía en esas cuencas el 75% de las veces) y medía un solo sentido.
+    **Corregido (2026-11-21, tras la revisión de Claude y Codex):** con cuencas emparejadas
+    uno a uno (Jaccard ≥ 0.5), 70% de las islas estables en recta tienen pareja por calle,
+    pero solo 34% de las de calle la tienen en recta. Las uniones de cuencas se traslapan con
+    J = 0.58, frente a J = 0.86 de los dos mapas de umbral {f < 0.5}. **La geografía fina
+    de las islas sí depende de cómo se mide la distancia**, más que el mapa de umbral. La
+    versión por calle es la principal por realismo, y la diferencia se reporta.
   - Limitación conocida: la red de OSM tiene huecos de cruces peatonales. Por ejemplo, en el
     corredor Gran Canal / Av. Central de Ecatepec no hay cruces mapeados en ~4 km. Las
     celdas "sospechosas" (acceso 0 por calle pero con unidad a ≤ 1,667 m en recta) suman
-    175 mil personas y se reportan aparte. Con el acceso en recta en esas celdas sobrevive
-    90% de las islas.
+    174 mil personas. Con el acceso en recta en esas celdas, 86% de las islas estables por
+    calle conservan su cuenca (96% de su gente con acceso bajo).
+  - Rodeo sin censura (muestra elegida por distancia en recta, Dijkstra sin límite):
+    mediana 1.39 (1.37 en CDMX, ~1.40 en EDOMEX), todavía dentro de [1.25, 1.45]. El 1.33
+    reportado antes estaba sesgado a la baja por el corte de 2,250 m. 13% de los pares que el
+    supuesto 1.35 mete en la cuenca quedan fuera por calle.
   - Archivos principales: `acceso_calle.parquet`, `islas_acceso_calle.parquet`,
-    `persistencia_calle.json` y la sección F5 de `red_real.json`.
+    `persistencia_calle.json` (F4) y `optimizacion_calle.json` / `optimizacion_sitios_calle.csv`
+    (F5, notebook 32 con `DISTANCIA=calle`). La sección F5 de `red_real.json` es solo una
+    comparación con los candidatos de la recta.
 
 ### F7. Escritura
 

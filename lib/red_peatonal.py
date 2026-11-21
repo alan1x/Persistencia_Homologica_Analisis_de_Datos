@@ -6,6 +6,7 @@
 
 La red es no dirigida: a pie se puede ir en ambos sentidos de una calle de un solo sentido.
 """
+import hashlib
 import time
 import urllib.request
 from pathlib import Path
@@ -29,6 +30,22 @@ CAMINABLES = {
     "primary", "primary_link", "cycleway",
 }
 PROHIBIDO = {"no", "private"}
+PERMITIDO = {"yes", "designated", "permissive"}
+REGLAS_VERSION = 2  # súbelo si cambia la lógica de extracción, para invalidar la red guardada
+
+
+def huella(*partes):
+    """Hash corto de las entradas de un caché (arreglos, números o textos)."""
+    h = hashlib.sha1()
+    for p in partes:
+        h.update(np.ascontiguousarray(p).tobytes() if isinstance(p, np.ndarray) else repr(p).encode())
+    return h.hexdigest()[:16]
+
+
+def huella_reglas(bbox):
+    """Huella de la red: reglas de vías y caja de extracción."""
+    return huella(sorted(CAMINABLES), sorted(PROHIBIDO), sorted(PERMITIDO), np.round(np.asarray(bbox, float), 6),
+                  REGLAS_VERSION)
 
 
 def descargar_pbf(destino, url=URL_PBF):
@@ -75,7 +92,10 @@ def extraer_red(pbf, bbox):
 
         def way(self, w):
             t = w.tags
-            if t.get("highway") not in CAMINABLES or t.get("foot") in PROHIBIDO or t.get("access") in PROHIBIDO:
+            # access=no/private excluye la vía salvo que foot la permita explícitamente.
+            pie = t.get("foot")
+            if (t.get("highway") not in CAMINABLES or pie in PROHIBIDO
+                    or (t.get("access") in PROHIBIDO and pie not in PERMITIDO)):
                 return
             pts = [(nd.ref, nd.lon, nd.lat) for nd in w.nodes if nd.location.valid()]
             if not any(oeste <= lo <= este and sur <= la <= norte for _, lo, la in pts):

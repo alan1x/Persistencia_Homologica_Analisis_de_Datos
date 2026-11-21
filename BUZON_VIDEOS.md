@@ -143,3 +143,21 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 - **Qué se agregó:** modo `DISTANCIA=calle` en `notebooks/32_optimizacion.py`. Usa el acceso por calle de hoy, las islas estables por calle, cobertura a ≤ 1,125 m y cuenca de 2,250 m de calle, y 13,636 candidatos con pares por la red. El modo en recta da resultados idénticos a antes.
 - **Resultado (K = 20, 14 personas por unidad):** brecha −6.3%, peor 10% −5.5%, p-mediana −4.0% y MCLP −3.6%. La brecha sigue sin "ganar" (conserva 42% de la cobertura del MCLP). El voraz coincide con el exacto de CBC (K = 10). Las razones de Minoux van de 0.51 a 0.62 y el p95 de 200 conjuntos aleatorios es 1.7%. 14 de 20 sitios de la brecha reaparecen en ≥ 80% de las réplicas. Con 40 personas por unidad, la brecha baja 14.6% y saca a 137 mil personas del acceso bajo, 109 mil de ellas en marginación alta. Sitios iguales a la recta (≤ 500 m): MCLP 18/20, brecha 13, peor 10% 12 y p-mediana 12.
 - **Evidencia:** `outputs/figuras/optimizacion_*_calle.png`, `outputs/auditoria/optimizacion_calle.json`, `outputs/auditoria/optimizacion_sitios_calle.csv`.
+
+## 2026-11-21 — Correcciones tras la revisión de Claude + Codex (19 hallazgos)
+- **Qué se aprendió:**
+  - La "extensión" de una isla tiene que ser su cuenca ({f < d} conexa al mínimo). La etiqueta de entrada del union-find dejaba fuera las subcuencas fundidas en la isla.
+  - Con mesetas de ceros, comparar islas por distancia entre mínimos no sirve, y "el mínimo cae en una cuenca" tampoco si no hay línea base. Lo correcto es emparejar cuencas uno a uno con Jaccard, maximizando primero las parejas con J ≥ 0.5.
+  - El rodeo medido solo con pares que ya caben en la cuenca sale sesgado a la baja.
+  - Codex sirvió como segundo revisor de las propias correcciones: encontró que los empates al mismo nivel pegaban subcuencas desconectadas y que el emparejamiento por suma de J podía perder parejas válidas.
+- **Qué se agregó:**
+  - `lib/f4.py`, con las piezas comunes de los notebooks 31 y 34.
+  - En `lib/topo_rejilla.py`: `h0(cuencas=True)` (la cuenca de cada isla sale del union-find, en 2.5 s en vez de ~30 s), `particion` y `jaccard_emparejado`.
+  - Huellas en los cachés (red, pares, partición de cuencas), rodeo sin censura, isla atendida por brecha cerrada en su cuenca, CBC publicado solo con optimalidad probada, JSON sin `NaN`, regla de `foot=yes`, superorigen con el anclaje mínimo, y "saturación" renombrada a "acceso bajo con unidad cerca".
+- **Resultado:**
+  - **F4:** las islas estables contienen 81% de la gente con acceso bajo por calle (2.75 de 3.39 M) y 59% en recta. Antes decíamos 44% y 41%: la respuesta a la pregunta clave de F4 pasa de "no" a "sí". Pero 2.58 M de esos 2.75 M están en islas que nacen en 0, estables por construcción, así que falta el nulo espacial.
+  - **Recta contra calle:** 70% de las islas estables en recta tienen pareja por calle, pero solo 34% en el otro sentido. Las cuencas se traslapan con J = 0.58, contra 0.86 de los mapas de umbral. Se corrigió la frase "las dos versiones coinciden".
+  - **Rodeo:** 1.39 (antes 1.33).
+  - **F5:** sin cambios materiales. Islas atendidas con K = 20: 5–7 de 682.
+  - **Cifras viejas:** las entradas del 13 y 18 de noviembre de este buzón quedan superadas por esta.
+- **Evidencia:** `outputs/auditoria/persistencia_calle.json`, `persistencia_acceso.json`, `red_real.json`, `ceros_calle.json`, `optimizacion*.json`, `outputs/figuras/persistencia_calle.png`.

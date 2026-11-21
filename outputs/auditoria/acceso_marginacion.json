@@ -3,6 +3,10 @@
     "CDMX": 355.00000000000006,
     "EDOMEX": 1606.0
   },
+  "psin_bajo_sin_dato_conapo": {
+    "CDMX": 132.55352737808332,
+    "EDOMEX": 1055.096827812297
+  },
   "CDMX": {
     "tabla_grado": {
       "Muy bajo": {

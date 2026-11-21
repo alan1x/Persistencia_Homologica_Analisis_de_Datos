@@ -1,22 +1,23 @@
 # %% [markdown]
-# # 34 — Persistencia del acceso por calle (F4 repetida sobre la red de F6)
+# # 34 — Persistencia del acceso por calle (F4 sobre la red de F6, versión principal)
 #
-# En el notebook 33 solo 78% de las islas estables en línea recta reaparecieron por calle
-# (criterio: 80%), así que la versión por calle pasa a ser la principal. Aquí se le aplica
-# a esa versión el mismo procedimiento completo de F4 (notebook 31):
+# Mismo procedimiento que el notebook 31, con las piezas comunes en `lib/f4.py`:
 #
 # - **Filtración:** subniveles de `acceso_rel_calle` en la rejilla de 100 m, 8 vecinos.
 # - **Isla:** b < 0.5 y persistencia ≥ 0.25.
+# - **Extensión:** la cuenca de la isla, {f < d} conexa al mínimo (incluye las subcuencas que
+#   se fundieron en ella). Para totales cada celda va a la cuenca más profunda que la contiene.
 # - **Estabilidad:** 100 réplicas sorteando la capacidad de cada unidad en su rango de
-#   `per_ocu` de DENUE; estable si en ≥ 80% de las réplicas hay una isla a ≤ 500 m.
+#   `per_ocu`. Una isla aparece en una réplica si su cuenca se empareja (uno a uno) con una
+#   de la réplica con Jaccard ≥ 0.5; es estable si aparece en ≥ 80% de las réplicas.
+#   Como referencia se guarda el criterio anterior (alguna isla a ≤ 500 m).
 # - **Tipos:** finita / aislada / resto de región, igual que en F4.
 #
-# **Comparación justa con la línea recta (fijada antes de correr):** ahora se comparan
-# estables con estables, en ambos sentidos: qué parte de las estables en recta tiene una
-# estable por calle a ≤ 500 m, y al revés.
+# **Comparación con la línea recta:** emparejamiento de cuencas estables contra estables
+# (Jaccard), en ambos sentidos, más el Jaccard de los dos mapas de umbral {f < 0.5} como
+# referencia descriptiva. La prueba contra un modelo nulo queda para otro notebook.
 
 # %%
-import json
 import sys
 from pathlib import Path
 
@@ -30,18 +31,14 @@ from matplotlib.patches import Patch
 from scipy import ndimage
 from scipy.spatial import cKDTree
 
-from lib import acceso, config, topo_rejilla as tr, viz_eval as ve
+from lib import acceso, config, f4, red_peatonal as rp, topo_rejilla as tr, viz_eval as ve
+from lib.f4 import UMBRAL_B, UMBRAL_P, TOPE, N_REP, ESTABLE, J_MIN
 
 ve.aplicar()
 INT = config.INTERMEDIOS_DIR
 SALIDA = config.OUTPUTS_DIR / "auditoria"
 FIG = config.FIGURAS_DIR
-UMBRAL_B, UMBRAL_P, TOPE = 0.5, 0.25, 1.0
-N_REP, ESTABLE, RADIO_MATCH = 100, 0.8, 500.0
 LIM = 30 * 4500 / 60  # 2,250 m de calle, como en el notebook 33
-RANGOS = {"0 a 5 personas": (1, 5), "6 a 10 personas": (6, 10), "11 a 30 personas": (11, 30),
-          "31 a 50 personas": (31, 50), "51 a 100 personas": (51, 100), "101 a 250 personas": (101, 250),
-          "251 y más personas": (251, 350)}
 
 c = pd.read_parquet(INT / "acceso_e2sfca_celdas.parquet")
 calle = pd.read_parquet(INT / "acceso_calle.parquet")
@@ -58,55 +55,31 @@ A, _ = acceso.e2sfca_pares(I, J, W, PSIN, o["cap"].to_numpy(float), N)
 assert np.abs(A / (o["cap"].sum() / PSIN.sum()) - F).max() < 1e-4  # distancias guardadas en float32
 
 rej = tr.Rejilla(c["x"], c["y"], acceso.PASO)
-pares, etiqueta = rej.h0(F)
-isl = tr.islas(pares, UMBRAL_B, UMBRAL_P).copy()
+pares, etiqueta, CUEN = rej.h0(F, cuencas=True, umbral_b=UMBRAL_B, umbral_p=UMBRAL_P, tope=TOPE)
+isl = tr.islas(pares, UMBRAL_B, UMBRAL_P).reset_index(drop=True)
+cuen_isl = f4.lista_cuencas(isl, CUEN)
 print(f"componentes: {len(pares)}, islas: {len(isl)} (esenciales: {np.isinf(isl['d']).sum()})")
 
 # %% [markdown]
 # ## Réplicas de capacidad
 
 # %%
-rng = np.random.default_rng(31)
-lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
-hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
-apariciones = np.zeros(len(isl))
-n_islas_rep = []
-for rep in range(N_REP):
-    cap = rng.integers(lo, hi + 1).astype(float)
-    A, _ = acceso.e2sfca_pares(I, J, W, PSIN, cap, N)
-    ir = tr.islas(rej.h0(A / (cap.sum() / PSIN.sum()))[0], UMBRAL_B, UMBRAL_P)
-    n_islas_rep.append(len(ir))
-    cerca = cKDTree(XY[ir["celda"]]).query(XY[isl["celda"]], distance_upper_bound=RADIO_MATCH)[0]
-    apariciones += np.isfinite(cerca)
-    if rep % 20 == 0:
-        print(rep, len(ir), flush=True)
-isl["frecuencia"] = apariciones / N_REP
+est_df, n_islas_rep = f4.estabilidad(rej, XY, isl, cuen_isl, f4.replicas_capacidad(I, J, W, PSIN, o))
+isl = isl.join(est_df)
 isl["estable"] = isl["frecuencia"] >= ESTABLE
 
 # %% [markdown]
-# ## Extensión, tipo y zonas de umbral (igual que F4)
+# ## Extensión, tipo y zonas de umbral
 
 # %%
 RAS, fr, cr, act = rej.ras, rej.fr, rej.cr, rej.activa
 alta = c["alta_marg"].to_numpy(bool)
-c["isla"] = np.where(F <= TOPE, etiqueta, -1)
 bajo = F < UMBRAL_B
 mask = np.zeros(RAS.shape, bool)
 mask[RAS >= 0] = bajo[RAS[RAS >= 0]]
 umb, n_umb = ndimage.label(mask, structure=np.ones((3, 3)))
 zona = np.zeros(N, int)
 zona[act] = umb[fr[act], cr[act]]
-
-m = c["isla"].to_numpy() >= 0
-lab = c["isla"].to_numpy()[m]
-ext = pd.DataFrame({"psin": np.bincount(lab, PSIN[m], N), "psin_bajo": np.bincount(lab, (PSIN * bajo)[m], N),
-                    "psin_marg_alta": np.bincount(lab, (PSIN * alta)[m], N), "celdas": np.bincount(lab, minlength=N)})
-isl = isl.join(ext, on="celda")
-isl["region"] = c["region"].to_numpy()[isl["celda"]]
-isl["CVEGEO"] = c["CVEGEO"].to_numpy()[isl["celda"]]
-isl["zona_umbral"] = zona[isl["celda"]]
-isl["x"], isl["y"] = XY[isl["celda"]].T
-isl = isl.merge(acceso.marginacion_conapo()[["CVEGEO", "NOM_MUN"]], on="CVEGEO", how="left")
 
 reg_pob, _ = ndimage.label(RAS >= 0, structure=np.ones((3, 3)))
 reg_celda = np.zeros(N, int)
@@ -115,41 +88,72 @@ isl["reg"] = reg_celda[isl["celda"]]
 n_isl_reg = isl.groupby("reg").size()
 isl["tipo"] = np.where(np.isfinite(isl["d"]), "finita",
                        np.where(isl["reg"].map(n_isl_reg) > 1, "resto de región", "aislada"))
-print(isl.groupby(["tipo", "estable"]).agg(n=("celda", "size"), psin_bajo=("psin_bajo", "sum")))
+isl["region"] = c["region"].to_numpy()[isl["celda"]]
+isl["CVEGEO"] = c["CVEGEO"].to_numpy()[isl["celda"]]
+isl["zona_umbral"] = zona[isl["celda"]]
+isl["x"], isl["y"] = XY[isl["celda"]].T
+isl = isl.merge(acceso.marginacion_conapo()[["CVEGEO", "NOM_MUN"]], on="CVEGEO", how="left")
 
-est = isl[isl["estable"] & (isl["tipo"] != "resto de región")].reset_index(drop=True)
+# Totales con las cuencas de las islas estables (sin "resto"): cada celda cuenta una vez.
+sel = (isl["estable"] & (isl["tipo"] != "resto de región")).to_numpy()
+est = isl[sel].reset_index(drop=True)
+cuen_est = [cuen_isl[k] for k in np.flatnonzero(sel)]
+ext, ASIG = f4.extension(cuen_est, PSIN, bajo, alta, N)
+est = est.join(ext)
+print(isl.groupby(["tipo", "estable"]).size())
 resto = isl[isl["tipo"] == "resto de región"]
 por_zona = est.groupby("zona_umbral").size()
 zonas_multi = por_zona[por_zona >= 2]
 psin_zona = pd.Series(np.bincount(zona[zona > 0], PSIN[zona > 0]), dtype=float)
 
 # %% [markdown]
-# ## Comparación estable contra estable con la línea recta
+# ## Comparación con la línea recta (cuencas estables contra estables)
 
 # %%
+F0 = c["acceso_rel"].to_numpy()
 isl0 = pd.read_parquet(INT / "islas_acceso.parquet")
 est0 = isl0[isl0["estable"] & (isl0["tipo"] != "resto de región")].reset_index(drop=True)
-d01 = cKDTree(est[["x", "y"]].to_numpy()).query(est0[["x", "y"]].to_numpy())[0]
-d10 = cKDTree(est0[["x", "y"]].to_numpy()).query(est[["x", "y"]].to_numpy())[0]
+_, _, CUEN0 = rej.h0(F0, cuencas=True, umbral_b=UMBRAL_B, umbral_p=UMBRAL_P, tope=TOPE)
+cuen_est0 = f4.lista_cuencas(est0, CUEN0)
+Jm, fil, col, resumen = tr.jaccard_emparejado(cuen_est0, cuen_est, N, umbral=J_MIN)
+par0, par1 = np.zeros(len(est0)), np.zeros(len(est))
+par0[fil], par1[col] = Jm[fil, col], Jm[fil, col]
+# Gente con acceso bajo en el territorio propio de cada isla en recta (sin doble conteo de anidadas).
+ASIG0 = tr.particion(cuen_est0, N)
+u0, u1 = ASIG0 >= 0, ASIG >= 0
+pb0 = np.bincount(ASIG0[u0], (PSIN * (F0 < UMBRAL_B))[u0], len(est0))
+
+
+def jac(a, b):
+    return float((a & b).sum() / max((a | b).sum(), 1))
+
+
 comp = {
     "estables_recta": len(est0), "estables_calle": len(est),
-    "recta_con_estable_calle_pct": float((d01 <= RADIO_MATCH).mean() * 100),
-    "psin_bajo_recta_en_esas_pct": float(est0.loc[d01 <= RADIO_MATCH, "psin_bajo"].sum() / est0["psin_bajo"].sum() * 100),
-    "calle_con_estable_recta_pct": float((d10 <= RADIO_MATCH).mean() * 100),
-    "psin_bajo_calle_en_esas_pct": float(est.loc[d10 <= RADIO_MATCH, "psin_bajo"].sum() / est["psin_bajo"].sum() * 100),
+    "jaccard_emparejado_resumen": float(resumen),
+    "recta_con_pareja_j05_pct": float((par0 >= J_MIN).mean() * 100),
+    "calle_con_pareja_j05_pct": float((par1 >= J_MIN).mean() * 100),
+    "psin_bajo_recta_en_islas_con_pareja_pct": float(pb0[par0 >= J_MIN].sum() / pb0.sum() * 100),
+    "jaccard_union_cuencas": jac(u0, u1),
+    "referencia_jaccard_umbral_f05": jac(F0 < UMBRAL_B, bajo),
 }
-est["en_recta"] = d10 <= RADIO_MATCH
-print(json.dumps(comp, indent=1))
+est["j_pareja_recta"] = par1
+print(comp)
 
 res = {
+    "definiciones": {"extension": "cuenca {f < d} conexa al mínimo; partición por la cuenca más profunda",
+                     "estable": f"pareja con Jaccard >= {J_MIN} en >= {ESTABLE:.0%} de {N_REP} réplicas de capacidad"},
     "componentes_h0": len(pares),
     "islas": {"total": len(isl), "por_tipo": isl.groupby("tipo").size().to_dict(),
               "estables_por_tipo": isl[isl["estable"]].groupby("tipo").size().to_dict(),
-              "estables_sin_resto": len(est)},
+              "estables_sin_resto": len(est),
+              "estables_b0": int((est["b"] == 0).sum()),
+              "estables_criterio_distancia_500m": int(((isl["frecuencia_dist"] >= ESTABLE)
+                                                       & (isl["tipo"] != "resto de región")).sum())},
     "islas_por_replica": {"media": float(np.mean(n_islas_rep)), "min": int(min(n_islas_rep)), "max": int(max(n_islas_rep))},
     "psin_bajo": {"total": float(PSIN[bajo].sum()), "en_islas_estables": float(est["psin_bajo"].sum()),
-                  "en_resto": float(resto["psin_bajo"].sum())},
-    "resto_de_region": resto[["NOM_MUN", "b", "frecuencia", "psin", "psin_bajo"]].round(3).to_dict(orient="records"),
+                  "en_islas_estables_b0": float(est.loc[est["b"] == 0, "psin_bajo"].sum())},
+    "resto_de_region": resto[["NOM_MUN", "b", "frecuencia"]].round(3).to_dict(orient="records"),
     "umbral": {"zonas": int(n_umb), "zonas_con_isla_estable": int(len(por_zona)),
                "zonas_con_2_o_mas": int(len(zonas_multi)),
                "psin_en_zonas_con_2_o_mas": float(psin_zona.reindex(zonas_multi.index).sum()),
@@ -160,13 +164,17 @@ res = {
                    for r in ["CDMX", "EDOMEX"]},
     "comparacion_recta": comp,
 }
-cols = ["NOM_MUN", "region", "tipo", "b", "d", "pers", "frecuencia", "psin", "psin_bajo", "psin_marg_alta", "en_recta"]
-res["islas_estables"] = est.sort_values("psin_bajo", ascending=False)[cols].replace({np.inf: None}).round(3).to_dict(orient="records")
-print(json.dumps({k: v for k, v in res.items() if k not in ("islas_estables", "resto_de_region")}, indent=1, ensure_ascii=False))
+cols = ["NOM_MUN", "region", "tipo", "b", "d", "pers", "frecuencia", "j_medio", "psin", "psin_bajo",
+        "psin_bajo_cuenca", "psin_marg_alta", "j_pareja_recta"]
+res["islas_estables"] = est.sort_values("psin_bajo", ascending=False)[cols].round(3).to_dict(orient="records")
+print({k: v for k, v in res.items() if k not in ("islas_estables", "resto_de_region")})
 print(est.sort_values("psin_bajo", ascending=False)[cols].head(20).to_string())
-isl[["celda", "x", "y", "b", "d", "pers", "frecuencia", "estable", "tipo", "NOM_MUN", "region", "psin_bajo"]].to_parquet(
-    INT / "islas_acceso_calle.parquet")
-(SALIDA / "persistencia_calle.json").write_text(json.dumps(res, indent=2, ensure_ascii=False, default=float), encoding="utf-8")
+isl[["celda", "x", "y", "b", "d", "pers", "frecuencia", "frecuencia_dist", "j_medio", "estable", "tipo",
+     "NOM_MUN", "region"]].to_parquet(INT / "islas_acceso_calle.parquet")
+np.save(INT / "asig_cuencas_calle.npy", ASIG)
+# Huella que liga ASIG con su acceso y sus islas, en orden; 32 y 35 la comprueban.
+(INT / "asig_cuencas_calle.huella").write_text(rp.huella(F, est["celda"].to_numpy()))
+f4.guardar_json(res, SALIDA / "persistencia_calle.json")
 
 # %% [markdown]
 # ## Figura: islas estables por calle y su correspondencia con la línea recta
@@ -176,15 +184,14 @@ fig, (ax, axd) = plt.subplots(1, 2, figsize=(15, 8), gridspec_kw={"width_ratios"
 base = np.full(RAS.shape, np.nan)
 base[RAS >= 0] = np.where(bajo[RAS[RAS >= 0]], 1.0, 0.0)
 ax.imshow(base, origin="lower", cmap=plt.matplotlib.colors.ListedColormap(["#e6e5e0", "#c9c7bf"]), interpolation="nearest")
-labr = np.full(RAS.shape, -1)
-labr[RAS >= 0] = c["isla"].to_numpy()[RAS[RAS >= 0]]
-sel = np.where(np.isin(labr, est["celda"].to_numpy()), 1.0, np.nan)
-ax.imshow(sel, origin="lower", cmap=plt.matplotlib.colors.ListedColormap([ve.NARANJA]), interpolation="nearest")
+cub = np.full(RAS.shape, np.nan)
+cub[RAS >= 0] = np.where(ASIG[RAS[RAS >= 0]] >= 0, 1.0, np.nan)
+ax.imshow(cub, origin="lower", cmap=plt.matplotlib.colors.ListedColormap([ve.NARANJA]), interpolation="nearest")
 col, fil = rej.col, rej.fil
-for t, color, mk, nom in [(est[est["en_recta"]], ve.TEXTO, "o", "Estable por calle, también en recta"),
-                          (est[~est["en_recta"]], ve.AZUL, "o", "Estable por calle, nueva")]:
+for t, color, mk, nom in [(est[est["j_pareja_recta"] >= J_MIN], ve.TEXTO, "o", "Estable por calle, con pareja en recta (J ≥ 0.5)"),
+                          (est[est["j_pareja_recta"] < J_MIN], ve.AZUL, "o", "Estable por calle, sin pareja")]:
     ax.scatter(col[t["celda"]] + 1, fil[t["celda"]] + 1, s=6, c=color, marker=mk, lw=0, label=nom)
-perd = est0[d01 > RADIO_MATCH]
+perd = est0[par0 < J_MIN]
 cel0 = cKDTree(XY).query(perd[["x", "y"]].to_numpy())[1]
 ax.scatter(col[cel0] + 1, fil[cel0] + 1, s=10, c=ve.AQUA, marker="x", lw=0.8, label="Estable en recta que se pierde")
 ax.set_axis_off()
@@ -193,7 +200,7 @@ ax.set_xlim(col.min() - 5, col.max() + 7)
 ax.set_ylim(fil.min() - 5, fil.max() + 7)
 h, l = ax.get_legend_handles_labels()
 ax.legend(h + [Patch(color=ve.NARANJA), Patch(color="#c9c7bf")],
-          l + ["Extensión de isla estable (f ≤ 1)", "Acceso bajo por calle (f < 0.5)"], loc="lower left",
+          l + ["Cuenca de isla estable", "Acceso bajo por calle (f < 0.5)"], loc="lower left",
           fontsize=8.5, frameon=False, scatterpoints=1, markerscale=2)
 
 fin = pares[np.isfinite(pares["d"]) & (pares["pers"] > 0)]
@@ -211,7 +218,7 @@ axd.set_ylabel("Muerte d (acceso al unirse)")
 axd.set_title(f"Diagrama de H0 por calle ({int(np.isinf(est['d']).sum())} islas aisladas estables no se dibujan)", fontsize=9.5)
 axd.legend(fontsize=8.5, frameon=False, loc="lower right")
 ve.titulo(fig, "Persistencia de las zonas de acceso bajo, distancias por calle",
-          f"{len(est)} islas estables por calle; {comp['recta_con_estable_calle_pct']:.0f}% de las {len(est0)} estables "
-          f"en línea recta tienen una estable por calle a ≤ 500 m.")
+          f"{len(est)} islas estables por calle; {comp['recta_con_pareja_j05_pct']:.0f}% de las {len(est0)} estables "
+          f"en línea recta tienen pareja por calle con Jaccard ≥ 0.5.")
 fig.subplots_adjust(top=0.84)
 ve.guardar(fig, FIG / "persistencia_calle.png")

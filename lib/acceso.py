@@ -143,7 +143,7 @@ def marginacion_conapo():
     """Índice de Marginación Urbana 2020 de CONAPO por AGEB (CDMX y Estado de México).
 
     IM_2020: un valor mayor indica MENOS marginación (método DP2). GM_2020 es el grado.
-    El índice incluye PSDSS (% sin derechohabiencia) como uno de sus diez indicadores.
+    El índice incluye PSDSS (% sin derechohabiencia) como uno de sus once indicadores.
     """
     d = pd.read_excel(config.DATOS_DIR / "CONAPO" / "IMU_2020.xls", sheet_name="IMU_2020", dtype={"CVE_AGEB": str})
     d = d[d["ENT"].isin([9, 15])].rename(columns={"CVE_AGEB": "CVEGEO"})

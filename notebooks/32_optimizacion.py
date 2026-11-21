@@ -28,7 +28,9 @@
 # - **Principal:** brecha E2SFCA con K = 20.
 # - **La brecha "gana"** si con K = 20 reduce la brecha al menos 10% más que la solución del
 #   MCLP (en términos relativos) y conserva al menos el 90% de la cobertura del MCLP.
-# - **Isla atendida:** el acceso en su mínimo sube 0.25 o más.
+# - **Isla atendida:** se cierra al menos 25% de la brecha (Σ peso · max(0, 0.5 − f)) dentro de
+#   su cuenca (territorio propio, de `asig_cuencas_*.npy` de los notebooks 31/34). Antes se
+#   medía en la celda del mínimo, que en mesetas de ceros es arbitraria (corregido 2026-11-21).
 # - **Validación:**
 #   - MCLP con K = 10 contra el óptimo exacto (PuLP/CBC);
 #   - cota superior de cada solución voraz (cota de Minoux: valor + suma de las K mejores
@@ -66,7 +68,7 @@ import pandas as pd
 import pulp
 from scipy.spatial import cKDTree
 
-from lib import acceso, config, viz_eval as ve
+from lib import acceso, config, red_peatonal as rp, viz_eval as ve
 
 ve.aplicar()
 SALIDA = config.OUTPUTS_DIR / "auditoria"
@@ -116,13 +118,13 @@ CXY = np.unique(CXY, axis=0)
 M = len(CXY)
 if CALLE:
     ruta = INT / "pares_red_candidatos_calle.parquet"
-    if not ruta.exists():
-        from lib import red_peatonal as rp
-
-        z = np.load(INT / "red_peatonal.npz")
+    z = np.load(INT / "red_peatonal.npz")
+    h = rp.huella(rp.huella(z["xy"], z["u"], z["v"], z["largo"]), XY, CXY, CUENCA)
+    if not (ruta.exists() and ruta.with_suffix(".huella").exists() and ruta.with_suffix(".huella").read_text() == h):
         i_, j_, d_, _ = rp.Red(z["xy"], z["u"], z["v"], z["largo"]).pares(XY, CXY, CUENCA, cada=2000)
         pd.DataFrame({"i": i_.astype(np.int32), "j": j_.astype(np.int32), "d": d_.astype(np.float32),
                       "cx": CXY[j_, 0], "cy": CXY[j_, 1]}).to_parquet(ruta)
+        ruta.with_suffix(".huella").write_text(h)
     pc = pd.read_parquet(ruta)
     assert np.allclose(pc[["cx", "cy"]].to_numpy(), CXY[pc["j"].to_numpy()])  # mismos candidatos
     I, J, DIST = pc["i"].to_numpy(), pc["j"].to_numpy(), pc["d"].to_numpy(float)
@@ -239,7 +241,18 @@ def voraz(obj, K):
 # ## Evaluación cruzada
 
 # %%
-ISL_CELDA = isl["celda"].to_numpy()
+ASIG = np.load(INT / f"asig_cuencas{'_calle' if CALLE else '_recta'}.npy")
+# Mismo acceso y mismas islas estables, en el mismo orden, que cuando 31/34 hicieron la partición.
+assert (INT / f"asig_cuencas{'_calle' if CALLE else '_recta'}.huella").read_text() == rp.huella(F0, isl["celda"].to_numpy())
+EN_ISLA = ASIG >= 0
+
+
+def brecha_por_isla(f):
+    w = PESO * np.maximum(0, UMBRAL - f)
+    return np.bincount(ASIG[EN_ISLA], w[EN_ISLA], len(isl))
+
+
+BRECHA_ISLA0 = brecha_por_isla(F0)
 
 
 def evaluar(sel, delta=DELTA):
@@ -261,7 +274,8 @@ def evaluar(sel, delta=DELTA):
         "peor10_acceso_medio": float((PESO[S10] * np.minimum(f[S10], UMBRAL)).sum() / PESO[S10].sum()),
         "salen_de_bajo_psin": float(PSIN[bajo0 & ~bajo1].sum()),
         "salen_de_bajo_alta_marg_psin": float(PSIN[bajo0 & ~bajo1 & ALTA].sum()),
-        "islas_atendidas": int(((f - F0)[ISL_CELDA] >= 0.25).sum()),
+        "islas_atendidas": int(((1 - brecha_por_isla(f) / np.maximum(BRECHA_ISLA0, 1e-12)) >= 0.25)[BRECHA_ISLA0 > 0].sum()),
+        "brecha_cerrada_en_islas": float(1 - brecha_por_isla(f).sum() / BRECHA_ISLA0.sum()),
     }
 
 
@@ -311,10 +325,12 @@ prob += pulp.lpSum(x.values()) == 10
 for v, f in zip(y, grupo.index):
     prob += v <= pulp.lpSum(x[j] for j in f)
 prob.solve(pulp.PULP_CBC_CMD(msg=False, timeLimit=600))
-exacto = pulp.value(prob.objective)
+# Solo con prueba de optimalidad: PuLP puede marcar Optimal un incumbente de CBC detenido por tiempo.
+probado = pulp.LpStatus[prob.status] == "Optimal" and prob.sol_status == pulp.LpSolutionOptimal
+exacto = pulp.value(prob.objective) if probado else None
 voraz10 = evaluar(sol["cobertura"][:10])["cobertura_nueva_peso"]
 res["mclp_exacto_K10"] = {"estado": pulp.LpStatus[prob.status], "exacto": exacto, "voraz": voraz10,
-                          "razon": voraz10 / exacto, "firmas": len(grupo)}
+                          "razon": voraz10 / exacto if exacto else None, "firmas": len(grupo)}
 print(res["mclp_exacto_K10"])
 
 rng = np.random.default_rng(32)

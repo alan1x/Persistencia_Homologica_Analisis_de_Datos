@@ -17,7 +17,7 @@
       "personas": 50154.22234617357,
       "pct": 2.0242282485895595
     },
-    "bajo_y_cerca_saturacion": {
+    "bajo_y_cerca": {
       "personas": 249968.1499611157,
       "pct": 10.088733644527647
     },
@@ -52,7 +52,7 @@
       "personas": 407567.3536951387,
       "pct": 8.44368431215832
     },
-    "bajo_y_cerca_saturacion": {
+    "bajo_y_cerca": {
       "personas": 1236020.8955151741,
       "pct": 25.606982871272688
     },
@@ -87,7 +87,7 @@
       "personas": 457721.5760413123,
       "pct": 6.266222015064403
     },
-    "bajo_y_cerca_saturacion": {
+    "bajo_y_cerca": {
       "personas": 1485989.0454762897,
       "pct": 20.34323431165421
     },

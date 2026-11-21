@@ -42,10 +42,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pyproj import Transformer
+from scipy.sparse import csgraph
 from scipy.spatial import cKDTree
 from scipy.stats import spearmanr
 
-from lib import acceso, config, red_peatonal as rp, topo_rejilla as tr, viz_eval as ve
+from lib import acceso, config, f4, red_peatonal as rp, viz_eval as ve
 
 ve.aplicar()
 T0 = time.time()
@@ -83,30 +84,48 @@ CXY = np.unique(np.vstack([XY[nodo], est0[["x", "y"]].to_numpy()]), axis=0)
 
 # %%
 ruta_red = Path(PRUEBA) if PRUEBA else INT / "red_peatonal.npz"
-if not ruta_red.exists():
-    pbf = rp.descargar_pbf(config.DATOS_DIR / "OSM" / "mexico-latest.osm.pbf")
+m = 3000  # margen de 3 km alrededor de las celdas y las unidades
+todo = np.vstack([XY, FXY])
+lon, lat = Transformer.from_crs(config.CRS_METROS, config.CRS_GEO, always_xy=True).transform(
+    [todo[:, 0].min() - m, todo[:, 0].max() + m], [todo[:, 1].min() - m, todo[:, 1].max() + m])
+BBOX = (lon[0], lat[0], lon[1], lat[1])
+RUTA_PBF = config.DATOS_DIR / "OSM" / "mexico-latest.osm.pbf"
+# Identidad del PBF (tamaño y fecha) + reglas + caja: si cambia cualquiera, se vuelve a extraer.
+ID_PBF = (RUTA_PBF.stat().st_size, int(RUTA_PBF.stat().st_mtime)) if RUTA_PBF.exists() else None
+HRED = rp.huella(rp.huella_reglas(BBOX), ID_PBF)
+# La red guardada solo se usa si se extrajo con las mismas reglas y la misma caja.
+def _huella_guardada(ruta):
+    with np.load(ruta) as zz:
+        return str(zz["huella"]) if "huella" in zz.files else ""
+
+
+vigente = ruta_red.exists() and (bool(PRUEBA) or _huella_guardada(ruta_red) == HRED)
+if not vigente:
+    pbf = rp.descargar_pbf(RUTA_PBF)
     reloj("PBF listo")
-    m = 3000  # margen de 3 km alrededor de las celdas y las unidades
-    todo = np.vstack([XY, FXY])
-    lon, lat = Transformer.from_crs(config.CRS_METROS, config.CRS_GEO, always_xy=True).transform(
-        [todo[:, 0].min() - m, todo[:, 0].max() + m], [todo[:, 1].min() - m, todo[:, 1].max() + m])
-    xy_red, u, v, largo = rp.extraer_red(pbf, (lon[0], lat[0], lon[1], lat[1]))
-    np.savez_compressed(ruta_red, xy=xy_red, u=u, v=v, largo=largo)
+    xy_red, u, v, largo = rp.extraer_red(pbf, BBOX)
+    np.savez_compressed(ruta_red, xy=xy_red, u=u, v=v, largo=largo, huella=HRED)
     reloj("red extraída")
 z = np.load(ruta_red)
 red = rp.Red(z["xy"], z["u"], z["v"], z["largo"])
+HGRAFO = rp.huella(z["xy"], z["u"], z["v"], z["largo"])  # identidad del grafo efectivo (también en pruebas)
 reloj("red cargada")
 
 
 def pares_cache(nombre, fxy):
+    """Pares por calle con caché. La huella cubre red, celdas, fuentes (en orden) y cuenca:
+    si algo cambia, se recalcula en vez de reutilizar distancias de otra configuración."""
     ruta = INT / f"pares_red_{nombre}{SUF}.parquet"
-    if ruta.exists():
+    ruta_h = ruta.with_suffix(".huella")
+    h = rp.huella(HGRAFO, XY, np.asarray(fxy, float), LIM)
+    if ruta.exists() and ruta_h.exists() and ruta_h.read_text() == h:
         p = pd.read_parquet(ruta)
         return p["i"].to_numpy(), p["j"].to_numpy(), p["d"].to_numpy()
     reloj(f"Dijkstra desde {len(fxy):,} {nombre}")
     i, j, d, anc = red.pares(XY, fxy, LIM)
     pd.DataFrame({"i": i.astype(np.int32), "j": j.astype(np.int32), "d": d.astype(np.float32)}).to_parquet(ruta)
     np.save(INT / f"anclaje_celdas{SUF}.npy", anc)
+    ruta_h.write_text(h)
     return i, j, d
 
 
@@ -123,15 +142,51 @@ lon_c, _ = Transformer.from_crs(config.CRS_METROS, config.CRS_GEO, always_xy=Tru
 ZONA = np.where(c["region"] == "CDMX", "CDMX", np.where(lon_c < -99.3, "EDOMEX poniente (Toluca)", "EDOMEX resto"))
 recta_u = np.hypot(*(XY[Iu] - FXY[Ju]).T)
 lejos = recta_u >= 300
-rodeo = Du[lejos] / recta_u[lejos]
+rodeo_cens = Du[lejos] / recta_u[lejos]  # censurado: solo pares que ya caben en 2,250 m de calle
+
+# Rodeo sin censura: la muestra se elige por distancia en recta (300–1,667 m) y la distancia
+# por calle se mide sin corte. Así no se excluyen por construcción los rodeos grandes.
+rng_r = np.random.default_rng(33)
+cel_nodo, _ = red.anclar(XY)
+fue_nodo, fue_anc = red.anclar(FXY)
+arbol_c = cKDTree(XY)
+rq, cq, zq = [], [], []
+UQ = rng_r.choice(len(FXY), 200, replace=False)
+uq = []
+for j in UQ:
+    cel = np.asarray(arbol_c.query_ball_point(FXY[j], RECTA), dtype=int)
+    rr = np.hypot(*(XY[cel] - FXY[j]).T)
+    cel, rr = cel[(rr >= 300) & (PSIN[cel] > 0)], rr[(rr >= 300) & (PSIN[cel] > 0)]
+    dist = csgraph.dijkstra(red.G, directed=False, indices=fue_nodo[j])  # sin límite
+    rq.append(rr)
+    uq.append(np.full(len(rr), j))
+    cq.append(dist[cel_nodo[cel]] + ANC[cel] + fue_anc[j])
+    zq.append(ZONA[cel])
+rq, cq, zq, uq = np.concatenate(rq), np.concatenate(cq), np.concatenate(zq), np.concatenate(uq)
+conec = np.isfinite(cq)
+fuera_calle_pct = float((cq > LIM).mean() * 100)  # incluye pares sin camino
+rodeo = cq[conec] / rq[conec]  # solo pares conectados; la desconexión se reporta aparte
+rq, zq, uq, cq = rq[conec], zq[conec], uq[conec], cq[conec]
+med_unidad = pd.Series(rodeo).groupby(uq).median()
+bandas = [300, 600, 1000, 1400, RECTA]
 res = {
     "red": {"nodos": int(len(z["xy"])), "aristas": int(len(z["u"]))},
     "anclaje": {"celdas_mas_300m": int((ANC > 300).sum()), "psin_mas_300m": float(PSIN[ANC > 300].sum()),
                 "mediana_m": float(np.median(ANC))},
-    "rodeo": {"mediana": float(np.median(rodeo)), "p25": float(np.percentile(rodeo, 25)),
-              "p75": float(np.percentile(rodeo, 75)),
-              "por_zona": {zn: float(np.median(rodeo[ZONA[Iu[lejos]] == zn])) for zn in np.unique(ZONA)},
-              "valido_1_35": bool(1.25 <= np.median(rodeo) <= 1.45)},
+    "rodeo": {"muestra": "200 unidades al azar; celdas pobladas a 300–1,667 m en recta; Dijkstra sin límite",
+              "pares_conectados": int(len(rq)), "sin_camino_pct": float((~conec).mean() * 100),
+              "mediana_de_medianas_por_unidad": float(med_unidad.median()),
+              "mediana": float(np.median(rodeo)), "p25": float(np.percentile(rodeo, 25)),
+              "p75": float(np.percentile(rodeo, 75)), "p90": float(np.percentile(rodeo, 90)),
+              "por_banda_recta_m": {f"{a:.0f}-{b:.0f}": float(np.median(rodeo[(rq >= a) & (rq < b)]))
+                                    for a, b in zip(bandas[:-1], bandas[1:])},
+              "por_zona": {zn: float(np.median(rodeo[zq == zn])) for zn in np.unique(ZONA)},
+              "valido_1_35": bool(1.25 <= np.median(rodeo) <= 1.45),
+              # Con el supuesto 1.35 estos pares caben en la cuenca (recta <= 1,667 m); ¿cuántos no
+              # caben por calle (> 2,250 m)?
+              "en_cuenca_recta_fuera_por_calle_pct": fuera_calle_pct,
+              "censurado_referencia": {"mediana": float(np.median(rodeo_cens)),
+                                       "nota": "pares que ya caben en 2,250 m de calle; sesgado a la baja"}},
 }
 print(json.dumps(res, indent=1, ensure_ascii=False))
 
@@ -159,21 +214,17 @@ print(json.dumps(res["f3"], indent=1))
 
 # %% [markdown]
 # ## F4 por calle
-
-# %%
-rej = tr.Rejilla(c["x"], c["y"], acceso.PASO)
-p1, _ = rej.h0(F1)
-is1 = tr.islas(p1)
-d_isl = cKDTree(XY[is1["celda"]]).query(est0[["x", "y"]].to_numpy())[0]
-res["f4"] = {"islas_calle": len(is1), "estables_recta": len(est0),
-             "estables_que_reaparecen_pct": float((d_isl <= 500).mean() * 100),
-             "psin_bajo_en_las_que_reaparecen_pct": float(est0.loc[d_isl <= 500, "psin_bajo"].sum()
-                                                          / est0["psin_bajo"].sum() * 100)}
-res["robusto"] = bool(res["f3"]["siguen_bajo_pct"] >= 80 and res["f4"]["estables_que_reaparecen_pct"] >= 80)
-print(res["f4"], "robusto:", res["robusto"])
+#
+# Se hace completa en el notebook 34 (cuencas, estabilidad por Jaccard y comparación con la
+# recta). La regla original de este notebook (≥ 80% de islas a ≤ 500 m) dependía de un mínimo
+# arbitrario en las mesetas de ceros; quedó reemplazada (decisión en `PLAN_ACCESO.md`, F6).
 
 # %% [markdown]
-# ## F5 por calle: brecha con K = 20
+# ## Comparación de F5: voraz de brecha con los candidatos de la recta
+#
+# No es la salida principal de F5 por calle: esa es `optimizacion_calle.json` (notebook 32
+# con `DISTANCIA=calle`, candidatos de las islas por calle). Aquí solo se mide cuánto rinden
+# por calle los sitios elegidos en recta frente a un voraz por calle con los mismos candidatos.
 
 # %%
 M = len(CXY)
@@ -230,7 +281,7 @@ for cap in [14.0, 40.0]:
         SEL14 = sel
 print(json.dumps(res["f5"], indent=1))
 res["minutos"] = (time.time() - T0) / 60
-(SALIDA / f"red_real{SUF}.json").write_text(json.dumps(res, indent=2, ensure_ascii=False, default=float), encoding="utf-8")
+f4.guardar_json(res, SALIDA / f"red_real{SUF}.json")
 c[["x", "y"]].assign(acceso_rel_calle=F1, anclaje=ANC).to_parquet(INT / f"acceso_calle{SUF}.parquet")
 
 # %% [markdown]

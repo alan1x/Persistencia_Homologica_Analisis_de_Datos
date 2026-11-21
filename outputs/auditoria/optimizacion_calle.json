@@ -1,232 +1,249 @@
 {
   "capacidad_nueva": 14.0,
-  "candidatos": 13636,
+  "candidatos": 13569,
   "linea_base": {
     "cobertura_nueva_peso": 0.0,
     "cobertura_nueva_psin": 0.0,
-    "distancia_media_m": 1114.9021454080885,
-    "brecha": 1346916.560268793,
-    "peor10_acceso_medio": 0.001258227407834837,
+    "distancia_media_m": 1114.5932699328148,
+    "brecha": 1346474.253893832,
+    "peor10_acceso_medio": 0.001285351379628029,
     "salen_de_bajo_psin": 0.0,
     "salen_de_bajo_alta_marg_psin": 0.0,
-    "islas_atendidas": 0
+    "islas_atendidas": 0,
+    "brecha_cerrada_en_islas": 0.0
   },
   "cota_minoux_K20": {
     "cobertura": {
-      "ganancia": 330707.23419353913,
-      "cota_superior": 557183.0966169278,
-      "razon": 0.5935342191848753
+      "ganancia": 330906.73419353913,
+      "cota_superior": 557382.5966169278,
+      "razon": 0.5936797025992567
     },
     "pmediana": {
-      "ganancia": 441785335.2197956,
-      "cota_superior": 712213450.69946,
-      "razon": 0.6202990617292066
+      "ganancia": 441447828.02539533,
+      "cota_superior": 711898834.3981767,
+      "razon": 0.6200991021408055
     },
     "peor10": {
-      "ganancia": 67573.73931041041,
-      "cota_superior": 116837.55660552497,
-      "razon": 0.5783563202931189
+      "ganancia": 67588.82420153325,
+      "cota_superior": 116913.98536947955,
+      "razon": 0.5781072639679029
     },
     "brecha": {
-      "ganancia": 84957.38927189056,
-      "cota_superior": 165186.42364139252,
-      "razon": 0.5143121777145968
+      "ganancia": 84957.42008287765,
+      "cota_superior": 165186.49023390593,
+      "razon": 0.5143121568996168
     }
   },
-  "personas_peor10": 679185.3253182302,
-  "islas_estables": 753,
+  "personas_peor10": 678619.8036555505,
+  "islas_estables": 682,
   "evaluacion": {
     "cobertura": {
       "5": {
-        "cobertura_nueva_peso": 104547.93279187457,
-        "cobertura_nueva_psin": 59493.525320346205,
-        "distancia_media_m": 1100.3983555040663,
-        "brecha": 1331587.3970821109,
-        "peor10_acceso_medio": 0.004914748433516803,
+        "cobertura_nueva_peso": 104747.43279187457,
+        "cobertura_nueva_psin": 59693.02532034621,
+        "distancia_media_m": 1100.0807692862454,
+        "brecha": 1331144.7260088883,
+        "peor10_acceso_medio": 0.004950628511381808,
         "salen_de_bajo_psin": 7472.374682868973,
         "salen_de_bajo_alta_marg_psin": 3668.771139028948,
-        "islas_atendidas": 0
+        "islas_atendidas": 0,
+        "brecha_cerrada_en_islas": 0.013297643592837471
       },
       "10": {
-        "cobertura_nueva_peso": 188063.87128688893,
-        "cobertura_nueva_psin": 112919.67600113884,
-        "distancia_media_m": 1088.6753635727198,
-        "brecha": 1317229.3038413443,
-        "peor10_acceso_medio": 0.009511095772925512,
+        "cobertura_nueva_peso": 188263.37128688896,
+        "cobertura_nueva_psin": 113119.17600113885,
+        "distancia_media_m": 1088.357777354899,
+        "brecha": 1316786.635886528,
+        "peor10_acceso_medio": 0.009572104992372432,
         "salen_de_bajo_psin": 16494.401899807533,
         "salen_de_bajo_alta_marg_psin": 10297.469228542323,
-        "islas_atendidas": 0
+        "islas_atendidas": 0,
+        "brecha_cerrada_en_islas": 0.025748323662515782
       },
       "20": {
-        "cobertura_nueva_peso": 330707.23419353913,
-        "cobertura_nueva_psin": 215978.92438708636,
-        "distancia_media_m": 1072.7385782604408,
-        "brecha": 1299043.408750897,
-        "peor10_acceso_medio": 0.01597190143852557,
+        "cobertura_nueva_peso": 330906.73419353913,
+        "cobertura_nueva_psin": 216178.42438708636,
+        "distancia_media_m": 1072.42099204262,
+        "brecha": 1298600.7956122626,
+        "peor10_acceso_medio": 0.016051419567362654,
         "salen_de_bajo_psin": 36665.531160907165,
         "salen_de_bajo_alta_marg_psin": 18115.90333749076,
-        "islas_atendidas": 0
+        "islas_atendidas": 3,
+        "brecha_cerrada_en_islas": 0.04152688418282324
       },
       "50": {
-        "cobertura_nueva_peso": 643487.8658581933,
-        "cobertura_nueva_psin": 457897.703106287,
-        "distancia_media_m": 1035.0740284742494,
-        "brecha": 1234017.1328774488,
-        "peor10_acceso_medio": 0.03328587897780137,
-        "salen_de_bajo_psin": 85482.67228063235,
-        "salen_de_bajo_alta_marg_psin": 35220.69198881319,
-        "islas_atendidas": 0
+        "cobertura_nueva_peso": 643430.8039210811,
+        "cobertura_nueva_psin": 454202.98005806375,
+        "distancia_media_m": 1034.6165453174463,
+        "brecha": 1233539.2566413821,
+        "peor10_acceso_medio": 0.03275419727701485,
+        "salen_de_bajo_psin": 86322.76289405458,
+        "salen_de_bajo_alta_marg_psin": 36520.95342672169,
+        "islas_atendidas": 9,
+        "brecha_cerrada_en_islas": 0.09641766841349053
       }
     },
     "pmediana": {
       "5": {
         "cobertura_nueva_peso": 81520.4052114317,
         "cobertura_nueva_psin": 48921.2096762633,
-        "distancia_media_m": 1097.1211089993633,
-        "brecha": 1330511.469580458,
-        "peor10_acceso_medio": 0.01306933067837401,
+        "distancia_media_m": 1096.8590834461197,
+        "brecha": 1330069.4689667507,
+        "peor10_acceso_medio": 0.0130365396611582,
         "salen_de_bajo_psin": 2294.903771238056,
         "salen_de_bajo_alta_marg_psin": 1160.83279102779,
-        "islas_atendidas": 0
+        "islas_atendidas": 0,
+        "brecha_cerrada_en_islas": 0.014221229602555674
       },
       "10": {
-        "cobertura_nueva_peso": 169207.75585914362,
-        "cobertura_nueva_psin": 100817.1955851562,
-        "distancia_media_m": 1084.4645737141825,
-        "brecha": 1314415.521335029,
-        "peor10_acceso_medio": 0.01894798104888206,
+        "cobertura_nueva_peso": 169407.25585914362,
+        "cobertura_nueva_psin": 101016.69558515621,
+        "distancia_media_m": 1084.1938374183917,
+        "brecha": 1313973.5812261424,
+        "peor10_acceso_medio": 0.018925504678419098,
         "salen_de_bajo_psin": 8529.476941306086,
         "salen_de_bajo_alta_marg_psin": 4216.990432996728,
-        "islas_atendidas": 0
+        "islas_atendidas": 1,
+        "brecha_cerrada_en_islas": 0.028183095226040566
       },
       "20": {
-        "cobertura_nueva_peso": 291707.5890016908,
-        "cobertura_nueva_psin": 199997.82528079045,
-        "distancia_media_m": 1065.20660702772,
-        "brecha": 1292552.5201022285,
-        "peor10_acceso_medio": 0.029869210071489228,
-        "salen_de_bajo_psin": 22920.932382515726,
+        "cobertura_nueva_peso": 291956.53344613523,
+        "cobertura_nueva_psin": 200246.7697252349,
+        "distancia_media_m": 1064.9356970537788,
+        "brecha": 1292103.5824868383,
+        "peor10_acceso_medio": 0.029890076844720958,
+        "salen_de_bajo_psin": 22952.36571584906,
         "salen_de_bajo_alta_marg_psin": 9049.259551341858,
-        "islas_atendidas": 0
+        "islas_atendidas": 1,
+        "brecha_cerrada_en_islas": 0.04685301845258871
       },
       "50": {
-        "cobertura_nueva_peso": 572572.1300657375,
-        "cobertura_nueva_psin": 402227.4221895294,
-        "distancia_media_m": 1024.7512939324688,
-        "brecha": 1223901.4950143907,
-        "peor10_acceso_medio": 0.05736464751276531,
-        "salen_de_bajo_psin": 73701.77786523226,
+        "cobertura_nueva_peso": 572821.074510182,
+        "cobertura_nueva_psin": 402476.3666339738,
+        "distancia_media_m": 1024.4799206021262,
+        "brecha": 1223458.5524284875,
+        "peor10_acceso_medio": 0.05747514488466851,
+        "salen_de_bajo_psin": 73825.3074260123,
         "salen_de_bajo_alta_marg_psin": 34424.14575710216,
-        "islas_atendidas": 3
+        "islas_atendidas": 15,
+        "brecha_cerrada_en_islas": 0.10571066459018008
       }
     },
     "peor10": {
       "5": {
         "cobertura_nueva_peso": 31333.261626747393,
         "cobertura_nueva_psin": 15876.397480040363,
-        "distancia_media_m": 1106.0280158353398,
-        "brecha": 1325584.9111104063,
-        "peor10_acceso_medio": 0.024588324992241,
+        "distancia_media_m": 1105.7191403600661,
+        "brecha": 1325142.6047354455,
+        "peor10_acceso_medio": 0.024615757689538914,
         "salen_de_bajo_psin": 1438.6597283805847,
         "salen_de_bajo_alta_marg_psin": 1438.6597283805847,
-        "islas_atendidas": 1
+        "islas_atendidas": 1,
+        "brecha_cerrada_en_islas": 0.018505903774539756
       },
       "10": {
         "cobertura_nueva_peso": 66478.30564948794,
         "cobertura_nueva_psin": 33920.43611520012,
-        "distancia_media_m": 1098.9646283856162,
-        "brecha": 1306360.5882870774,
-        "peor10_acceso_medio": 0.04440053200107029,
+        "distancia_media_m": 1098.6557529103425,
+        "brecha": 1305918.281912116,
+        "peor10_acceso_medio": 0.04443104563406279,
         "salen_de_bajo_psin": 13281.170887317807,
         "salen_de_bajo_alta_marg_psin": 13111.50761446559,
-        "islas_atendidas": 4
+        "islas_atendidas": 4,
+        "brecha_cerrada_en_islas": 0.03518611852170306
       },
       "20": {
         "cobertura_nueva_peso": 114584.55921816902,
         "cobertura_nueva_psin": 60402.727495277126,
-        "distancia_media_m": 1088.486080377849,
-        "brecha": 1272997.0573769582,
-        "peor10_acceso_medio": 0.07726549475556586,
+        "distancia_media_m": 1088.1772049025753,
+        "brecha": 1272554.7145185021,
+        "peor10_acceso_medio": 0.07729916789071528,
         "salen_de_bajo_psin": 30501.357024037155,
         "salen_de_bajo_alta_marg_psin": 29113.67821176347,
-        "islas_atendidas": 5
+        "islas_atendidas": 7,
+        "brecha_cerrada_en_islas": 0.0641249996668789
       },
       "50": {
         "cobertura_nueva_peso": 200133.98008362943,
         "cobertura_nueva_psin": 128003.1652583259,
-        "distancia_media_m": 1066.4412763461685,
-        "brecha": 1200444.0097336313,
-        "peor10_acceso_medio": 0.14999233828777395,
+        "distancia_media_m": 1066.1324008708946,
+        "brecha": 1200001.444525501,
+        "peor10_acceso_medio": 0.1500498860881043,
         "salen_de_bajo_psin": 74800.34669156666,
         "salen_de_bajo_alta_marg_psin": 55969.46932611062,
-        "islas_atendidas": 13
+        "islas_atendidas": 20,
+        "brecha_cerrada_en_islas": 0.12140441633311683
       }
     },
     "brecha": {
       "5": {
         "cobertura_nueva_peso": 39995.02991321041,
         "cobertura_nueva_psin": 19997.514956605206,
-        "distancia_media_m": 1106.391298349525,
-        "brecha": 1325183.46829903,
-        "peor10_acceso_medio": 0.016903120338126604,
+        "distancia_media_m": 1106.0824228742513,
+        "brecha": 1324741.1619240688,
+        "peor10_acceso_medio": 0.016961359005605733,
         "salen_de_bajo_psin": 623.3771902377974,
         "salen_de_bajo_alta_marg_psin": 623.3771902377974,
-        "islas_atendidas": 0
+        "islas_atendidas": 2,
+        "brecha_cerrada_en_islas": 0.01885330241670935
       },
       "10": {
         "cobertura_nueva_peso": 58885.89796968004,
         "cobertura_nueva_psin": 29466.44898484002,
-        "distancia_media_m": 1101.9051472899914,
-        "brecha": 1303571.450039997,
-        "peor10_acceso_medio": 0.02918504058388003,
+        "distancia_media_m": 1101.5962718147177,
+        "brecha": 1303129.1436650357,
+        "peor10_acceso_medio": 0.029246625535232915,
         "salen_de_bajo_psin": 2812.5714626689187,
         "salen_de_bajo_alta_marg_psin": 2790.5260081234637,
-        "islas_atendidas": 1
+        "islas_atendidas": 2,
+        "brecha_cerrada_en_islas": 0.03760247181107079
       },
       "20": {
         "cobertura_nueva_peso": 138526.51249213098,
         "cobertura_nueva_psin": 70053.45462004925,
-        "distancia_media_m": 1090.803181056562,
-        "brecha": 1261959.1709969025,
-        "peor10_acceso_medio": 0.04327390580215209,
+        "distancia_media_m": 1090.4943055812882,
+        "brecha": 1261516.8338109541,
+        "peor10_acceso_medio": 0.04351669178529328,
         "salen_de_bajo_psin": 7259.878544582628,
         "salen_de_bajo_alta_marg_psin": 7112.083090037174,
-        "islas_atendidas": 1
+        "islas_atendidas": 5,
+        "brecha_cerrada_en_islas": 0.07370155412428914
       },
       "50": {
-        "cobertura_nueva_peso": 275616.875344423,
-        "cobertura_nueva_psin": 141706.00262970265,
-        "distancia_media_m": 1070.4206816090998,
-        "brecha": 1148492.6752020055,
-        "peor10_acceso_medio": 0.069857214303278,
+        "cobertura_nueva_peso": 275518.975344423,
+        "cobertura_nueva_psin": 141657.05262970267,
+        "distancia_media_m": 1070.1240403315182,
+        "brecha": 1148052.8452103934,
+        "peor10_acceso_medio": 0.07030874866142958,
         "salen_de_bajo_psin": 60315.91800203453,
         "salen_de_bajo_alta_marg_psin": 56797.63104470497,
-        "islas_atendidas": 9
+        "islas_atendidas": 18,
+        "brecha_cerrada_en_islas": 0.1684470527677009
       }
     }
   },
   "criterio": {
     "reduccion_brecha": {
-      "cobertura": 0.03554277445986875,
-      "pmediana": 0.04036184702912515,
-      "peor10": 0.05488053608687038,
-      "brecha": 0.06307546568061817
+      "cobertura": 0.03555467781364963,
+      "pmediana": 0.04038003047571137,
+      "peor10": 0.05489859101394923,
+      "brecha": 0.06309620836580565
     },
-    "brecha_vs_mclp_reduccion_relativa": 0.7746353974655664,
-    "cobertura_brecha_vs_mclp": 0.41887959551275306,
+    "brecha_vs_mclp_reduccion_relativa": 0.7746246695444021,
+    "cobertura_brecha_vs_mclp": 0.41862705765035974,
     "brecha_gana": false
   },
   "mclp_exacto_K10": {
     "estado": "Optimal",
-    "exacto": 188063.87128688925,
-    "voraz": 188063.87128688893,
-    "razon": 0.9999999999999983,
-    "firmas": 58470
+    "exacto": 188263.37128688925,
+    "voraz": 188263.37128688896,
+    "razon": 0.9999999999999984,
+    "firmas": 58315
   },
   "aleatorio_K20_reduccion_brecha": {
-    "media": 0.012031156602624668,
-    "p95": 0.01711027613471289,
-    "max": 0.019601023480203872
+    "media": 0.01183975909176525,
+    "p95": 0.01664645998870107,
+    "max": 0.02105605069833172
   },
   "robustez_sitios_brecha": {
     "frecuencia": [
@@ -258,182 +275,199 @@
     "evaluacion": {
       "cobertura_nueva_peso": 84728.57237900383,
       "cobertura_nueva_psin": 60075.75020279586,
-      "distancia_media_m": 1094.2594426374233,
-      "brecha": 1288868.5854991353,
-      "peor10_acceso_medio": 0.032378466070748305,
+      "distancia_media_m": 1093.9874214337265,
+      "brecha": 1288426.2791241743,
+      "peor10_acceso_medio": 0.03234366454723137,
       "salen_de_bajo_psin": 0.0,
       "salen_de_bajo_alta_marg_psin": 0.0,
-      "islas_atendidas": 4
+      "islas_atendidas": 7,
+      "brecha_cerrada_en_islas": 0.04641459007177984
     }
   },
   "capacidad_40": {
     "evaluacion": {
       "cobertura": {
         "5": {
-          "cobertura_nueva_peso": 104547.93279187457,
-          "cobertura_nueva_psin": 59493.525320346205,
-          "distancia_media_m": 1100.3983555040663,
-          "brecha": 1305810.016267622,
-          "peor10_acceso_medio": 0.011705430338354743,
-          "salen_de_bajo_psin": 31095.88805640002,
+          "cobertura_nueva_peso": 104747.43279187457,
+          "cobertura_nueva_psin": 59693.02532034621,
+          "distancia_media_m": 1100.0807692862454,
+          "brecha": 1305366.7227138006,
+          "peor10_acceso_medio": 0.011757571756067396,
+          "salen_de_bajo_psin": 31057.763056400025,
           "salen_de_bajo_alta_marg_psin": 20337.122765813725,
-          "islas_atendidas": 0
+          "islas_atendidas": 1,
+          "brecha_cerrada_en_islas": 0.035658284866185275
         },
         "10": {
-          "cobertura_nueva_peso": 188063.87128688893,
-          "cobertura_nueva_psin": 112919.67600113884,
-          "distancia_media_m": 1088.6753635727198,
-          "brecha": 1267819.3497606998,
-          "peor10_acceso_medio": 0.02483785130809391,
-          "salen_de_bajo_psin": 63204.42183767139,
+          "cobertura_nueva_peso": 188263.37128688896,
+          "cobertura_nueva_psin": 113119.17600113885,
+          "distancia_media_m": 1088.357777354899,
+          "brecha": 1267376.115501118,
+          "peor10_acceso_medio": 0.024961790273183463,
+          "salen_de_bajo_psin": 63166.29683767139,
           "salen_de_bajo_alta_marg_psin": 43914.251581722565,
-          "islas_atendidas": 0
+          "islas_atendidas": 4,
+          "brecha_cerrada_en_islas": 0.06860737694330299
         },
         "20": {
-          "cobertura_nueva_peso": 330707.23419353913,
-          "cobertura_nueva_psin": 215978.92438708636,
-          "distancia_media_m": 1072.7385782604408,
-          "brecha": 1224635.4375223867,
-          "peor10_acceso_medio": 0.04173479204282338,
-          "salen_de_bajo_psin": 131249.8069852936,
+          "cobertura_nueva_peso": 330906.73419353913,
+          "cobertura_nueva_psin": 216178.42438708636,
+          "distancia_media_m": 1072.42099204262,
+          "brecha": 1224193.4782044936,
+          "peor10_acceso_medio": 0.04190564485003146,
+          "salen_de_bajo_psin": 131211.68198529363,
           "salen_de_bajo_alta_marg_psin": 78901.70229518061,
-          "islas_atendidas": 0
+          "islas_atendidas": 9,
+          "brecha_cerrada_en_islas": 0.10607359015425755
         },
         "50": {
-          "cobertura_nueva_peso": 643487.8658581933,
-          "cobertura_nueva_psin": 457897.703106287,
-          "distancia_media_m": 1035.0740284742494,
-          "brecha": 1088121.5593665382,
-          "peor10_acceso_medio": 0.07567847743702615,
-          "salen_de_bajo_psin": 356549.8580191244,
-          "salen_de_bajo_alta_marg_psin": 192319.0777683461,
-          "islas_atendidas": 3
+          "cobertura_nueva_peso": 643430.8039210811,
+          "cobertura_nueva_psin": 454202.98005806375,
+          "distancia_media_m": 1034.6165453174463,
+          "brecha": 1089748.7381734394,
+          "peor10_acceso_medio": 0.07390578080008481,
+          "salen_de_bajo_psin": 359104.001189469,
+          "salen_de_bajo_alta_marg_psin": 195794.63430429378,
+          "islas_atendidas": 17,
+          "brecha_cerrada_en_islas": 0.22007993887233446
         }
       },
       "pmediana": {
         "5": {
           "cobertura_nueva_peso": 81520.4052114317,
           "cobertura_nueva_psin": 48921.2096762633,
-          "distancia_media_m": 1097.1211089993633,
-          "brecha": 1301238.4652766285,
-          "peor10_acceso_medio": 0.03500423675223248,
+          "distancia_media_m": 1096.8590834461197,
+          "brecha": 1300796.8127361694,
+          "peor10_acceso_medio": 0.0348601750411428,
           "salen_de_bajo_psin": 12241.513640708203,
           "salen_de_bajo_alta_marg_psin": 7638.281788711944,
-          "islas_atendidas": 0
+          "islas_atendidas": 1,
+          "brecha_cerrada_en_islas": 0.039600999272378146
         },
         "10": {
-          "cobertura_nueva_peso": 169207.75585914362,
-          "cobertura_nueva_psin": 100817.1955851562,
-          "distancia_media_m": 1084.4645737141825,
-          "brecha": 1261123.5822582832,
-          "peor10_acceso_medio": 0.04805551732747838,
-          "salen_de_bajo_psin": 43058.02906614145,
-          "salen_de_bajo_alta_marg_psin": 31102.1393956771,
-          "islas_atendidas": 1
+          "cobertura_nueva_peso": 169407.25585914362,
+          "cobertura_nueva_psin": 101016.69558515621,
+          "distancia_media_m": 1084.1938374183917,
+          "brecha": 1260682.8739098473,
+          "peor10_acceso_medio": 0.047941439233412875,
+          "salen_de_bajo_psin": 43088.22839046577,
+          "salen_de_bajo_alta_marg_psin": 31170.463720001426,
+          "islas_atendidas": 3,
+          "brecha_cerrada_en_islas": 0.07439512662357595
         },
         "20": {
-          "cobertura_nueva_peso": 291707.5890016908,
-          "cobertura_nueva_psin": 199997.82528079045,
-          "distancia_media_m": 1065.20660702772,
-          "brecha": 1207314.7242722427,
-          "peor10_acceso_medio": 0.0764702491622126,
-          "salen_de_bajo_psin": 106979.84545497954,
-          "salen_de_bajo_alta_marg_psin": 61373.69478102443,
-          "islas_atendidas": 1
+          "cobertura_nueva_peso": 291956.53344613523,
+          "cobertura_nueva_psin": 200246.7697252349,
+          "distancia_media_m": 1064.9356970537788,
+          "brecha": 1206860.7741480581,
+          "peor10_acceso_medio": 0.0764669068613356,
+          "salen_de_bajo_psin": 107015.91144597053,
+          "salen_de_bajo_alta_marg_psin": 61442.01910534875,
+          "islas_atendidas": 6,
+          "brecha_cerrada_en_islas": 0.12069013266560369
         },
         "50": {
-          "cobertura_nueva_peso": 572572.1300657375,
-          "cobertura_nueva_psin": 402227.4221895294,
-          "distancia_media_m": 1024.7512939324688,
-          "brecha": 1062754.132255234,
-          "peor10_acceso_medio": 0.12560422330282747,
-          "salen_de_bajo_psin": 324265.19660085015,
-          "salen_de_bajo_alta_marg_psin": 171502.33340252025,
-          "islas_atendidas": 9
+          "cobertura_nueva_peso": 572821.074510182,
+          "cobertura_nueva_psin": 402476.3666339738,
+          "distancia_media_m": 1024.4799206021262,
+          "brecha": 1062306.7180685163,
+          "peor10_acceso_medio": 0.12584554399729694,
+          "salen_de_bajo_psin": 324249.4774828823,
+          "salen_de_bajo_alta_marg_psin": 171570.65772684457,
+          "islas_atendidas": 25,
+          "brecha_cerrada_en_islas": 0.24509340338010366
         }
       },
       "peor10": {
         "5": {
           "cobertura_nueva_peso": 51747.215282193705,
           "cobertura_nueva_psin": 27059.57131092412,
-          "distancia_media_m": 1101.9817024235083,
-          "brecha": 1300630.7619254838,
-          "peor10_acceso_medio": 0.04908993346001146,
+          "distancia_media_m": 1101.6728269482346,
+          "brecha": 1300188.4555505228,
+          "peor10_acceso_medio": 0.049133409607287855,
           "salen_de_bajo_psin": 24890.95359638101,
           "salen_de_bajo_alta_marg_psin": 23982.22110901448,
-          "islas_atendidas": 2
+          "islas_atendidas": 2,
+          "brecha_cerrada_en_islas": 0.04015938507060368
         },
         "10": {
-          "cobertura_nueva_peso": 88723.95176927859,
-          "cobertura_nueva_psin": 54187.91507808947,
-          "distancia_media_m": 1092.3392538333826,
-          "brecha": 1263293.9865453849,
-          "peor10_acceso_medio": 0.08095269609000662,
-          "salen_de_bajo_psin": 53055.83529060019,
-          "salen_de_bajo_alta_marg_psin": 41234.706202635774,
-          "islas_atendidas": 2
+          "cobertura_nueva_peso": 90861.15326738401,
+          "cobertura_nueva_psin": 55370.38249380885,
+          "distancia_media_m": 1091.859585710958,
+          "brecha": 1261690.3454047565,
+          "peor10_acceso_medio": 0.0810102981178959,
+          "salen_de_bajo_psin": 50395.920794571015,
+          "salen_de_bajo_alta_marg_psin": 38155.71275923817,
+          "islas_atendidas": 4,
+          "brecha_cerrada_en_islas": 0.07356273303207839
         },
         "20": {
-          "cobertura_nueva_peso": 144995.32365064955,
-          "cobertura_nueva_psin": 95710.39099773874,
-          "distancia_media_m": 1080.103568067304,
-          "brecha": 1203866.3282706197,
-          "peor10_acceso_medio": 0.1301239752021083,
-          "salen_de_bajo_psin": 112925.46879628015,
-          "salen_de_bajo_alta_marg_psin": 62523.99671998985,
-          "islas_atendidas": 6
+          "cobertura_nueva_peso": 147132.525148755,
+          "cobertura_nueva_psin": 96892.85841345812,
+          "distancia_media_m": 1079.6202356456965,
+          "brecha": 1201995.5985185816,
+          "peor10_acceso_medio": 0.13065871657516423,
+          "salen_de_bajo_psin": 110691.93413188912,
+          "salen_de_bajo_alta_marg_psin": 59958.36088600818,
+          "islas_atendidas": 9,
+          "brecha_cerrada_en_islas": 0.12524011929333267
         },
         "50": {
-          "cobertura_nueva_peso": 248078.41175669467,
-          "cobertura_nueva_psin": 172446.3994353022,
-          "distancia_media_m": 1055.0074057179238,
-          "brecha": 1089825.2919485867,
-          "peor10_acceso_medio": 0.2215601914480412,
-          "salen_de_bajo_psin": 274418.1652146556,
-          "salen_de_bajo_alta_marg_psin": 114188.93958477418,
-          "islas_atendidas": 18
+          "cobertura_nueva_peso": 248394.08989257267,
+          "cobertura_nueva_psin": 171807.34348879417,
+          "distancia_media_m": 1054.8205194567213,
+          "brecha": 1090444.41782994,
+          "peor10_acceso_medio": 0.22168432461150114,
+          "salen_de_bajo_psin": 267076.8179854312,
+          "salen_de_bajo_alta_marg_psin": 111529.09685424076,
+          "islas_atendidas": 27,
+          "brecha_cerrada_en_islas": 0.21255630814632864
         }
       },
       "brecha": {
         "5": {
           "cobertura_nueva_peso": 72071.03147540838,
           "cobertura_nueva_psin": 36564.505933782624,
-          "distancia_media_m": 1102.7296658470434,
-          "brecha": 1287807.631026774,
-          "peor10_acceso_medio": 0.025637522842121955,
+          "distancia_media_m": 1102.4207903717697,
+          "brecha": 1287365.3089408036,
+          "peor10_acceso_medio": 0.025821621942947855,
           "salen_de_bajo_psin": 15049.64768862611,
           "salen_de_bajo_alta_marg_psin": 12538.736703777624,
-          "islas_atendidas": 1
+          "islas_atendidas": 2,
+          "brecha_cerrada_en_islas": 0.05128658649543094
         },
         "10": {
           "cobertura_nueva_peso": 110928.00428864837,
           "cobertura_nueva_psin": 56048.10597676626,
-          "distancia_media_m": 1097.048308833118,
-          "brecha": 1235546.1193670272,
-          "peor10_acceso_medio": 0.03542457442126789,
+          "distancia_media_m": 1096.7406558448483,
+          "brecha": 1235106.8350619578,
+          "peor10_acceso_medio": 0.03566425234047416,
           "salen_de_bajo_psin": 52068.37105605458,
           "salen_de_bajo_alta_marg_psin": 44854.64160072403,
-          "islas_atendidas": 5
+          "islas_atendidas": 8,
+          "brecha_cerrada_en_islas": 0.09625645984173392
         },
         "20": {
           "cobertura_nueva_peso": 182861.3272076955,
           "cobertura_nueva_psin": 97000.00541894342,
-          "distancia_media_m": 1084.5018195739606,
-          "brecha": 1150049.7033987136,
-          "peor10_acceso_medio": 0.0655790746012264,
+          "distancia_media_m": 1084.194166585691,
+          "brecha": 1149608.8199680755,
+          "peor10_acceso_medio": 0.0659397981666535,
           "salen_de_bajo_psin": 137074.5382180373,
           "salen_de_bajo_alta_marg_psin": 109357.44531036218,
-          "islas_atendidas": 6
+          "islas_atendidas": 12,
+          "brecha_cerrada_en_islas": 0.17024947457461737
         },
         "50": {
-          "cobertura_nueva_peso": 349861.20615368104,
-          "cobertura_nueva_psin": 225188.7170962158,
-          "distancia_media_m": 1055.8819908426376,
-          "brecha": 959407.5282703182,
-          "peor10_acceso_medio": 0.121539003089873,
-          "salen_de_bajo_psin": 390708.8473719534,
-          "salen_de_bajo_alta_marg_psin": 238927.224451181,
-          "islas_atendidas": 7
+          "cobertura_nueva_peso": 346035.32441309217,
+          "cobertura_nueva_psin": 222583.8994034712,
+          "distancia_media_m": 1056.062100398075,
+          "brecha": 958966.9367783202,
+          "peor10_acceso_medio": 0.12076908254728096,
+          "salen_de_bajo_psin": 392232.13655680127,
+          "salen_de_bajo_alta_marg_psin": 240718.65423324922,
+          "islas_atendidas": 19,
+          "brecha_cerrada_en_islas": 0.3235149611076208
         }
       }
     },
@@ -443,81 +477,81 @@
     },
     "criterio": {
       "reduccion_brecha": {
-        "cobertura": 0.09078596726288946,
-        "pmediana": 0.1036454967698156,
-        "peor10": 0.10620571178486804,
-        "brecha": 0.14616113772540762
+        "cobertura": 0.09081553199826731,
+        "pmediana": 0.10368819109762362,
+        "peor10": 0.10730146154479858,
+        "brecha": 0.14620809373550714
       },
-      "cobertura_brecha_vs_mclp": 0.5529402090450792,
+      "cobertura_brecha_vs_mclp": 0.5526068475256367,
       "brecha_gana": false
     }
   },
   "frontera_K20": [
     {
       "alfa": 0.0,
-      "distancia_media_m": 1091.4803356062957,
-      "reduccion_brecha": 0.06316217368183807,
-      "islas_atendidas": 1
+      "distancia_media_m": 1091.6253810081619,
+      "reduccion_brecha": 0.06308226808322737,
+      "islas_atendidas": 5
     },
     {
       "alfa": 0.1,
-      "distancia_media_m": 1086.0997757528294,
-      "reduccion_brecha": 0.06283456055131786,
-      "islas_atendidas": 1
+      "distancia_media_m": 1085.79212276456,
+      "reduccion_brecha": 0.06285472591251295,
+      "islas_atendidas": 6
     },
     {
       "alfa": 0.2,
-      "distancia_media_m": 1082.371402371833,
-      "reduccion_brecha": 0.06206627192294645,
-      "islas_atendidas": 1
+      "distancia_media_m": 1082.0637493835636,
+      "reduccion_brecha": 0.06208618490727125,
+      "islas_atendidas": 8
     },
     {
       "alfa": 0.3,
-      "distancia_media_m": 1078.673260277686,
-      "reduccion_brecha": 0.06079727683396685,
-      "islas_atendidas": 1
+      "distancia_media_m": 1078.3656072894164,
+      "reduccion_brecha": 0.06081676595680696,
+      "islas_atendidas": 8
     },
     {
       "alfa": 0.4,
-      "distancia_media_m": 1073.239953384102,
-      "reduccion_brecha": 0.05702497691824504,
-      "islas_atendidas": 2
+      "distancia_media_m": 1072.97976027755,
+      "reduccion_brecha": 0.05704315379516789,
+      "islas_atendidas": 8
     },
     {
       "alfa": 0.5,
-      "distancia_media_m": 1070.2530507767835,
-      "reduccion_brecha": 0.05384809169593052,
-      "islas_atendidas": 2
+      "distancia_media_m": 1069.9823144809927,
+      "reduccion_brecha": 0.05386550407568036,
+      "islas_atendidas": 7
     },
     {
       "alfa": 0.6,
-      "distancia_media_m": 1069.226940333718,
-      "reduccion_brecha": 0.052303463124296456,
-      "islas_atendidas": 2
+      "distancia_media_m": 1068.9562040379271,
+      "reduccion_brecha": 0.05232036820904551,
+      "islas_atendidas": 7
     },
     {
       "alfa": 0.7,
-      "distancia_media_m": 1066.566511401444,
-      "reduccion_brecha": 0.046465947291798426,
-      "islas_atendidas": 1
+      "distancia_media_m": 1066.295775105653,
+      "reduccion_brecha": 0.04648093495379968,
+      "islas_atendidas": 5
     },
     {
       "alfa": 0.8,
-      "distancia_media_m": 1065.5888688318353,
-      "reduccion_brecha": 0.044286456880866076,
-      "islas_atendidas": 1
+      "distancia_media_m": 1065.3181325360445,
+      "reduccion_brecha": 0.04430072944066232,
+      "islas_atendidas": 3
     },
     {
       "alfa": 0.9,
-      "distancia_media_m": 1065.3021839385447,
-      "reduccion_brecha": 0.04236816112637898,
-      "islas_atendidas": 0
+      "distancia_media_m": 1065.0312739646035,
+      "reduccion_brecha": 0.04238700029555609,
+      "islas_atendidas": 1
     },
     {
       "alfa": 1.0,
-      "distancia_media_m": 1065.20660702772,
-      "reduccion_brecha": 0.04036184702912515,
-      "islas_atendidas": 0
+      "distancia_media_m": 1064.9356970537788,
+      "reduccion_brecha": 0.04038003047571137,
+      "islas_atendidas": 1
     }
   ],
   "sitios_iguales_a_recta_K20_500m": {

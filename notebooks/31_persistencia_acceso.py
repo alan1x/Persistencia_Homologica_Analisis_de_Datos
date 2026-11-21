@@ -12,9 +12,11 @@
 # con una componente más vieja (regla del más viejo), en d = f de la celda que las une.
 # La persistencia es d − b. La componente más vieja de cada región conexa nunca muere.
 #
-# **Extensión de una componente:** la celda que entra se asigna a la componente que toca
-# (si toca varias, a la más vieja). Así las celdas quedan repartidas sin repetirse. Solo se
-# cuentan las celdas con f ≤ 1, es decir, por debajo del promedio.
+# **Extensión de una isla:** su cuenca, {f < d} conexa al mínimo: todo lo que había absorbido
+# antes de fundirse con una zona más vieja, incluidas subcuencas que no son islas. Las cuencas
+# se anidan; para totales cada celda va a la cuenca más profunda que la contiene. Para las
+# esenciales se usa {f < 1}. (Versión anterior: la etiqueta de entrada del union-find, que
+# dejaba fuera las subcuencas; corregido el 2026-11-21 tras la revisión.)
 #
 # ## Criterios fijados antes de correr
 #
@@ -22,8 +24,11 @@
 # - **Estabilidad:** 100 réplicas del acceso sorteando la capacidad de cada unidad (entero
 #   uniforme dentro de su rango de personal de DENUE; "0 a 5" → 1–5 y "251 y más" →
 #   251–350, centrado en el valor 300 que se usa). En cada réplica, f se divide entre el
-#   promedio de esa réplica. Una isla es estable si en ≥ 80% de las réplicas hay una isla
-#   con su mínimo a ≤ 500 m del suyo.
+#   promedio de esa réplica. Una isla aparece en una réplica si su cuenca se empareja (uno
+#   a uno) con una de la réplica con Jaccard ≥ 0.5; es estable si aparece en ≥ 80%.
+#   (Antes: alguna isla con el mínimo a ≤ 500 m, que en mesetas de ceros depende de un
+#   mínimo arbitrario; se guarda como referencia.) Solo prueba la incertidumbre de
+#   capacidad: las islas que nacen en 0 son estables por construcción.
 # - **¿Aporta frente al umbral?** Se cuentan las zonas conexas de {f < 0.5} (8 vecinos) que
 #   contienen dos o más islas estables. Si casi ninguna, la persistencia no agrega nada al
 #   corte simple y así se reporta.
@@ -45,16 +50,14 @@ import pandas as pd
 from scipy import ndimage
 from scipy.spatial import cKDTree
 
-from lib import acceso, config, viz_eval as ve
+from lib import acceso, config, f4, red_peatonal as rp, topo_rejilla as tr, viz_eval as ve
+from lib.f4 import J_MIN
 
 ve.aplicar()
 SALIDA = config.OUTPUTS_DIR / "auditoria"
 FIG = config.FIGURAS_DIR
 UMBRAL_B, UMBRAL_P, TOPE = 0.5, 0.25, 1.0
-N_REP, ESTABLE, RADIO_MATCH = 100, 0.8, 500.0
-RANGOS = {"0 a 5 personas": (1, 5), "6 a 10 personas": (6, 10), "11 a 30 personas": (11, 30),
-          "31 a 50 personas": (31, 50), "51 a 100 personas": (51, 100), "101 a 250 personas": (101, 250),
-          "251 y más personas": (251, 350)}
+N_REP, ESTABLE = f4.N_REP, f4.ESTABLE
 
 c = pd.read_parquet(config.INTERMEDIOS_DIR / "acceso_e2sfca_celdas.parquet")
 o = acceso.oferta()
@@ -160,57 +163,41 @@ print(comprob)
 assert comprob["coinciden"] and comprob["esenciales_propio"] == comprob["esenciales_gudhi"]
 
 # %% [markdown]
-# ## Réplicas de capacidad
+# ## Cuencas y réplicas de capacidad (piezas comunes en `lib/f4.py`)
 
 # %%
-rng = np.random.default_rng(31)
-lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
-hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
-arb_isl = cKDTree(XY[isl["celda"]])
-apariciones = np.zeros(len(isl))
-n_islas_rep = []
-for rep in range(N_REP):
-    cap = rng.integers(lo, hi + 1).astype(float)
-    A, _ = acceso.e2sfca_pares(I, J, W, PSIN, cap, N)
-    f = A / (cap.sum() / PSIN.sum())
-    ir = islas(h0(f)[0])
-    n_islas_rep.append(len(ir))
-    cerca = cKDTree(XY[ir["celda"]]).query(XY[isl["celda"]], distance_upper_bound=RADIO_MATCH)[0]
-    apariciones += np.isfinite(cerca)
-    if rep % 20 == 0:
-        print(rep, len(ir))
-isl["frecuencia"] = apariciones / N_REP
+rej = tr.Rejilla(c["x"], c["y"], acceso.PASO)
+pares_r, _, CUEN = rej.h0(F0, cuencas=True, umbral_b=UMBRAL_B, umbral_p=UMBRAL_P, tope=TOPE)
+assert pares_r[["celda", "b", "d"]].equals(pares[["celda", "b", "d"]].reset_index(drop=True))
+isl = isl.reset_index(drop=True)
+cuen_isl = f4.lista_cuencas(isl, CUEN)
+est_df, n_islas_rep = f4.estabilidad(rej, XY, isl, cuen_isl, f4.replicas_capacidad(I, J, W, PSIN, o))
+isl = isl.join(est_df)
 isl["estable"] = isl["frecuencia"] >= ESTABLE
 
 # %% [markdown]
 # ## Extensión de cada isla y comparación con el umbral
 
 # %%
-c["isla"] = np.where(F0 <= TOPE, etiqueta, -1)
-c["en_umbral"] = F0 < UMBRAL_B
+alta = c["alta_marg"].to_numpy(bool)
+bajo = F0 < UMBRAL_B
 mask = np.zeros(RAS.shape, bool)
-mask[RAS >= 0] = F0[RAS[RAS >= 0]] < UMBRAL_B
+mask[RAS >= 0] = bajo[RAS[RAS >= 0]]
 umb, n_umb = ndimage.label(mask, structure=np.ones((3, 3)))
-c["zona_umbral"] = 0
-c.loc[en_rejilla, "zona_umbral"] = umb[fr[en_rejilla], cr[en_rejilla]]
+zona = np.zeros(N, int)
+zona[en_rejilla] = umb[fr[en_rejilla], cr[en_rejilla]]
 
-g = c[c["isla"] >= 0].groupby("isla")
-ext = pd.DataFrame({"psin": g["psin"].sum(), "psin_bajo": g.apply(lambda t: t.loc[t["en_umbral"], "psin"].sum()),
-                    "psin_marg_alta": g.apply(lambda t: t.loc[t["alta_marg"], "psin"].sum()),
-                    "celdas": g.size()})
-isl = isl.join(ext, on="celda")
 isl["region"] = c["region"].to_numpy()[isl["celda"]]
 isl["CVEGEO"] = c["CVEGEO"].to_numpy()[isl["celda"]]
-isl["zona_umbral"] = c["zona_umbral"].to_numpy()[isl["celda"]]
+isl["zona_umbral"] = zona[isl["celda"]]
 isl["x"], isl["y"] = XY[isl["celda"]].T
-
 imu = acceso.marginacion_conapo()[["CVEGEO", "NOM_MUN"]]
 isl = isl.merge(imu, on="CVEGEO", how="left")
 
-# Tipo de isla. La componente que nunca muere recibe todas las celdas que entran después de
-# cada unión. Si su región conexa de población tiene otras islas, su extensión es el resto
-# de esa región y no una isla: se reporta aparte y no entra en el ranking ni en el mapa.
-# Si es la única isla de su región (un poblado separado del resto), es una isla aislada.
+# Tipo de isla. La componente que nunca muere es la más vieja de su región conexa de
+# población. Si la región tiene otras islas, su cuenca {f < 1} contiene a las demás y no es
+# una isla: es el "resto de región" y no entra al ranking ni al mapa. Si es la única isla de
+# su región (un poblado separado), es una isla aislada.
 reg_pob, _ = ndimage.label(RAS >= 0, structure=np.ones((3, 3)))
 reg_celda = np.zeros(N, int)
 reg_celda[en_rejilla] = reg_pob[fr[en_rejilla], cr[en_rejilla]]
@@ -218,23 +205,33 @@ isl["reg"] = reg_celda[isl["celda"]]
 n_isl_reg = isl.groupby("reg").size()
 isl["tipo"] = np.where(np.isfinite(isl["d"]), "finita",
                        np.where(isl["reg"].map(n_isl_reg) > 1, "resto de región", "aislada"))
-print(isl.groupby(["tipo", "estable"]).agg(n=("celda", "size"), psin=("psin", "sum"), psin_bajo=("psin_bajo", "sum")))
 
-est = isl[isl["estable"] & (isl["tipo"] != "resto de región")]
+sel = (isl["estable"] & (isl["tipo"] != "resto de región")).to_numpy()
+est = isl[sel].reset_index(drop=True)
+cuen_est = [cuen_isl[k] for k in np.flatnonzero(sel)]
+ext, ASIG = f4.extension(cuen_est, PSIN, bajo, alta, N)
+est = est.join(ext)
+print(isl.groupby(["tipo", "estable"]).size())
+
 resto = isl[isl["tipo"] == "resto de región"]
 por_zona = est.groupby("zona_umbral").size()
 zonas_multi = por_zona[por_zona >= 2]
-psin_zona = c[c["zona_umbral"] > 0].groupby("zona_umbral")["psin"].sum()
+psin_zona = pd.Series(np.bincount(zona[zona > 0], PSIN[zona > 0]), dtype=float)
 res = {
+    "definiciones": {"extension": "cuenca {f < d} conexa al mínimo; partición por la cuenca más profunda",
+                     "estable": f"pareja con Jaccard >= {J_MIN} en >= {ESTABLE:.0%} de {N_REP} réplicas de capacidad"},
     "comprobacion_gudhi": comprob,
     "celdas_fuera_rejilla": int((~en_rejilla).sum()),
     "componentes_h0": len(pares),
     "islas": {"total": len(isl), "por_tipo": isl.groupby("tipo").size().to_dict(),
               "estables_por_tipo": isl[isl["estable"]].groupby("tipo").size().to_dict(),
-              "estables_sin_resto": len(est)},
-    "resto_de_region": resto[["NOM_MUN", "b", "frecuencia", "psin", "psin_bajo"]].round(3).to_dict(orient="records"),
-    "psin_bajo": {"total": float(PSIN[F0 < UMBRAL_B].sum()), "en_islas_estables": float(est["psin_bajo"].sum()),
-                  "en_resto": float(resto["psin_bajo"].sum())},
+              "estables_sin_resto": len(est),
+              "estables_b0": int((est["b"] == 0).sum()),
+              "estables_criterio_distancia_500m": int(((isl["frecuencia_dist"] >= ESTABLE)
+                                                       & (isl["tipo"] != "resto de región")).sum())},
+    "resto_de_region": resto[["NOM_MUN", "b", "frecuencia"]].round(3).to_dict(orient="records"),
+    "psin_bajo": {"total": float(PSIN[bajo].sum()), "en_islas_estables": float(est["psin_bajo"].sum()),
+                  "en_islas_estables_b0": float(est.loc[est["b"] == 0, "psin_bajo"].sum())},
     "islas_por_replica": {"media": float(np.mean(n_islas_rep)), "min": int(min(n_islas_rep)), "max": int(max(n_islas_rep))},
     "sensibilidad_umbral_persistencia": {str(u): int(((pares["b"] < UMBRAL_B) & (pares["pers"] >= u)).sum())
                                          for u in [0.1, 0.25, 0.5, 1.0]},
@@ -246,16 +243,19 @@ res = {
                "islas_en_zonas_con_2_o_mas": int(zonas_multi.sum())},
     "por_region": {r: {"estables": int((est["region"] == r).sum()),
                        "psin_bajo_en_estables": float(est.loc[est["region"] == r, "psin_bajo"].sum()),
-                       "psin_bajo_total": float(PSIN[(F0 < UMBRAL_B) & (c["region"].to_numpy() == r)].sum())}
+                       "psin_bajo_total": float(PSIN[bajo & (c["region"].to_numpy() == r)].sum())}
                    for r in ["CDMX", "EDOMEX"]},
 }
-cols = ["NOM_MUN", "region", "tipo", "b", "d", "pers", "frecuencia", "psin", "psin_bajo", "psin_marg_alta", "zona_umbral"]
-res["islas_estables"] = est.sort_values("psin_bajo", ascending=False)[cols].replace({np.inf: None}).round(3).to_dict(orient="records")
-print(json.dumps({k: v for k, v in res.items() if k != "islas_estables"}, indent=1, ensure_ascii=False))
+cols = ["NOM_MUN", "region", "tipo", "b", "d", "pers", "frecuencia", "j_medio", "psin", "psin_bajo",
+        "psin_bajo_cuenca", "psin_marg_alta", "zona_umbral"]
+res["islas_estables"] = est.sort_values("psin_bajo", ascending=False)[cols].round(3).to_dict(orient="records")
+print({k: v for k, v in res.items() if k not in ("islas_estables", "resto_de_region")})
 print(est.sort_values("psin_bajo", ascending=False)[cols].head(25).to_string())
-isl[["celda", "x", "y", "b", "d", "pers", "frecuencia", "estable", "tipo", "NOM_MUN", "region", "psin_bajo"]].to_parquet(
-    config.INTERMEDIOS_DIR / "islas_acceso.parquet")
-(SALIDA / "persistencia_acceso.json").write_text(json.dumps(res, indent=2, ensure_ascii=False, default=float), encoding="utf-8")
+isl[["celda", "x", "y", "b", "d", "pers", "frecuencia", "frecuencia_dist", "j_medio", "estable", "tipo", "NOM_MUN",
+     "region"]].to_parquet(config.INTERMEDIOS_DIR / "islas_acceso.parquet")
+np.save(config.INTERMEDIOS_DIR / "asig_cuencas_recta.npy", ASIG)
+(config.INTERMEDIOS_DIR / "asig_cuencas_recta.huella").write_text(rp.huella(F0, est["celda"].to_numpy()))
+f4.guardar_json(res, SALIDA / "persistencia_acceso.json")
 
 # %% [markdown]
 # ## Figuras: mapa de islas y diagrama de persistencia
@@ -266,11 +266,8 @@ base = np.full(RAS.shape, np.nan)
 base[RAS >= 0] = np.where(F0[RAS[RAS >= 0]] < UMBRAL_B, 1.0, 0.0)
 ax.imshow(base, origin="lower", cmap=plt.matplotlib.colors.ListedColormap(["#e6e5e0", "#c9c7bf"]),
           interpolation="nearest")
-lab = np.full(RAS.shape, -1)
-lab[RAS >= 0] = c["isla"].to_numpy()[RAS[RAS >= 0]]
-estab = set(est["celda"])
-sel = np.isin(lab, list(estab))
-cap_isla = np.where(sel, 1.0, np.nan)
+cap_isla = np.full(RAS.shape, np.nan)
+cap_isla[RAS >= 0] = np.where(ASIG[RAS[RAS >= 0]] >= 0, 1.0, np.nan)
 ax.imshow(cap_isla, origin="lower", cmap=plt.matplotlib.colors.ListedColormap([ve.NARANJA]), interpolation="nearest")
 inest = isl[~isl["estable"] & (isl["tipo"] != "resto de región")]
 for t, color, mk, nom in [(est, ve.TEXTO, "o", "Mínimo de isla estable"), (inest, ve.AZUL, "x", "Mínimo de isla no estable")]:
@@ -282,7 +279,7 @@ ax.set_ylim(fil.min() - 5, fil.max() + 7)
 from matplotlib.patches import Patch
 h, l = ax.get_legend_handles_labels()
 ax.legend(h + [Patch(color=ve.NARANJA), Patch(color="#c9c7bf")],
-          l + ["Extensión de isla estable (f ≤ 1)", "Acceso bajo (f < 0.5)"], loc="lower left", fontsize=8.5, frameon=False, scatterpoints=1, markerscale=2)
+          l + ["Cuenca de isla estable", "Acceso bajo (f < 0.5)"], loc="lower left", fontsize=8.5, frameon=False, scatterpoints=1, markerscale=2)
 
 fin = pares[np.isfinite(pares["d"]) & (pares["pers"] > 0)]
 axd.scatter(fin["b"], fin["d"], s=4, c=ve.GRIS, lw=0, label="Pares de H0")
@@ -301,6 +298,6 @@ axd.set_title(f"Diagrama de H0 (pares finitos; {int(np.isinf(est['d']).sum())} i
 axd.legend(fontsize=8.5, frameon=False, loc="lower right")
 ve.titulo(fig, "Persistencia de las zonas de acceso bajo",
           f"Filtración por subniveles del acceso relativo E2SFCA. Isla: b < 0.5 y d − b ≥ 0.25; "
-          f"estable si aparece en ≥ 80% de {N_REP} réplicas de capacidad.")
+          f"estable si su cuenca reaparece (Jaccard ≥ 0.5) en ≥ 80% de {N_REP} réplicas de capacidad.")
 fig.subplots_adjust(top=0.84)
 ve.guardar(fig, FIG / "persistencia_acceso.png")

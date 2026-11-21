@@ -4,12 +4,12 @@
 # **Marginación:** Índice de Marginación Urbana 2020 de CONAPO por AGEB
 # (`Datos/CONAPO/IMU_2020.xls`). Cada celda de 100 m toma el grado de su AGEB. El índice
 # incluye el % sin derechohabiencia (PSDSS), que también está en la demanda, así que como
-# sensibilidad se arma un índice con los otros nueve indicadores.
+# sensibilidad se arma un índice con los otros diez indicadores.
 #
 # ## Criterios fijados antes de correr
 #
 # - **Prioridad:** acceso bajo (notebook 30) y grado de marginación Alto o Muy alto.
-# - **Sensibilidad sin PSDSS:** z-score promedio de los nueve indicadores restantes, con
+# - **Sensibilidad sin PSDSS:** z-score promedio de los diez indicadores restantes, con
 #   signo tal que mayor = más marginado. "Alta marginación" = el 20% de las personas sin
 #   seguro con mayor valor. Se reporta cuánto coincide la prioridad con la principal.
 # - **Referencia del acceso bajo:** la principal es el promedio metropolitano. Como
@@ -51,7 +51,11 @@ imu = acceso.marginacion_conapo()
 z = (imu[INDIC] - imu[INDIC].mean()) / imu[INDIC].std()
 imu["sin_psdss"] = z.mean(axis=1)
 c = c.merge(imu[["CVEGEO", "GM_2020", "IM_2020", "sin_psdss"]], on="CVEGEO", how="left")
-res = {"psin_sin_dato_conapo": {r: float(c.loc[(c["region"] == r) & c["GM_2020"].isna(), "psin"].sum()) for r in REGIONES}}
+# Las AGEB sin grado de CONAPO quedan como "no alta" en alta_marg (peso 1 en F5). Se reporta
+# cuánta gente es y cuánta tiene acceso bajo, para que se vea que no cambia nada material.
+res = {"psin_sin_dato_conapo": {r: float(c.loc[(c["region"] == r) & c["GM_2020"].isna(), "psin"].sum()) for r in REGIONES},
+       "psin_bajo_sin_dato_conapo": {r: float(c.loc[(c["region"] == r) & c["GM_2020"].isna() & c["bajo"], "psin"].sum())
+                                     for r in REGIONES}}
 print(res)
 
 # %% [markdown]

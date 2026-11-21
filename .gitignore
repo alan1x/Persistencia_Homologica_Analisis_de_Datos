@@ -15,4 +15,5 @@ outputs/intermedios/*.pkl
 /outputs/redes
 outputs/intermedios/*.npz
 outputs/intermedios/*.npy
+outputs/intermedios/*.huella
 outputs/*.log

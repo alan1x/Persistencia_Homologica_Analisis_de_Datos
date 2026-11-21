@@ -117,7 +117,7 @@ for r in REGIONES + ["Total"]:
         "acceso_medio_ponderado": acceso_medio,
         "acceso_medio_sobre_promedio": acceso_medio / prom,
         "acceso_bajo": pct(bajo), "sin_acceso": pct(~base["alcanza"]),
-        "bajo_y_cerca_saturacion": pct(bajo & ~lejos), "bajo_y_lejos_distancia": pct(bajo & lejos),
+        "bajo_y_cerca": pct(bajo & ~lejos), "bajo_y_lejos_distancia": pct(bajo & lejos),
         "no_bajo_pero_lejos": pct(~bajo & lejos),
         "percentiles_A_por_persona": {q: float(np.interp(q / 100, np.cumsum(PSIN[m][np.argsort(A[m])]) / tot, np.sort(A[m])))
                                       for q in [10, 25, 50, 75, 90]},
@@ -203,7 +203,7 @@ ve.guardar(fig, FIG / "acceso_e2sfca_mapa.png")
 # %%
 fig, ax = plt.subplots(figsize=(10, 3.6))
 cats = [("bajo_y_lejos_distancia", "Bajo por distancia (unidad a > 833 m)", "#b8431a"),
-        ("bajo_y_cerca_saturacion", "Bajo por saturación (unidad a ≤ 833 m)", "#eb9a74"),
+        ("bajo_y_cerca", "Bajo con una unidad a ≤ 833 m", "#eb9a74"),
         ("no_bajo_pero_lejos", "Lejos pero no bajo", "#8fb6e6")]
 for k, r in enumerate(REGIONES):
     izq = 0
@@ -218,6 +218,6 @@ ax.invert_yaxis()
 ax.set_xlabel("% de las personas sin seguro de la entidad")
 ax.grid(axis="y", visible=False)
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.55), ncol=3, fontsize=9)
-ve.titulo(fig, "Acceso bajo: ¿por distancia o por saturación?")
+ve.titulo(fig, "Acceso bajo: ¿lejos de toda unidad o con una cerca?")
 fig.subplots_adjust(top=0.85)
 ve.guardar(fig, FIG / "acceso_e2sfca_causas.png")
