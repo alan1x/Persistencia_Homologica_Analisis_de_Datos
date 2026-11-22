@@ -161,3 +161,17 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   - **F5:** sin cambios materiales. Islas atendidas con K = 20: 5–7 de 682.
   - **Cifras viejas:** las entradas del 13 y 18 de noviembre de este buzón quedan superadas por esta.
 - **Evidencia:** `outputs/auditoria/persistencia_calle.json`, `persistencia_acceso.json`, `red_real.json`, `ceros_calle.json`, `optimizacion*.json`, `outputs/figuras/persistencia_calle.png`.
+
+## 2026-11-22 — Nulo espacial de las islas (F4)
+
+- **Qué se agregó:** `lib/nulo.py` (campos gaussianos Matérn por FFT, cópula por rangos,
+  calibración por simulación) y `notebooks/36_nulo_espacial.py`. Diseño criticado con Codex:
+  ceros fijos, gradiente urbano, significancia por isla con control de comparaciones múltiples.
+  Dos cambios tras la prueba de humo, anotados en la cabecera: rampa junto a los ceros (sin ella
+  el nulo creaba acantilados) y BH en lugar del máximo por réplica (sin poder).
+- **Qué se aprendió:** el "81% de la gente con acceso bajo está en islas" no distingue nada:
+  un relieve aleatorio da 87%. Ninguna isla es más profunda que el azar. Lo real es que el mapa
+  tiene muchas más islas que nacen con acceso positivo (405 contra ~72): bolsas entre unidades.
+  Moraleja: un resultado que suena fuerte necesita su nulo antes de contarse.
+- **Evidencia:** `outputs/auditoria/nulo_espacial.json`, `outputs/figuras/nulo_espacial.png`.
+

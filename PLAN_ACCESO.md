@@ -96,6 +96,20 @@ E2SFCA es el método de cuenca flotante en dos pasos, en su versión mejorada.
     islas que nacen en 0 (335 de 682 por calle, con 2.58 de los 2.75 M de personas de acceso
     bajo en islas estables) son estables ante la capacidad por construcción, así que el nulo
     espacial es la validación que más falta hace.
+  - **Nulo espacial (2026-11-22, `notebooks/36_nulo_espacial.py`):** 999 superficies con los
+    ceros reales fijos, el gradiente urbano, la rampa junto a los ceros y la autocorrelación
+    calibrada (N2), más 200 estacionarias de referencia (N1). Resultado:
+    - **Que las islas contengan a la mayoría no es evidencia:** 83% observado contra 87% de
+      mediana en N2 (p = 0.90). Es una propiedad del método sobre cualquier superficie suave.
+    - **Ninguna isla es más profunda que el azar** (Benjamini–Hochberg 5%; ~5% con p < 0.05,
+      lo esperable por azar).
+    - **Lo que sí es estructura es la fragmentación:** 933 islas contra 668 (p = 0.002), y todo
+      el exceso está en las que nacen con acceso > 0: 405 contra ~72 en N2. Son bolsas de acceso
+      bajo entre unidades, que un campo gaussiano no produce. Las que nacen en 0 son incluso
+      menos que en el nulo (409 contra 472).
+    - **Respuesta a la pregunta clave:** las islas sirven para describir y priorizar, pero su
+      persistencia no es una señal más allá de "aquí no hay unidades cerca". Siguiente nulo
+      sugerido: reubicar las unidades entre los candidatos de F5 y recalcular E2SFCA.
 - **Pregunta clave:** ¿las islas persistentes contienen a la mayoría de las personas con
   peor acceso, y lo hacen mejor que un umbral simple sobre el mapa?
 

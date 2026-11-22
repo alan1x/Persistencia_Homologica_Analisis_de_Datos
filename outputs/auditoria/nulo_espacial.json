@@ -1,0 +1,222 @@
+{
+  "rampa_por_franja_100m": {
+    "1": -1.354,
+    "2": -0.918,
+    "3": -0.647,
+    "4": -0.455,
+    "5": -0.309,
+    "6": -0.187,
+    "7": -0.092,
+    "8": -0.028,
+    "9": 0.032,
+    "10": 0.087,
+    "11": 0.13,
+    "12": 0.171,
+    "13": 0.203,
+    "14": 0.227,
+    "15": 0.243,
+    "16": 0.263,
+    "17": 0.287,
+    "18": 0.311,
+    "19": 0.327,
+    "20": 0.338,
+    "21": 0.359,
+    "22": 0.395,
+    "23": 0.412,
+    "24": 0.429,
+    "25": 0.45,
+    "26": 0.464,
+    "27": 0.49,
+    "28": 0.492,
+    "29": 0.494,
+    "30": 0.751
+  },
+  "criterios": {
+    "ajuste": "correlograma simulado a ±0.05 del observado hasta 2000 m",
+    "principal": "p <= 0.05 y exceso >= 5 puntos sobre la mediana del nulo (N2)",
+    "por_isla": "BH FDR 5% por clase con p contra persistencias nulas agrupadas; estricto: persistencia > P97.5 del máximo por réplica de su clase"
+  },
+  "observado": {
+    "frac_bajo_en_islas": 0.8288507787522333,
+    "psin_bajo_en_islas": 2805925.8229706213,
+    "psin_bajo_en_islas_b0": 2615052.55023193,
+    "psin_bajo_en_islas_bpos": 190873.27273870533,
+    "n_islas": 933,
+    "n_b0": 409,
+    "n_esenciales": 119,
+    "pers_total_finita": 646.982170470804,
+    "max_pers_b0": 17.17418383559221,
+    "max_pers_bpos": 7.31264173642536
+  },
+  "ajuste": {
+    "N1": {
+      "w": 0.8165105422022575,
+      "rho1": 1528.305535490247,
+      "rho2": 11658.512756011449,
+      "nu": 1.0,
+      "sse": 0.0027769586292113752,
+      "escala": 1.15,
+      "sse_simulado": 0.0027417849890182884,
+      "correlograma_simulado": [
+        0.9865695322334769,
+        0.960774732362671,
+        0.9289294760222823,
+        0.8557371000530016,
+        0.7410208277047466,
+        0.5995534584654342,
+        0.47901705259633065,
+        0.379863751623287,
+        0.2813611204791855,
+        0.20920120176026813,
+        0.12063090151413822,
+        0.0752736379856769,
+        0.025711855731945697,
+        0.038360062068659044
+      ],
+      "dif_max_hasta_2km": 0.026609096239149255,
+      "ajuste_ok": true
+    },
+    "N2": {
+      "w": 1.0,
+      "rho1": 1226.4805069392753,
+      "rho2": 17249.999771720755,
+      "nu": 1.0,
+      "sse": 0.019907795718048876,
+      "escala": 1.15,
+      "sse_simulado": 0.0066369710319723624,
+      "correlograma_simulado": [
+        0.9829603437141806,
+        0.9510480781188201,
+        0.9121670757385945,
+        0.8253191711684986,
+        0.6965748625829131,
+        0.55126123971873,
+        0.4402313932162746,
+        0.36241764966574774,
+        0.29783019920176734,
+        0.2525103788957327,
+        0.19230692850373893,
+        0.16225536906534643,
+        0.15644143542459532,
+        0.14413790348577582
+      ],
+      "dif_max_hasta_2km": 0.040724380721125164,
+      "ajuste_ok": true
+    }
+  },
+  "n_sim": {
+    "N2": 999,
+    "N1": 200
+  },
+  "N2": {
+    "frac_bajo_en_islas": {
+      "observado": 0.8288507787522333,
+      "mediana_nulo": 0.8739947536661007,
+      "p2_5": 0.7943255757959007,
+      "p97_5": 0.9072104429120332,
+      "p": 0.903,
+      "exceso_puntos": -4.514397491386735
+    },
+    "exceso_personas": -30066.71254160721,
+    "exceso_personas_b0": 28843.029709656723,
+    "exceso_personas_bpos": -50028.67648051132,
+    "secundarios": {
+      "n_islas": {
+        "observado": 933,
+        "mediana_nulo": 668.0,
+        "p2_5": 632.0,
+        "p97_5": 708.0,
+        "p_dos_colas": 0.002
+      },
+      "n_b0": {
+        "observado": 409,
+        "mediana_nulo": 472.0,
+        "p2_5": 447.0,
+        "p97_5": 498.04999999999995,
+        "p_dos_colas": 0.002
+      },
+      "pers_total_finita": {
+        "observado": 646.982170470804,
+        "mediana_nulo": 442.6865757803822,
+        "p2_5": 395.23546810148173,
+        "p97_5": 508.961437835516,
+        "p_dos_colas": 0.002
+      }
+    },
+    "corte_pers_b0": 26.73742702023582,
+    "corte_pers_bpos": 7.528794644553781,
+    "estructura": false
+  },
+  "N1": {
+    "frac_bajo_en_islas": {
+      "observado": 0.8288507787522333,
+      "mediana_nulo": 0.8457980087729191,
+      "p2_5": 0.45971074746992896,
+      "p97_5": 0.9348893112125318,
+      "p": 0.5621890547263682,
+      "exceso_puntos": -1.6947230020685766
+    },
+    "exceso_personas": -295234.41714481823,
+    "exceso_personas_b0": -253089.94498456828,
+    "exceso_personas_bpos": -49859.27989834355,
+    "secundarios": {
+      "n_islas": {
+        "observado": 933,
+        "mediana_nulo": 540.5,
+        "p2_5": 494.9,
+        "p97_5": 597.0,
+        "p_dos_colas": 0.009950248756218905
+      },
+      "n_b0": {
+        "observado": 409,
+        "mediana_nulo": 192.0,
+        "p2_5": 147.95,
+        "p97_5": 232.05,
+        "p_dos_colas": 0.009950248756218905
+      },
+      "pers_total_finita": {
+        "observado": 646.982170470804,
+        "mediana_nulo": 276.2381882834874,
+        "p2_5": 232.73046959410556,
+        "p97_5": 326.18509598516624,
+        "p_dos_colas": 0.009950248756218905
+      }
+    },
+    "corte_pers_b0": 22.473091768946098,
+    "corte_pers_bpos": 20.639200927046517,
+    "estructura": false
+  },
+  "por_isla_N2": {
+    "b0": {
+      "islas": 337,
+      "significativas": 0,
+      "significativas_max": 0,
+      "estables_y_significativas_max": 0,
+      "estables": 271,
+      "estables_y_significativas": 0,
+      "psin_bajo": 2493464.319807073,
+      "psin_bajo_estables_y_significativas": 0.0
+    },
+    "bpos": {
+      "islas": 477,
+      "significativas": 0,
+      "significativas_max": 0,
+      "estables_y_significativas_max": 0,
+      "estables": 311,
+      "estables_y_significativas": 0,
+      "psin_bajo": 146660.28200397344,
+      "psin_bajo_estables_y_significativas": 0.0
+    },
+    "esencial": {
+      "islas": 119,
+      "significativas": 0,
+      "significativas_max": 0,
+      "estables_y_significativas_max": 0,
+      "estables": 100,
+      "estables_y_significativas": 0,
+      "psin_bajo": 165801.22115958846,
+      "psin_bajo_estables_y_significativas": 0.0
+    },
+    "nota": "psin_bajo por territorio propio en la partición de todas las islas; puede diferir de persistencia_calle.json, que parte solo entre las estables"
+  }
+}
