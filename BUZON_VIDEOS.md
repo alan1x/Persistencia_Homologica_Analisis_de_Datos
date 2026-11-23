@@ -186,3 +186,13 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   islas) resultó frágil: mover 21 unidades lo cambia 20 puntos.
 - **Evidencia:** `outputs/auditoria/nulo_oferta.json`, `outputs/figuras/nulo_oferta.png`.
 
+## 2026-11-22 — Sensibilidad a los parámetros de acceso (F4/F5)
+
+- **Qué se agregó:** `notebooks/38_sensibilidad_f3.py`. Recalcula acceso, islas y los sitios de
+  F5 con 4 formas de medir el acceso (30 o 15 min × gaussiano o escalones). Diseño revisado con
+  Codex (veredicto por el peor escenario, emparejamiento uno a uno de sitios).
+- **Qué se aprendió:** cambiar la forma del decaimiento casi no mueve nada (los mismos sitios
+  logran 99.9% de la mejora). Cambiar el horizonte a 15 min sí: 3 M de personas quedan sin
+  ninguna unidad y los sitios óptimos son otros. Un resultado de acceso siempre lleva su horizonte.
+- **Evidencia:** `outputs/auditoria/sensibilidad_f3.json`, `outputs/figuras/sensibilidad_f3.png`.
+

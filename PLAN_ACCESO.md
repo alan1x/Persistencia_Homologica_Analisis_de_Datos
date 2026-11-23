@@ -124,6 +124,18 @@ E2SFCA es el método de cuenca flotante en dos pasos, en su versión mejorada.
     - La fracción de gente en cuencas de islas es frágil: mover 21 unidades al redondear la
       bajó de 83% a 63%, porque una cuenca de 760 mil personas con persistencia 0.30 dejó de
       contar como isla. Pendiente: estratos de macrozonas en lugar de municipios.
+  - **Sensibilidad a F3 (2026-11-22, `notebooks/38_sensibilidad_f3.py`):** cuenca 30 o 15 min
+    de calle × decaimiento gaussiano o escalones, con criterios fijados antes de correr.
+    - **Con 30 min y escalones las conclusiones se sostienen:** Jaccard del mapa de acceso bajo
+      0.88, 94% de la gente baja en islas estables cae en islas recuperadas (las chicas cambian,
+      las grandes no) y los 20 sitios de F5 de la base logran 99.9% de la reducción de brecha
+      del voraz propio (17 de 20 sitios a ≤ 500 m).
+    - **Con 15 min cambia la pregunta:** 3.04 M de personas sin ninguna unidad a 1,125 m de calle
+      (contra 0.56 M a 30 min), Jaccard 0.60, solo 13% de la gente en islas recuperadas (las
+      cuencas se funden en mesetas de cero) y los sitios de la base logran 68–71% de la
+      reducción propia. Ningún veredicto cambia moviendo los cortes ±5 puntos.
+    - Conclusión: la forma del decaimiento no importa; el **horizonte** sí. Los resultados de F4
+      y F5 son "a 30 min a pie" y así deben reportarse.
 - **Pregunta clave:** ¿las islas persistentes contienen a la mayoría de las personas con
   peor acceso, y lo hacen mejor que un umbral simple sobre el mapa?
 

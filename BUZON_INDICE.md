@@ -13,3 +13,6 @@
 
 ## 2026-11-13
 - HITO: el proyecto pasó de huecos topológicos a acceso medido (`PLAN_ACCESO.md`, `notebooks/30` a `33`). Incluye E2SFCA con cruce de marginación CONAPO, persistencia H0 por subniveles de las zonas de acceso bajo, optimización con cuatro objetivos y distancias por la red peatonal de OpenStreetMap. Falta F7 (escritura) y, opcional, transporte público con r5py.
+
+## 2026-11-22
+- HITO: validación de F4 completa (`notebooks/36` a `38`). Ni el nulo espacial (campos Matérn con ceros fijos) ni el nulo de la oferta (unidades reubicadas por municipio) dan evidencia de que las islas o la ubicación actual sean peores que el azar. El acceso bajo se explica sobre todo por falta de oferta: solo 4% es atribuible a la ubicación. Los resultados resisten un cambio en la forma del decaimiento, pero no un horizonte de 15 min; se reportan como acceso a pie en 30 min. Sigue pendiente F7 (escritura).
