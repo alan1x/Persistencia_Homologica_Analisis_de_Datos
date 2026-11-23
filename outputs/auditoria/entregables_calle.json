@@ -1,0 +1,28 @@
+{
+  "CDMX": {
+    "psin": 2477696.0,
+    "psin_bajo": 563869.0953227419,
+    "pct_bajo": 22.757799799601802,
+    "bajo_lejos_pct": 14.151416703123349,
+    "bajo_cerca_pct": 8.606383096478453,
+    "lejos_no_bajo_pct": 17.054316687584667,
+    "prioridad": 65893.36148896119,
+    "prioridad_pct": 2.6594611077775965
+  },
+  "EDOMEX": {
+    "psin": 4826890.0,
+    "psin_bajo": 2821451.754824388,
+    "pct_bajo": 58.45278750550329,
+    "bajo_lejos_pct": 36.199699664502724,
+    "bajo_cerca_pct": 22.25308784100057,
+    "lejos_no_bajo_pct": 10.744809841017494,
+    "prioridad": 955635.3524971489,
+    "prioridad_pct": 19.79815890764341
+  },
+  "tablas": {
+    "islas": 682,
+    "sitios": 20,
+    "municipios": 141,
+    "zonas_sospechosas": 1117
+  }
+}

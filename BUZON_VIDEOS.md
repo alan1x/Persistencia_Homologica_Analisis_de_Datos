@@ -196,3 +196,15 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   ninguna unidad y los sitios óptimos son otros. Un resultado de acceso siempre lleva su horizonte.
 - **Evidencia:** `outputs/auditoria/sensibilidad_f3.json`, `outputs/figuras/sensibilidad_f3.png`.
 
+## 2026-11-22 — Mapas por calle y tablas para entregar
+
+- **Qué se agregó:** `notebooks/39_entregables_calle.py`. Rehace los mapas de acceso con la
+  distancia por calle y exporta 4 CSV legibles (islas, sitios propuestos, municipios, zonas
+  sospechosas de OSM) con coordenadas en grados.
+- **Qué se aprendió:** por calle, 58% de la gente sin seguro de EDOMEX tiene acceso bajo
+  (23% en CDMX); en EDOMEX 36% está lejos de toda unidad. Los primeros sitios de F5 reducen
+  brecha sin sacar a nadie del umbral: atienden zonas con acceso 0, donde una unidad sube el
+  acceso pero no lo suficiente.
+- **Evidencia:** `outputs/entregables/*.csv`, `outputs/figuras/acceso_calle_*.png`,
+  `outputs/figuras/acceso_marginacion_calle_mapa.png`.
+

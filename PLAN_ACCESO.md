@@ -136,6 +136,11 @@ E2SFCA es el método de cuenca flotante en dos pasos, en su versión mejorada.
       reducción propia. Ningún veredicto cambia moviendo los cortes ±5 puntos.
     - Conclusión: la forma del decaimiento no importa; el **horizonte** sí. Los resultados de F4
       y F5 son "a 30 min a pie" y así deben reportarse.
+  - **Entregables por calle (2026-11-22, `notebooks/39_entregables_calle.py`):** mapas de F3
+    por calle (`acceso_calle_mapa.png`, `acceso_calle_causas.png`,
+    `acceso_marginacion_calle_mapa.png`) y cuatro tablas en `outputs/entregables/`: islas
+    estables, los 20 sitios de F5 con su aporte, resumen por municipio y zonas sospechosas de
+    OSM. El municipio de una isla es el de su mínimo; su cuenca puede cruzar municipios.
 - **Pregunta clave:** ¿las islas persistentes contienen a la mayoría de las personas con
   peor acceso, y lo hacen mejor que un umbral simple sobre el mapa?
 
