@@ -251,6 +251,22 @@ Codex antes de correr.
      Álvaro Obregón, Ecatepec, Gran Canal).
    - Agregar los cruces que faltan con una regla explícita (por ejemplo, unir aceras a ≤ 30 m
      separadas por una vía sin cruce mapeado) y medir cuánto cambian los ceros y las islas.
+   - **Estado (2026-11-23, `notebooks/40_cruces_osm.py`):** la regla de las aceras no aplica,
+     porque la red ya incluye las calles y no solo las banquetas. En su lugar se probaron los
+     dos defectos típicos de OSM, en un **escenario permisivo** sin etiquetas de puente ni
+     barda, dentro de 2,250 m de las 17,545 celdas sospechosas: 7,540 cruces sin nodo y 12,206
+     casi-uniones (sin salida a ≤ 20 m de otra calle, lejos por la red). Codex lo criticó antes
+     de correr. Resultado:
+     - gana acceso solo el 18% de la gente en celdas sospechosas (225 k → 184 k en cero);
+     - el acceso bajo pasa de 3.21 M a 3.19 M;
+     - la corrección cierra el 25% de la diferencia con el híbrido del 35;
+     - **sobrevive el 89% de las islas estables por calle** (92% de las b = 0), así que los
+       defectos de OSM no cambian la geografía de F4.
+
+     La falla del híbrido del 35 se debía a un supuesto demasiado generoso (todo cero
+     sospechoso es un error de la red). La mayoría son barreras reales: barrancas en Álvaro
+     Obregón y Atizapán, la sierra y el Gran Canal en Ecatepec, autopistas. La red base se
+     queda como principal.
 3. **¿Cuántas unidades convienen?** Da la cifra central del paper.
    - Curvas de K = 1 a 500 para tres soluciones: **llegar a los peores** (brecha),
      **cubrir más gente** (MCLP) y **mixta** (α·p-mediana o cobertura + (1 − α)·brecha, con α

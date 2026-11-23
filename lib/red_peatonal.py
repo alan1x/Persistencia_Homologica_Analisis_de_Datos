@@ -150,14 +150,18 @@ class Red:
         d, k = self.arbol_util.query(pts)
         return self.idx_util[k], d
 
-    def pares(self, cel_xy, fue_xy, limite, cada=500):
+    def pares(self, cel_xy, fue_xy, limite, cada=500, anclas=None):
         """Pares (celda i, fuente j, distancia por red) con distancia ≤ limite.
 
         distancia = anclaje de la fuente + red + anclaje de la celda. Como la distancia por red
         nunca es menor que la recta, basta con explorar los nodos a ≤ limite en línea recta.
+        `anclas` = (cel_nodo, cel_anc, fue_nodo, fue_anc) fija los anclajes (p. ej., los de otra red).
         """
-        cel_nodo, cel_anc = self.anclar(cel_xy)
-        fue_nodo, fue_anc = self.anclar(fue_xy)
+        if anclas is None:
+            cel_nodo, cel_anc = self.anclar(cel_xy)
+            fue_nodo, fue_anc = self.anclar(fue_xy)
+        else:
+            cel_nodo, cel_anc, fue_nodo, fue_anc = anclas
         arbol_cel = cKDTree(cel_xy)
         I, J, D = [], [], []
         t0 = time.time()

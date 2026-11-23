@@ -1,0 +1,62 @@
+{
+  "regla": {
+    "dominio_m": 2250.0,
+    "casi_union_m": 20.0,
+    "lejos_por_red_m": 300.0,
+    "nota": "escenario permisivo: sin etiquetas de puente, túnel ni barda"
+  },
+  "candidatos": {
+    "nodos_dominio": 1838882,
+    "segmentos_dominio": 2058548,
+    "cruces_sin_nodo": 7540,
+    "sin_salida_dominio": 160346,
+    "casi_uniones": 12206
+  },
+  "acceso": {
+    "base": {
+      "psin_cero": 1129848.1681383653,
+      "psin_bajo": 3208531.298698244,
+      "psin_cero_sospechosas": 224790.12847064098
+    },
+    "corregida": {
+      "psin_cero": 1077552.6390101952,
+      "psin_bajo": 3194000.84607073,
+      "psin_cero_sospechosas": 184030.1212312681
+    },
+    "hibrido_35": {
+      "psin_cero": 905058.0396677243,
+      "psin_bajo": 3151116.458174224,
+      "psin_cero_sospechosas": 0.0
+    },
+    "frac_hibrido_cerrada": 0.253078341677794,
+    "sospechosas_por_clase": {
+      "rodeo > 2": {
+        "psin": 93404.2,
+        "psin_gana": 18232.8,
+        "pct_gana": 19.5
+      },
+      "rodeo moderado": {
+        "psin": 129914.0,
+        "psin_gana": 22524.7,
+        "pct_gana": 17.3
+      },
+      "sin calle a 300 m": {
+        "psin": 1471.8,
+        "psin_gana": 2.4,
+        "pct_gana": 0.2
+      }
+    },
+    "psin_sospechosas": 224790.12847064098,
+    "psin_sospechosas_que_ganan": 40760.00723937284
+  },
+  "islas": {
+    "estables_calle": 760,
+    "islas_corregida": 1035,
+    "jaccard_emparejado_resumen": 0.7460116003401703,
+    "sobreviven_pct": 89.34210526315789,
+    "b0_sobreviven_pct": 91.86507936507937,
+    "b_pos_sobreviven_pct": 84.375,
+    "geografia_robusta_a_osm": true
+  },
+  "minutos": 1.512333877881368
+}

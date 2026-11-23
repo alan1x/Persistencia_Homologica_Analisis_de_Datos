@@ -228,3 +228,19 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 - **Evidencia:** `outputs/auditoria/oferta_clues.json`, `outputs/figuras/oferta_clues_cotejo.png`
   y los JSON y figuras de los notebooks 30 a 39 recalculados. La versión DENUE está en git
   (`HEAD`) y en `outputs/intermedios/archivo_denue/`.
+
+## 2026-11-23 — ¿Los ceros por calle son huecos de OSM? (F8.2)
+
+- **Qué se agregó:** `notebooks/40_cruces_osm.py`. Corrige la red peatonal con los dos
+  defectos típicos de OSM (calles que se cruzan sin nodo y sin salidas a ≤ 20 m de otra calle)
+  en un escenario permisivo y repite E2SFCA y las islas por calle. `lib/red_peatonal.py` ahora
+  permite fijar los anclajes en `Red.pares`.
+- **Qué se aprendió:**
+  - Aun conectando ~20 mil enlaces, incluidos puentes legítimos, solo el 18% de la gente en
+    zonas sospechosas gana acceso, y el 89% de las islas sobrevive.
+  - Los ceros por calle son sobre todo barreras reales (barrancas, sierra, canal), no datos
+    malos.
+  - Una prueba de sensibilidad que reemplaza lo dudoso por el mejor caso (el híbrido del 35)
+    puede exagerar la fragilidad. Corregir el dato con una regla explícita da una respuesta
+    más honesta.
+- **Evidencia:** `outputs/auditoria/cruces_osm.json`, `outputs/figuras/cruces_osm.png`.
