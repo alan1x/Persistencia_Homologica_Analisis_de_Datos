@@ -119,7 +119,9 @@ class Oferta:
         return sitio
 
 
-OF = {"base": Oferta(acceso.oferta()), "abierta": Oferta(acceso.oferta(abierta=True))}
+OF = {"base": Oferta(acceso.oferta())}
+if acceso.fuente_oferta() == "denue":  # con CLUES la oferta ya es "abierta" (F8.1)
+    OF["abierta"] = Oferta(acceso.oferta(abierta=True))
 print(f"nodos: {NODO.sum()}, desplazamiento mediano {np.median(OF['base'].dsnap):.0f} m")
 
 rej = tr.Rejilla(c["x"], c["y"], acceso.PASO)
@@ -165,9 +167,11 @@ print("real", real)
 # %%
 SIM, FREC_BAJO = {}, {}
 ESC = {"S1": ("base", DEM15 + 1e-9, 371), "S2": ("base", None, 372), "S1_abierta": ("abierta", DEM15 + 1e-9, 373)}
+ESC = {k: v for k, v in ESC.items() if v[0] in OF}
+SUF = acceso.sufijo_oferta()  # puntos de control separados por fuente de oferta
 for k, (nof, pesos, semilla) in ESC.items():
     of = OF[nof]
-    ruta_f, ruta_b = INT / f"nulo_oferta_{k}.parquet", INT / f"nulo_oferta_bajo_{k}.npy"
+    ruta_f, ruta_b = INT / f"nulo_oferta_{k}{SUF}.parquet", INT / f"nulo_oferta_bajo_{k}{SUF}.npy"
     filas, cuenta = [], np.zeros(N, np.int32)
     if ruta_f.exists() and ruta_b.exists():
         filas, cuenta = pd.read_parquet(ruta_f).to_dict(orient="records"), np.load(ruta_b)
@@ -210,7 +214,7 @@ def contraste(x, o_):
 res = {"criterios": {"principal": f"una cola p <= 0.05 y diferencia >= {DIF_MIN} personas frente a la mediana de S1",
                      "atribuible": f"f < 0.5 en el observado y en < {ATRIB:.0%} de las réplicas de S1"},
        "redondeo": {"desplazamiento_mediano_m": float(np.median(OF["base"].dsnap)), "desplazamiento_p90_m": float(np.quantile(OF["base"].dsnap, 0.9)),
-                    "real": real, "redondeado": OBS["base"], "abierta_redondeado": OBS["abierta"],
+                    "real": real, "redondeado": OBS["base"], "abierta_redondeado": OBS.get("abierta"),
                     "jaccard_bajo_real_vs_redondeado": float(((F_REAL < 0.5) & (F_OBS < 0.5)).sum()
                                                              / ((F_REAL < 0.5) | (F_OBS < 0.5)).sum())},
        "n_sim": N_SIM}
@@ -236,7 +240,7 @@ res["atribuible_ubicacion"] = {"psin": float(PSIN[atrib].sum()), "pct_del_bajo":
                                "psin_bajo_en_80pct_o_mas_de_replicas": float(PSIN[estruct].sum())}
 print(json.dumps({k: v for k, v in res.items() if k != "redondeo"}, indent=1, ensure_ascii=False))
 f4.guardar_json(res, SALIDA / "nulo_oferta.json")
-np.save(INT / "nulo_oferta_frec_bajo_S1.npy", FREC_BAJO["S1"])
+np.save(INT / f"nulo_oferta_frec_bajo_S1{SUF}.npy", FREC_BAJO["S1"])
 
 # %% [markdown]
 # ## Figura

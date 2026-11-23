@@ -52,7 +52,9 @@ p = pd.read_parquet(INT / "pares_red_unidades.parquet")
 I, J = p["i"].to_numpy(), p["j"].to_numpy()
 W = acceso.peso(p["d"].to_numpy(float), LIM)
 A, _ = acceso.e2sfca_pares(I, J, W, PSIN, o["cap"].to_numpy(float), N)
-assert np.abs(A / (o["cap"].sum() / PSIN.sum()) - F).max() < 1e-4  # distancias guardadas en float32
+# Distancias guardadas en float32: tolerancia relativa, porque con CLUES hay celdas con f de
+# cientos (unidades rurales con poca demanda alrededor) donde el error absoluto crece.
+assert np.allclose(A / (o["cap"].sum() / PSIN.sum()), F, rtol=1e-4, atol=1e-4)
 
 rej = tr.Rejilla(c["x"], c["y"], acceso.PASO)
 pares, etiqueta, CUEN = rej.h0(F, cuencas=True, umbral_b=UMBRAL_B, umbral_p=UMBRAL_P, tope=TOPE)

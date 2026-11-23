@@ -208,3 +208,23 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 - **Evidencia:** `outputs/entregables/*.csv`, `outputs/figuras/acceso_calle_*.png`,
   `outputs/figuras/acceso_marginacion_calle_mapa.png`.
 
+
+## 2026-11-23 — Oferta oficial CLUES en lugar de DENUE (F8.1)
+
+- **Qué se agregó:** `notebooks/29_oferta_clues.py`. Lee el catálogo CLUES de la DGIS
+  (oct-2026) y Recursos en Salud 2025, y coteja contra DENUE con una asignación húngara a
+  ≤ 200 m. `lib/acceso.py` cambia de fuente con `OFERTA` (denue, clues, clues_ampliado). Se
+  recalcularon los notebooks 30 a 39 con médicos como capacidad, y DIF y municipales quedaron
+  como escenario ampliado.
+- **Qué se aprendió:**
+  - El dato oficial pasa la regla de F1: 98.8% de las unidades tiene coordenadas y recursos.
+    Pero DENUE contaba DIF, municipales y hasta bomberos como sector público.
+  - `per_ocu` era un buen proxy de la capacidad por unidad (Spearman 0.80).
+  - Con CLUES se duplica la gente sin ninguna unidad (1.13 M) y la ubicación actual sale
+    *mejor* que el azar.
+  - Error de dominio: si la oferta cubre más territorio que la demanda, las unidades sin
+    nadie alrededor inflan el promedio y fabrican acceso bajo. Se vio al revisar un
+    desplazamiento de 6.7 km en el nulo de la oferta.
+- **Evidencia:** `outputs/auditoria/oferta_clues.json`, `outputs/figuras/oferta_clues_cotejo.png`
+  y los JSON y figuras de los notebooks 30 a 39 recalculados. La versión DENUE está en git
+  (`HEAD`) y en `outputs/intermedios/archivo_denue/`.

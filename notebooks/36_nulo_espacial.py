@@ -207,7 +207,7 @@ SIM, PERS_SIM = {}, {}
 for k, simular, semilla in [("N2", f_n2, 361), ("N1", f_n1, 362)]:
     a = AJ[k]
     gen = nulo.Generador(rej, acceso.PASO, a["w"], a["rho1"], a["rho2"], a["nu"], hilos=1)
-    ruta_f, ruta_p = INT / f"nulo_espacial_{k}.parquet", INT / f"nulo_pers_{k}.npy"
+    ruta_f, ruta_p = INT / f"nulo_espacial_{k}{acceso.sufijo_oferta()}.parquet", INT / f"nulo_pers_{k}{acceso.sufijo_oferta()}.npy"
     filas, pers_k = [], []
     if ruta_f.exists() and ruta_p.exists():
         filas = pd.read_parquet(ruta_f).to_dict(orient="records")

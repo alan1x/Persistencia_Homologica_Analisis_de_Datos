@@ -1,28 +1,28 @@
 {
   "CDMX": {
     "psin": 2477696.0,
-    "psin_bajo": 563869.0953227419,
-    "pct_bajo": 22.757799799601802,
-    "bajo_lejos_pct": 14.151416703123349,
-    "bajo_cerca_pct": 8.606383096478453,
-    "lejos_no_bajo_pct": 17.054316687584667,
-    "prioridad": 65893.36148896119,
-    "prioridad_pct": 2.6594611077775965
+    "psin_bajo": 688810.3320855938,
+    "pct_bajo": 27.800437668123685,
+    "bajo_lejos_pct": 22.419271229926114,
+    "bajo_cerca_pct": 5.3811664381975675,
+    "lejos_no_bajo_pct": 26.98060934870621,
+    "prioridad": 49717.61451470906,
+    "prioridad_pct": 2.006606723129434
   },
   "EDOMEX": {
     "psin": 4826890.0,
-    "psin_bajo": 2821451.754824388,
-    "pct_bajo": 58.45278750550329,
-    "bajo_lejos_pct": 36.199699664502724,
-    "bajo_cerca_pct": 22.25308784100057,
-    "lejos_no_bajo_pct": 10.744809841017494,
-    "prioridad": 955635.3524971489,
-    "prioridad_pct": 19.79815890764341
+    "psin_bajo": 2519720.96661265,
+    "pct_bajo": 52.20174826052904,
+    "bajo_lejos_pct": 44.495181780036845,
+    "bajo_cerca_pct": 7.706566480492184,
+    "lejos_no_bajo_pct": 16.78836042474873,
+    "prioridad": 756743.3187686873,
+    "prioridad_pct": 15.677658259638966
   },
   "tablas": {
-    "islas": 682,
+    "islas": 760,
     "sitios": 20,
     "municipios": 141,
-    "zonas_sospechosas": 1117
+    "zonas_sospechosas": 1396
   }
 }

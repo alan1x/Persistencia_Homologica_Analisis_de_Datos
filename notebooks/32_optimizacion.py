@@ -3,7 +3,8 @@
 #
 # Se agregan K unidades públicas de primer nivel a las 1,290 actuales, que se quedan fijas.
 #
-# - **Capacidad de cada unidad nueva:** la mediana de las actuales (14 personas ocupadas).
+# - **Capacidad de cada unidad nueva:** la mediana de las actuales (14 personas ocupadas con
+#   DENUE; 2 médicos con CLUES desde F8.1).
 # - **Peso de cada persona sin seguro:** ×2 si su AGEB tiene marginación Alta o Muy alta
 #   (CONAPO 2020). Como contraste se corre la brecha sin ese peso.
 # - **Candidatos:** nodos poblados de una rejilla de 500 m, más los mínimos de las islas
@@ -106,7 +107,8 @@ else:
     Io, Jo, Wo = acceso.pares_e2sfca(XY, o[["x", "y"]].to_numpy(), CUENCA)
 PROM = o["cap"].sum() / PSIN.sum()
 CAP = float(o["cap"].median())
-print(f"capacidad nueva: {CAP}, unidades actuales: {len(o)}")
+UNI = "personas" if acceso.fuente_oferta() == "denue" else "médicos"
+print(f"oferta {acceso.fuente_oferta()}; capacidad nueva: {CAP} {UNI}, unidades actuales: {len(o)}")
 
 # %% [markdown]
 # ## Candidatos y pares candidato–celda
@@ -340,8 +342,11 @@ res["aleatorio_K20_reduccion_brecha"] = {"media": float(np.mean(alea)), "p95": f
 print(res["aleatorio_K20_reduccion_brecha"])
 
 # Réplicas de la capacidad actual: cambia f de hoy y el promedio de referencia.
-lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
-hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
+if "per_ocu" in o:
+    lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
+    hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
+else:  # CLUES (F8.1): entre consultorios y médicos
+    lo, hi = acceso.rango_capacidad(o)
 principal = CXY[sol["brecha"][:K_MAIN]]
 arb = cKDTree(principal)
 aparece = np.zeros(K_MAIN)
@@ -364,13 +369,13 @@ res["brecha_sin_peso_marginacion"] = {"sitios_iguales_500m": int((d_sin <= 500).
 print(res["brecha_sin_peso_marginacion"]["sitios_iguales_500m"])
 
 # %% [markdown]
-# ## Sensibilidad: unidades de 40 personas
+# ## Sensibilidad: unidades grandes (percentil 75 de las actuales)
 #
 # Cobertura y p-mediana no dependen de la capacidad, así que eligen los mismos sitios y solo
 # cambia su evaluación. Peor 10% y brecha se vuelven a optimizar.
 
 # %%
-CAP40 = 40.0
+CAP40 = float(o["cap"].quantile(0.75))  # percentil 75 (40 personas con DENUE)
 DELTA40 = DELTA * CAP40 / CAP
 sol40 = {"cobertura": sol["cobertura"], "pmediana": sol["pmediana"],
          "peor10": voraz(Peor10(delta=DELTA40), K_MAX)[0], "brecha": voraz(Brecha(delta=DELTA40), K_MAX)[0]}
@@ -434,7 +439,7 @@ for ax, (n, s) in zip(axes.ravel(), sol.items()):
     ax.set_aspect("equal")
     ax.set_axis_off()
 ve.titulo(fig, f"Dónde abrir {K_MAIN} unidades según cada objetivo" + (" (distancias por calle)" if CALLE else ""),
-          f"Unidades de {CAP:.0f} personas. Gris oscuro: acceso bajo hoy (f < 0.5). "
+          f"Unidades de {CAP:.0f} {UNI}. Gris oscuro: acceso bajo hoy (f < 0.5). "
           "Personas en marginación Alta o Muy alta pesan ×2.")
 fig.subplots_adjust(top=0.86, hspace=0.14, wspace=0.02)
 ve.guardar(fig, FIG / f"optimizacion_mapas{SUF}.png")
@@ -486,7 +491,7 @@ for ax, (clave, etiqueta) in zip(axes, [("brecha", "Reducción de la brecha (%)"
     ax.set_xlabel("Unidades nuevas K")
     ax.set_title(etiqueta, fontsize=10.5)
 axes[0].legend(fontsize=8, frameon=False, ncol=1)
-ve.titulo(fig, "Unidades de 40 personas frente a unidades de 14" + (" (por calle)" if CALLE else ""),
-          "Línea continua: 40 personas por unidad. Punteada: 14 (la mediana actual). Mismos candidatos y mismos pesos.")
+ve.titulo(fig, f"Unidades de {CAP40:.0f} {UNI} frente a unidades de {CAP:.0f}" + (" (por calle)" if CALLE else ""),
+          f"Línea continua: {CAP40:.0f} {UNI} por unidad (percentil 75). Punteada: {CAP:.0f} (la mediana actual). Mismos candidatos y mismos pesos.")
 fig.subplots_adjust(top=0.8, wspace=0.22)
 ve.guardar(fig, FIG / f"optimizacion_capacidad40{SUF}.png")

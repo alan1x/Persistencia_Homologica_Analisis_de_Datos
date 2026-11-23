@@ -36,10 +36,14 @@ def lista_cuencas(isl, cuen):
 
 
 def replicas_capacidad(I, J, W, psin, o, n_rep=N_REP, semilla=31):
-    """Acceso relativo en cada réplica que sortea la capacidad en el rango de `per_ocu`."""
+    """Acceso relativo en cada réplica que sortea la capacidad de cada unidad: en el rango de
+    `per_ocu` con DENUE, entre consultorios y médicos con CLUES (`acceso.rango_capacidad`)."""
     rng = np.random.default_rng(semilla)
-    lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
-    hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
+    if "per_ocu" in o:
+        lo = o["per_ocu"].map(lambda s: RANGOS[s][0]).to_numpy()
+        hi = o["per_ocu"].map(lambda s: RANGOS[s][1]).to_numpy()
+    else:
+        lo, hi = acceso.rango_capacidad(o)
     for _ in range(n_rep):
         cap = rng.integers(lo, hi + 1).astype(float)
         A, _ = acceso.e2sfca_pares(I, J, W, psin, cap, len(psin))

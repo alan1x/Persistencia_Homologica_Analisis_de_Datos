@@ -22,7 +22,8 @@
 #   en línea recta siguen con acceso bajo por calle y (b) ≥ 80% de las islas estables de F4
 #   tienen una isla por calle con su mínimo a ≤ 500 m. Si no, la versión por calle pasa a
 #   ser la principal.
-# - **F5:** brecha con K = 20 (14 y 40 personas). Se reportan los sitios que se repiten a
+# - **F5:** brecha con K = 20 (capacidad nueva = mediana y percentil 75 de las actuales;
+#   14 y 40 personas con DENUE). Se reportan los sitios que se repiten a
 #   ≤ 500 m y cuánto rinden por calle los sitios elegidos en línea recta frente a los
 #   elegidos por calle.
 # - **Celdas sin calle cerca:** las que quedan a > 300 m de la red se cuentan y se reportan.
@@ -266,19 +267,20 @@ def brecha(f0, delta, sel):
 
 sitios0 = pd.read_csv(SALIDA / "optimizacion_sitios.csv")
 s0 = sitios0[(sitios0["objetivo"] == "brecha") & (sitios0["orden"] <= K)][["x", "y"]].to_numpy()
-idx0 = cKDTree(CXY).query(s0)[1]  # sitios elegidos en línea recta (capacidad 14)
+idx0 = cKDTree(CXY).query(s0)[1]  # sitios elegidos en línea recta (capacidad mediana)
 base = float((PESO * np.maximum(0, UMBRAL - F1)).sum())
 res["f5"] = {"brecha_base_calle": base}
-for cap in [14.0, 40.0]:
+# Unidad nueva: mediana de las actuales; grande: percentil 75 (14 y 40 personas con DENUE).
+CAP_N, CAP_G = float(o["cap"].median()), float(o["cap"].quantile(0.75))
+for nombre, cap in [("mediana", CAP_N), ("p75", CAP_G)]:
     delta = cap / np.maximum(DEN[Jc], 1e-9) * Wc / PROM
     sel = voraz_brecha(F1, delta, K)
-    r = {"reduccion_calle_optimo": 1 - brecha(F1, delta, sel) / base}
-    if cap == 14.0:
+    r = {"capacidad": cap, "reduccion_calle_optimo": 1 - brecha(F1, delta, sel) / base}
+    if nombre == "mediana":
         r["reduccion_calle_con_sitios_recta"] = 1 - brecha(F1, delta, idx0) / base
         r["sitios_iguales_500m"] = int((cKDTree(CXY[sel]).query(s0)[0] <= 500).sum())
-    res["f5"][f"cap_{cap:.0f}"] = r
-    if cap == 14.0:
         SEL14 = sel
+    res["f5"][f"cap_{nombre}"] = r
 print(json.dumps(res["f5"], indent=1))
 res["minutos"] = (time.time() - T0) / 60
 f4.guardar_json(res, SALIDA / f"red_real{SUF}.json")

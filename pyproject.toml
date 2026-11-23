@@ -31,6 +31,7 @@ dependencies = [
     "osmium>=4.3.1",
     "python-pptx>=1.0.2",
     "xlrd>=2.0.2",
+    "openpyxl>=3.1.5",
 ]
 
 [tool.uv]

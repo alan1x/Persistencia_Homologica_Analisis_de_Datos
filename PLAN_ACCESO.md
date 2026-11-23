@@ -207,6 +207,45 @@ Codex antes de correr.
    - **Decisión (la de F1):** si ≥ 90% de las unidades tienen coordenadas utilizables y algún
      dato de capacidad, se cambia a CLUES y se recalculan F3 a F5. Si no, se sigue con DENUE
      y se reporta el cotejo.
+   - **Estado (2026-11-22, `notebooks/29_oferta_clues.py`):** catálogo de oct-2026 y Recursos
+     2025 en `Datos/CLUES/`. Universo principal: 1,321 unidades (IMSS-Bienestar, SSA y UMR del
+     IMSS; sin ISSEMYM, DIF ni municipales). **Pasa la regla de F1:** 98.8% tiene coordenadas y
+     consultorios a la vez. El cotejo con DENUE abierta da 675 pares a ≤ 200 m (mediana 19 m;
+     87% comparten nombre). Las 631 de CLUES sin pareja son rurales de EDOMEX que DENUE no
+     tiene. Las 474 de DENUE sin pareja (36% de su capacidad) son sobre todo DIF, consultorios
+     municipales o de alcaldía, ISSSTE mal clasificado y no-clínicas (bomberos, ERUM). En recta
+     a 30 min, CLUES deja 1.04 M de personas sin unidad (DENUE abierta, 0.58 M), concentradas en
+     la zona conurbada de EDOMEX. **No pasa el criterio 6:** consultorios contra médicos da
+     J = 0.76 (< 0.8), porque los médicos capturan turnos (CAAPS: 3 consultorios, 10 médicos).
+     **Pendiente antes de recalcular F3 a F5:** decidir la capacidad y si DIF y municipales
+     entran como escenario ampliado.
+   - **Decisión y recálculo (2026-11-22/23):** Mario eligió **médicos** (generales, familiares
+     y pasantes) como capacidad principal; consultorios queda como sensibilidad. DIF y
+     consultorios municipales o de alcaldía (CLUES más DENUE sin pareja, con médicos estimados
+     por rango de `per_ocu`) entran solo como **escenario ampliado**, calculado en los
+     notebooks 29 y 30. `lib/acceso.py` toma la fuente de la variable `OFERTA` (por defecto
+     `clues`); los puntos de control llevan sufijo y lo de DENUE quedó en
+     `outputs/intermedios/archivo_denue/`.
+   - **Error encontrado y corregido tras correr:** 375 unidades rurales de EDOMEX (12% de los
+     médicos) no tienen ninguna celda de demanda a ≤ 1,667 m, pero contaban en el promedio
+     metropolitano y metían ~0.33 M de personas de más en acceso bajo. Regla nueva: una unidad
+     entra a la oferta solo si tiene demanda a ≤ 1,667 m en recta (`en_dominio`). Por calle, la
+     media de f ponderada por personas queda en 0.993; con DENUE era 0.999. Ajuste propuesto
+     por Codex y no aplicado: normalizar por la capacidad alcanzada en cada escenario.
+   - **Resultados con CLUES** (por calle, contra DENUE). Acceso bajo 3.21 M (3.39 M), con
+     CDMX en 27.8% (22.8%) y EDOMEX en 52.2% (58.5%). Sin ninguna unidad, 1.13 M (0.56 M).
+     Islas estables: 760 (682), con 2.78 M de personas en acceso bajo dentro (2.75 M). En F5,
+     cada unidad nueva vale 3 médicos (la mediana), y 20 unidades cierran 166 k de brecha
+     (85 k). Sensibilidad de F3: sigue frágil (robusta a 30 min con escalones, frágil a 15 min).
+     Nulo espacial: sigue compatible con el azar (p 0.81 en N2 y 0.55 en N1). **Nulo de la
+     oferta: cambia de "compatible" a "mejor":** la ubicación real de CLUES deja 0.37 M menos
+     de personas en acceso bajo que reubicar las unidades por municipio siguiendo la demanda
+     (p = 0.002). Solo 1.8% del acceso bajo es atribuible a la ubicación (4.3% con DENUE).
+     **Empeora:** el chequeo de la geografía híbrida (notebook 35) ya no pasa; sobrevive el
+     76% de las islas estables por calle (86% con DENUE).
+   - **Supuestos documentados:** las réplicas de capacidad sortean entre consultorios y médicos;
+     las 32 unidades con consultorio pero sin médicos quedan fuera; las cabeceras de los
+     notebooks 31 a 39 citan todavía las cifras de DENUE (valen los JSON de `outputs/auditoria/`).
 2. **Cruces peatonales de OSM.** Cambia las distancias.
    - Revisar las zonas sospechosas más grandes (`outputs/entregables/zonas_sospechosas_osm.csv`:
      Álvaro Obregón, Ecatepec, Gran Canal).

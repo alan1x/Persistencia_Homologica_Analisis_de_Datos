@@ -10,60 +10,62 @@
   },
   "rodeo": {
     "muestra": "200 unidades al azar; celdas pobladas a 300–1,667 m en recta; Dijkstra sin límite",
-    "pares_conectados": 119366,
+    "pares_conectados": 97952,
     "sin_camino_pct": 0.0,
-    "mediana_de_medianas_por_unidad": 1.392481950030606,
-    "mediana": 1.3887205922901473,
-    "p25": 1.2665827202613973,
-    "p75": 1.5776705159042697,
-    "p90": 1.9383602795692072,
+    "mediana_de_medianas_por_unidad": 1.3944836239053675,
+    "mediana": 1.4047328887946469,
+    "p25": 1.282282950804151,
+    "p75": 1.6104390642893593,
+    "p90": 2.0338259433059047,
     "por_banda_recta_m": {
-      "300-600": 1.4956873053294206,
-      "600-1000": 1.4165782739331718,
-      "1000-1400": 1.3754596198345181,
-      "1400-1667": 1.350014229458193
+      "300-600": 1.5067189950565574,
+      "600-1000": 1.4276945186424959,
+      "1000-1400": 1.3926936371245886,
+      "1400-1667": 1.3667820914434254
     },
     "por_zona": {
-      "CDMX": 1.3682979602173369,
-      "EDOMEX poniente (Toluca)": 1.3989451666818529,
-      "EDOMEX resto": 1.4054661407536926
+      "CDMX": 1.3926380788408872,
+      "EDOMEX poniente (Toluca)": 1.4420139328124686,
+      "EDOMEX resto": 1.3979427937004936
     },
     "valido_1_35": true,
-    "en_cuenca_recta_fuera_por_calle_pct": 13.017944808404403,
+    "en_cuenca_recta_fuera_por_calle_pct": 14.716391702058152,
     "censurado_referencia": {
-      "mediana": 1.3300111552268286,
+      "mediana": 1.3425337536622006,
       "nota": "pares que ya caben en 2,250 m de calle; sesgado a la baja"
     }
   },
   "f3": {
-    "spearman": 0.9290359497428581,
-    "psin_bajo_recta": 3382806.4811681043,
-    "psin_bajo_calle": 3385320.8501471295,
-    "siguen_bajo_pct": 92.11230040191649,
-    "nuevos_bajo": 269339.9821980653,
-    "salen_bajo": 266825.61321904,
-    "psin_sin_acceso_calle": 560145.0779807998,
+    "spearman": 0.9060158076200798,
+    "psin_bajo_recta": 3191179.4561452707,
+    "psin_bajo_calle": 3208531.298698244,
+    "siguen_bajo_pct": 91.07520208409116,
+    "nuevos_bajo": 302158.1601479368,
+    "salen_bajo": 284806.3175949637,
+    "psin_sin_acceso_calle": 1129848.1681383653,
     "por_region": {
       "CDMX": {
-        "pct_bajo_recta": 22.69344132913893,
-        "pct_bajo_calle": 22.757799799601802
+        "pct_bajo_recta": 28.3343931741936,
+        "pct_bajo_calle": 27.800437668123685
       },
       "EDOMEX": {
-        "pct_bajo_recta": 58.43373255022763,
-        "pct_bajo_calle": 58.45278750550329
+        "pct_bajo_recta": 51.56818012931728,
+        "pct_bajo_calle": 52.20174826052904
       }
     }
   },
   "f5": {
-    "brecha_base_calle": 1346474.253893832,
-    "cap_14": {
-      "reduccion_calle_optimo": 0.06316337083570123,
-      "reduccion_calle_con_sitios_recta": 0.0626325693876687,
-      "sitios_iguales_500m": 17
+    "brecha_base_calle": 1310203.911908174,
+    "cap_mediana": {
+      "capacidad": 3.0,
+      "reduccion_calle_optimo": 0.12641010307338918,
+      "reduccion_calle_con_sitios_recta": 0.12345395562456984,
+      "sitios_iguales_500m": 12
     },
-    "cap_40": {
-      "reduccion_calle_optimo": 0.14620809369459586
+    "cap_p75": {
+      "capacidad": 7.0,
+      "reduccion_calle_optimo": 0.20127810091795162
     }
   },
-  "minutos": 10.620555992921194
+  "minutos": 10.56398051182429
 }

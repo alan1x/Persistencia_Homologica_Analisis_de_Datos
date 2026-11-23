@@ -153,7 +153,7 @@ def islas_de(f):
 # %%
 MOD = {k: modelo(*v) for k, v in CONF.items()}
 F_BASE = MOD["base"][0]
-assert np.abs(F_BASE - F_GUARDADO).max() < 1e-4
+assert np.allclose(F_BASE, F_GUARDADO, rtol=1e-4, atol=1e-4)  # float32; f de cientos con CLUES
 print("celdas que cambian de lado de f < 0.5 al reconstruir:", int(((F_BASE < UMBRAL_B) != (F_GUARDADO < UMBRAL_B)).sum()))
 
 isl_b, cuen_b, _ = islas_de(F_BASE)

@@ -1,0 +1,217 @@
+{
+  "fuentes": {
+    "catalogo": "ESTABLECIMIENTO_SALUD_202610.xlsx",
+    "recursos": "Recursos Salud Sectorial 2025"
+  },
+  "universo": {
+    "principal": 1321,
+    "publica_completa": 1639,
+    "principal_por_region": {
+      "EDOMEX": 1108,
+      "CDMX": 213
+    },
+    "principal_por_institucion": {
+      "SERVICIOS DE SALUD IMSS BIENESTAR": 1257,
+      "SECRETARIA DE SALUD": 35,
+      "INSTITUTO MEXICANO DEL SEGURO SOCIAL": 29
+    }
+  },
+  "criterio1_coordenadas_utilizables": 0.9886,
+  "criterio2_capacidad_observada": 0.9992,
+  "criterio3_ambos": 0.9879,
+  "decision_usar_clues": true,
+  "detalle_coordenadas": {
+    "en_municipio": 0.9902,
+    "compartidas_otra_localidad": 4,
+    "repetidas": 6,
+    "imprecisas_3dec": 18,
+    "localidad_discordante": 80
+  },
+  "capacidad": {
+    "consultorios": 3285.0,
+    "medicos": 5358.0,
+    "ceros_consultorios": 1,
+    "ceros_medicos": 33,
+    "imputadas": 0,
+    "discrepancia_catalogo_recursos": 0
+  },
+  "cotejo_principal_vs_denue_abierta": {
+    "n_clues": 1306,
+    "n_denue": 1149,
+    "pares": 675,
+    "frac_clues_con_pareja": 0.517,
+    "frac_denue_con_pareja": 0.587,
+    "dist_mediana_m": 19.3,
+    "dist_p90_m": 53.1,
+    "frac_pares_con_nombre_comun": 0.871,
+    "frac_pares_ambiguos": 0.064,
+    "clues_sin_pareja_por_tipologia": {
+      "RURAL DE 01 NÚCLEO BÁSICO": 358,
+      "RURAL DE 02 NÚCLEOS BÁSICOS": 108,
+      "CENTROS AVANZADOS DE ATENCIÓN PRIMARIA A LA SALUD (CAAPS)": 38,
+      "CASA DE SALUD": 30,
+      "UNIDAD MÉDICA RURAL": 29,
+      "URBANO DE 02 NÚCLEOS BÁSICOS": 18,
+      "URBANO DE 01 NÚCLEOS BÁSICOS": 16,
+      "URBANO DE 03 NÚCLEOS BÁSICOS": 12,
+      "RURAL DE 03 NÚCLEOS BÁSICOS Y MÁS": 7,
+      "URBANO DE 06 NÚCLEOS BÁSICOS": 5
+    },
+    "clues_sin_pareja_por_region": {
+      "EDOMEX": 609,
+      "CDMX": 22
+    },
+    "denue_sin_pareja_por_region": {
+      "EDOMEX": 294,
+      "CDMX": 180
+    },
+    "clues_sin_pareja_dist_vecino_mediana_m": 4229.0,
+    "denue_sin_pareja_dist_vecino_mediana_m": 908.0
+  },
+  "cotejo_publica_vs_denue_base": {
+    "n_clues": 1608,
+    "n_denue": 1290,
+    "pares": 813,
+    "frac_clues_con_pareja": 0.506,
+    "frac_denue_con_pareja": 0.63,
+    "dist_mediana_m": 21.0,
+    "dist_p90_m": 74.4,
+    "frac_pares_con_nombre_comun": 0.806,
+    "frac_pares_ambiguos": 0.105,
+    "clues_sin_pareja_por_tipologia": {
+      "RURAL DE 01 NÚCLEO BÁSICO": 361,
+      "RURAL DE 02 NÚCLEOS BÁSICOS": 109,
+      "UNIDAD DE MEDICINA FAMILIAR": 75,
+      "URBANO DE 01 NÚCLEOS BÁSICOS": 39,
+      "CENTROS AVANZADOS DE ATENCIÓN PRIMARIA A LA SALUD (CAAPS)": 36,
+      "CASA DE SALUD": 31,
+      "UNIDAD MÉDICA RURAL": 29,
+      "NO ESPECIFICADO": 23,
+      "URBANO DE 02 NÚCLEOS BÁSICOS": 21,
+      "CLÍNICA DE MEDICINA FAMILIAR": 15
+    },
+    "clues_sin_pareja_por_region": {
+      "EDOMEX": 706,
+      "CDMX": 89
+    },
+    "denue_sin_pareja_por_region": {
+      "EDOMEX": 294,
+      "CDMX": 183
+    },
+    "clues_sin_pareja_dist_vecino_mediana_m": 3095.0,
+    "denue_sin_pareja_dist_vecino_mediana_m": 739.0
+  },
+  "proxy_per_ocu": {
+    "spearman_consultorios": 0.796,
+    "spearman_medicos": 0.804,
+    "n_pares": 675,
+    "spearman_cap_por_persona_municipal": 0.437,
+    "n_municipios": 141
+  },
+  "dominio": {
+    "regla": "alguna celda de demanda a <= 1,667 m en recta; agregada tras correr",
+    "principal_utilizable": 1306,
+    "principal_en_dominio": 907,
+    "frac_medicos_en_dominio": 0.8781,
+    "fuera_por_region": {
+      "EDOMEX": 399
+    },
+    "ampliado_en_dominio": 1085,
+    "ampliado_total": 1485
+  },
+  "capacidad_principal": "medicos (generales + familiares + pasantes); decidido tras correr",
+  "ampliado": {
+    "capa_clues_unidades": 95,
+    "capa_clues_medicos": 86.0,
+    "capa_denue_unidades": 84,
+    "capa_denue_medicos_estimados": 246.0,
+    "medicos_por_rango_per_ocu": {
+      "0 a 5 personas": 2.0,
+      "101 a 250 personas": 16.5,
+      "11 a 30 personas": 4.0,
+      "31 a 50 personas": 6.0,
+      "51 a 100 personas": 10.5,
+      "6 a 10 personas": 2.0
+    }
+  },
+  "impacto_f3_recta_30min": {
+    "denue_base": {
+      "unidades": 1281,
+      "personas_bajo": 3379266,
+      "personas_sin_unidad": 457722,
+      "por_region_bajo": {
+        "CDMX": 561473,
+        "EDOMEX": 2817793
+      },
+      "jaccard_vs_denue_base": 1.0,
+      "jaccard_vs_clues_medicos": 0.551
+    },
+    "denue_abierta": {
+      "unidades": 1140,
+      "personas_bajo": 3181845,
+      "personas_sin_unidad": 575857,
+      "por_region_bajo": {
+        "CDMX": 539927,
+        "EDOMEX": 2641918
+      },
+      "jaccard_vs_denue_base": 0.76,
+      "jaccard_vs_clues_medicos": 0.598
+    },
+    "clues_medicos": {
+      "unidades": 898,
+      "personas_bajo": 3191179,
+      "personas_sin_unidad": 1037837,
+      "por_region_bajo": {
+        "CDMX": 702040,
+        "EDOMEX": 2489139
+      },
+      "jaccard_vs_denue_base": 0.551,
+      "jaccard_vs_clues_medicos": 1.0
+    },
+    "clues_consultorios": {
+      "unidades": 906,
+      "personas_bajo": 2738491,
+      "personas_sin_unidad": 1036045,
+      "por_region_bajo": {
+        "CDMX": 689631,
+        "EDOMEX": 2048860
+      },
+      "jaccard_vs_denue_base": 0.486,
+      "jaccard_vs_clues_medicos": 0.751
+    },
+    "clues_unidad": {
+      "unidades": 907,
+      "personas_bajo": 3724768,
+      "personas_sin_unidad": 1036010,
+      "por_region_bajo": {
+        "CDMX": 1140566,
+        "EDOMEX": 2584201
+      },
+      "jaccard_vs_denue_base": 0.444,
+      "jaccard_vs_clues_medicos": 0.644
+    },
+    "clues_sin_discordantes": {
+      "unidades": 860,
+      "personas_bajo": 3228825,
+      "personas_sin_unidad": 1133738,
+      "por_region_bajo": {
+        "CDMX": 705654,
+        "EDOMEX": 2523171
+      },
+      "jaccard_vs_denue_base": 0.557,
+      "jaccard_vs_clues_medicos": 0.943
+    },
+    "clues_ampliado": {
+      "unidades": 1038,
+      "personas_bajo": 3075432,
+      "personas_sin_unidad": 695061,
+      "por_region_bajo": {
+        "CDMX": 713030,
+        "EDOMEX": 2362402
+      },
+      "jaccard_vs_denue_base": 0.55,
+      "jaccard_vs_clues_medicos": 0.89
+    }
+  },
+  "variantes_clues_estables": false
+}

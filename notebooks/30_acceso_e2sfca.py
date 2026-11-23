@@ -33,6 +33,11 @@
 #   - demanda = población total;
 #   - acceso bajo = el 20% de la población con peor acceso.
 #
+#
+#   *F8.1 (2026-11-22):* con la oferta CLUES (médicos), las tres sensibilidades propias de
+#   DENUE (tope de 75, sin seguridad social, con hospitales) se cambian por consultorios,
+#   escenario ampliado (DIF y municipales) y la oferta DENUE anterior.
+#
 #   Para cada una se reportan las personas con acceso bajo y su coincidencia con el
 #   análisis principal, medida como la parte de las personas de acceso bajo principal que
 #   siguen siendo de acceso bajo.
@@ -82,8 +87,9 @@ REG = celdas["region"].to_numpy()
 print(celdas.groupby("region")[["psin", "pob"]].sum().round())
 
 
-def correr(nivel="primer", abierta=False, capacidad="personal", demanda="psin", d0=CUENCA, tipo="gauss"):
-    o = acceso.oferta(nivel, abierta, capacidad)
+def correr(nivel="primer", abierta=False, capacidad="personal", demanda="psin", d0=CUENCA, tipo="gauss",
+           fuente=None):
+    o = acceso.oferta(nivel, abierta, capacidad, fuente)
     dem = celdas[demanda].to_numpy()
     A, R, alcanza = e2sfca(XY, dem, o[["x", "y"]].to_numpy(), o["cap"].to_numpy(), d0, tipo)
     prom = o["cap"].sum() / dem.sum() * 1000
@@ -95,7 +101,7 @@ A, prom = base["A"], base["prom"]
 bajo = A < 0.5 * prom
 d_min = cKDTree(base["oferta"][["x", "y"]].to_numpy()).query(XY)[0]
 lejos = d_min > acceso.RADIO_15
-print(f"promedio metropolitano: {prom:.2f} personal por 1,000 sin seguro")
+print(f"oferta {acceso.fuente_oferta()}; promedio metropolitano: {prom:.2f} por 1,000 sin seguro")
 
 # %% [markdown]
 # ## Resultados principales
@@ -135,11 +141,16 @@ SENS = {
     "Cuenca 833 m": dict(d0=acceso.RADIO_15),
     "Decaimiento por escalones": dict(tipo="escalon"),
     "Capacidad = 1 por unidad": dict(capacidad="unidad"),
-    "Capacidad con tope de 75": dict(capacidad="personal_tope"),
-    "Sin seguridad social": dict(abierta=True),
-    "Con hospitales": dict(nivel="todo"),
     "Demanda = población total": dict(demanda="pob"),
 }
+if acceso.fuente_oferta() == "denue":
+    SENS |= {"Capacidad con tope de 75": dict(capacidad="personal_tope"),
+             "Sin seguridad social": dict(abierta=True),
+             "Con hospitales": dict(nivel="todo")}
+else:  # F8.1: CLUES con médicos es la oferta principal
+    SENS |= {"Capacidad = consultorios": dict(capacidad="consultorios", fuente="clues"),
+             "Ampliado (DIF y municipales)": dict(fuente="clues_ampliado"),
+             "Oferta DENUE (fuente anterior)": dict(fuente="denue")}
 sens = {}
 for nombre, kw in SENS.items():
     s = correr(**kw)

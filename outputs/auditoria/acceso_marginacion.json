@@ -4,118 +4,118 @@
     "EDOMEX": 1606.0
   },
   "psin_bajo_sin_dato_conapo": {
-    "CDMX": 132.55352737808332,
-    "EDOMEX": 1055.096827812297
+    "CDMX": 145.2566496177656,
+    "EDOMEX": 712.969165417558
   },
   "CDMX": {
     "tabla_grado": {
       "Muy bajo": {
-        "acceso_no_bajo": 311400.0,
-        "acceso_bajo": 78821.0,
-        "pct_bajo": 20.2
+        "acceso_no_bajo": 217786.0,
+        "acceso_bajo": 172435.0,
+        "pct_bajo": 44.2
       },
       "Bajo": {
-        "acceso_no_bajo": 983460.4,
-        "acceso_bajo": 219006.6,
-        "pct_bajo": 18.2
+        "acceso_no_bajo": 903166.8,
+        "acceso_bajo": 299300.2,
+        "pct_bajo": 24.9
       },
       "Medio": {
-        "acceso_no_bajo": 555134.1,
-        "acceso_bajo": 198760.9,
-        "pct_bajo": 26.4
+        "acceso_no_bajo": 569581.7,
+        "acceso_bajo": 184313.3,
+        "pct_bajo": 24.4
       },
       "Alto": {
-        "acceso_no_bajo": 60874.1,
-        "acceso_bajo": 55898.9,
-        "pct_bajo": 47.9
+        "acceso_no_bajo": 79033.6,
+        "acceso_bajo": 37739.4,
+        "pct_bajo": 32.3
       },
       "Muy alto": {
-        "acceso_no_bajo": 4330.4,
-        "acceso_bajo": 9654.6,
-        "pct_bajo": 69.0
+        "acceso_no_bajo": 5878.1,
+        "acceso_bajo": 8106.9,
+        "pct_bajo": 58.0
       }
     },
     "prioridad": {
-      "personas": 65553.44513710061,
-      "pct": 2.645742057827135,
-      "pct_del_acceso_bajo": 11.658619860487788
+      "personas": 45846.34347639652,
+      "pct": 1.8503619280330001,
+      "pct_del_acceso_bajo": 6.530444878975819
     },
     "prioridad_sin_psdss": {
-      "personas": 71874.76524019448,
-      "coincide_con_principal": 90.62591676313491
+      "personas": 48335.48340193536,
+      "coincide_con_principal": 83.40832369088912
     },
     "acceso_rel_mediano_por_grado": {
-      "Muy bajo": 1.652287805953153,
-      "Bajo": 1.3714098257490144,
-      "Medio": 0.8829099536827103,
-      "Alto": 0.5436286842738614,
-      "Muy alto": 0.09075461488213818
+      "Muy bajo": 0.6690863847339454,
+      "Bajo": 1.1086436744003514,
+      "Medio": 0.848022297523824,
+      "Alto": 0.7625045887151323,
+      "Muy alto": 0.3075953684774279
     }
   },
   "EDOMEX": {
     "tabla_grado": {
       "Muy bajo": {
-        "acceso_no_bajo": 101145.0,
-        "acceso_bajo": 206514.0,
-        "pct_bajo": 67.1
+        "acceso_no_bajo": 84225.3,
+        "acceso_bajo": 223433.7,
+        "pct_bajo": 72.6
       },
       "Bajo": {
-        "acceso_no_bajo": 389610.3,
-        "acceso_bajo": 642189.7,
-        "pct_bajo": 62.2
+        "acceso_no_bajo": 405864.3,
+        "acceso_bajo": 625935.7,
+        "pct_bajo": 60.7
       },
       "Medio": {
-        "acceso_no_bajo": 1016891.9,
-        "acceso_bajo": 1014438.1,
-        "pct_bajo": 49.9
+        "acceso_no_bajo": 1133647.9,
+        "acceso_bajo": 897682.1,
+        "pct_bajo": 44.2
       },
       "Alto": {
-        "acceso_no_bajo": 423977.1,
-        "acceso_bajo": 752463.9,
-        "pct_bajo": 64.0
+        "acceso_no_bajo": 567248.4,
+        "acceso_bajo": 609192.6,
+        "pct_bajo": 51.8
       },
       "Muy alto": {
-        "acceso_no_bajo": 74182.9,
-        "acceso_bajo": 203871.1,
-        "pct_bajo": 73.3
+        "acceso_no_bajo": 145871.7,
+        "acceso_bajo": 132182.3,
+        "pct_bajo": 47.5
       }
     },
     "prioridad": {
-      "personas": 956335.0141514579,
-      "pct": 19.812653989451963,
-      "pct_del_acceso_bajo": 33.906192749918354
+      "personas": 741374.9015733062,
+      "pct": 15.359266558245707,
+      "pct_del_acceso_bajo": 29.78438742598507
     },
     "prioridad_sin_psdss": {
-      "personas": 872949.091608863,
-      "coincide_con_principal": 86.59642108570135
+      "personas": 659074.9515607567,
+      "coincide_con_principal": 85.56104772195646
     },
     "acceso_rel_mediano_por_grado": {
-      "Muy bajo": 0.2540564062954729,
-      "Bajo": 0.3312457938002525,
-      "Medio": 0.5009935270087508,
-      "Alto": 0.3601531261472075,
-      "Muy alto": 0.20499947497698043
+      "Muy bajo": 0.08461574281671161,
+      "Bajo": 0.3621097360123555,
+      "Medio": 0.5728080870914173,
+      "Alto": 0.4830022586858906,
+      "Muy alto": 0.5403423023329214
     }
   },
   "referencia_por_zona": {
     "CDMX": {
       "psin": 2477696.0,
-      "razon_por_1000": 10.20262372785039,
-      "pct_bajo_ref_metro": 22.69344132913893,
-      "pct_bajo_ref_zona": 35.672526825906154
+      "razon_por_1000": 0.7393966007129203,
+      "pct_bajo_ref_metro": 28.3343931741936,
+      "pct_bajo_ref_zona": 32.04147731731224
     },
     "EDOMEX poniente (Toluca)": {
       "psin": 966924.5046186452,
-      "razon_por_1000": 6.859894405733417,
-      "pct_bajo_ref_metro": 48.757028981162314,
-      "pct_bajo_ref_zona": 50.650508385350165
+      "razon_por_1000": 1.3889398744007204,
+      "pct_bajo_ref_metro": 32.50784393412622,
+      "pct_bajo_ref_zona": 50.48204209910564
     },
     "EDOMEX resto": {
       "psin": 3859965.495381355,
-      "razon_por_1000": 3.9049571862845953,
-      "pct_bajo_ref_metro": 60.85775468619119,
-      "pct_bajo_ref_zona": 42.41642521814453
+      "razon_por_1000": 0.38679102229966833,
+      "pct_bajo_ref_metro": 56.34280989102171,
+      "pct_bajo_ref_zona": 37.995902822513855
     }
   },
-  "promedio_metropolitano": 6.432260500458206
+  "promedio_metropolitano": 0.6390505909575163
 }

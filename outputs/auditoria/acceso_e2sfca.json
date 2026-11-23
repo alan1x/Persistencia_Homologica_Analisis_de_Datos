@@ -1,215 +1,215 @@
 {
-  "promedio_metropolitano_por_1000": 6.432260500458206,
+  "promedio_metropolitano_por_1000": 0.6390505909575163,
   "cuenca_m": 1666.6666666666665,
-  "unidades": 1290,
+  "unidades": 898,
   "CDMX": {
     "psin": 2477696.0,
-    "unidades": 410,
-    "capacidad": 25279.0,
-    "razon_cruda_por_1000": 10.20262372785039,
-    "acceso_medio_ponderado": 10.010222524658406,
-    "acceso_medio_sobre_promedio": 1.556252661711279,
+    "unidades": 211,
+    "capacidad": 1832.0,
+    "razon_cruda_por_1000": 0.7393966007129203,
+    "acceso_medio_ponderado": 0.7294547047341435,
+    "acceso_medio_sobre_promedio": 1.1414662861686287,
     "acceso_bajo": {
-      "personas": 562274.4880744221,
-      "pct": 22.69344132913893
+      "personas": 702040.1263012679,
+      "pct": 28.3343931741936
     },
     "sin_acceso": {
-      "personas": 50154.22234617357,
-      "pct": 2.0242282485895595
+      "personas": 169276.0470120192,
+      "pct": 6.831994199934907
     },
     "bajo_y_cerca": {
-      "personas": 249968.1499611157,
-      "pct": 10.088733644527647
+      "personas": 169055.75621018704,
+      "pct": 6.823103246329938
     },
     "bajo_y_lejos_distancia": {
-      "personas": 312306.33811330644,
-      "pct": 12.604707684611286
+      "personas": 532984.3700910808,
+      "pct": 21.51128992786366
     },
     "no_bajo_pero_lejos": {
-      "personas": 375187.5856180892,
-      "pct": 15.142599641686841
+      "personas": 612376.5512603477,
+      "pct": 24.71556443003289
     },
     "percentiles_A_por_persona": {
-      "10": 1.125467692679909,
-      "25": 3.5237640265515764,
-      "50": 7.43852200837517,
-      "75": 13.748403841265564,
-      "90": 22.140649592781
+      "10": 0.05945066550208134,
+      "25": 0.2743088975081521,
+      "50": 0.5926442234741274,
+      "75": 1.000432581980155,
+      "90": 1.5924480513297796
     }
   },
   "EDOMEX": {
     "psin": 4826890.0,
-    "unidades": 880,
-    "capacidad": 21706.0,
-    "razon_cruda_por_1000": 4.4968913731201665,
-    "acceso_medio_ponderado": 4.583844191921499,
-    "acceso_medio_sobre_promedio": 0.712633481121445,
+    "unidades": 687,
+    "capacidad": 2836.0,
+    "razon_cruda_por_1000": 0.5875418747889428,
+    "acceso_medio_ponderado": 0.5926451599060744,
+    "acceso_medio_sobre_promedio": 0.9273837913491157,
     "acceso_bajo": {
-      "personas": 2820531.9930936825,
-      "pct": 58.43373255022763
+      "personas": 2489139.3298440026,
+      "pct": 51.56818012931728
     },
     "sin_acceso": {
-      "personas": 407567.3536951387,
-      "pct": 8.44368431215832
+      "personas": 868561.1982135067,
+      "pct": 17.99421984369867
     },
     "bajo_y_cerca": {
-      "personas": 1236020.8955151741,
-      "pct": 25.606982871272688
+      "personas": 436580.11217418255,
+      "pct": 9.044749562848594
     },
     "bajo_y_lejos_distancia": {
-      "personas": 1584511.097578508,
-      "pct": 32.82674967895494
+      "personas": 2052559.2176698202,
+      "pct": 42.52343056646868
     },
     "no_bajo_pero_lejos": {
-      "personas": 436637.5623656346,
-      "pct": 9.04593977417415
+      "personas": 707631.3556960161,
+      "pct": 14.660192291434363
     },
     "percentiles_A_por_persona": {
-      "10": 0.07576464038917638,
-      "25": 0.9291812001965734,
-      "50": 2.5319651310744047,
-      "75": 5.523585861084391,
-      "90": 10.573437493231777
+      "10": 0.0,
+      "25": 0.08659248751838287,
+      "50": 0.3068966095161335,
+      "75": 0.6108389269284097,
+      "90": 1.1813424467340556
     }
   },
   "Total": {
     "psin": 7304586.0,
-    "unidades": 1290,
-    "capacidad": 46985.0,
-    "razon_cruda_por_1000": 6.432260500458206,
-    "acceso_medio_ponderado": 6.424457183473505,
-    "acceso_medio_sobre_promedio": 0.9987868468660209,
+    "unidades": 898,
+    "capacidad": 4668.0,
+    "razon_cruda_por_1000": 0.6390505909575163,
+    "acceso_medio_ponderado": 0.6390505909575163,
+    "acceso_medio_sobre_promedio": 1.0,
     "acceso_bajo": {
-      "personas": 3382806.4811681043,
-      "pct": 46.31072152710782
+      "personas": 3191179.4561452707,
+      "pct": 43.68734184449701
     },
     "sin_acceso": {
-      "personas": 457721.5760413123,
-      "pct": 6.266222015064403
+      "personas": 1037837.245225526,
+      "pct": 14.208022812319903
     },
     "bajo_y_cerca": {
-      "personas": 1485989.0454762897,
-      "pct": 20.34323431165421
+      "personas": 605635.8683843695,
+      "pct": 8.291173084749355
     },
     "bajo_y_lejos_distancia": {
-      "personas": 1896817.4356918144,
-      "pct": 25.96748721545361
+      "personas": 2585543.587760901,
+      "pct": 35.39616875974766
     },
     "no_bajo_pero_lejos": {
-      "personas": 811825.1479837238,
-      "pct": 11.1139104664347
+      "personas": 1320007.9069563637,
+      "pct": 18.07094757945712
     },
     "percentiles_A_por_persona": {
-      "10": 0.23471672756145545,
-      "25": 1.3739749095578022,
-      "50": 3.618349041066615,
-      "75": 8.374360868474605,
-      "90": 15.825172098987931
+      "10": 0.0,
+      "25": 0.13991077160465182,
+      "50": 0.3827721004239683,
+      "75": 0.7635080978652,
+      "90": 1.3871107507033544
     }
   },
   "razon_unidades_por_1000": {
     "CDMX": {
-      "count": 410.0,
-      "mean": 5.34,
-      "std": 7.75,
-      "min": 0.1,
-      "10%": 0.21,
-      "50%": 2.2,
-      "90%": 13.88,
-      "max": 61.48
+      "count": 211.0,
+      "mean": 0.78,
+      "std": 0.89,
+      "min": 0.04,
+      "10%": 0.09,
+      "50%": 0.46,
+      "90%": 1.97,
+      "max": 5.59
     },
     "EDOMEX": {
-      "count": 880.0,
-      "mean": 8.8,
-      "std": 36.04,
-      "min": 0.0,
-      "10%": 0.36,
-      "50%": 2.84,
-      "90%": 15.33,
-      "max": 770.08
+      "count": 687.0,
+      "mean": 752.55,
+      "std": 16734.59,
+      "min": 0.04,
+      "10%": 0.28,
+      "50%": 1.23,
+      "90%": 22.06,
+      "max": 437976.11
     }
   },
   "sensibilidad": {
     "Cuenca 833 m": {
       "CDMX": {
-        "pct_bajo": 53.071521158519,
-        "retiene_bajo_principal": 92.95318997665004
+        "pct_bajo": 59.92268777347213,
+        "retiene_bajo_principal": 91.60634105530369
       },
       "EDOMEX": {
-        "pct_bajo": 70.78553465648142,
-        "retiene_bajo_principal": 89.87705931227636
+        "pct_bajo": 68.1225273162002,
+        "retiene_bajo_principal": 92.2907651604527
       }
     },
     "Decaimiento por escalones": {
       "CDMX": {
-        "pct_bajo": 22.19695760185715,
-        "retiene_bajo_principal": 87.85178145503517
+        "pct_bajo": 27.39765202234193,
+        "retiene_bajo_principal": 86.90839158306524
       },
       "EDOMEX": {
-        "pct_bajo": 57.69256650000077,
-        "retiene_bajo_principal": 94.15665789902616
+        "pct_bajo": 51.80670060869481,
+        "retiene_bajo_principal": 93.45650407241031
       }
     },
     "Capacidad = 1 por unidad": {
       "CDMX": {
-        "pct_bajo": 27.279269544536927,
-        "retiene_bajo_principal": 63.702152782158336
+        "pct_bajo": 46.03334088151696,
+        "retiene_bajo_principal": 76.44642669026668
       },
       "EDOMEX": {
-        "pct_bajo": 38.611602455048796,
-        "retiene_bajo_principal": 56.752703993576546
-      }
-    },
-    "Capacidad con tope de 75": {
-      "CDMX": {
-        "pct_bajo": 19.466632594895053,
-        "retiene_bajo_principal": 78.16847971817333
-      },
-      "EDOMEX": {
-        "pct_bajo": 47.95479211167119,
-        "retiene_bajo_principal": 80.81248880269699
-      }
-    },
-    "Sin seguridad social": {
-      "CDMX": {
-        "pct_bajo": 21.826380612726688,
-        "retiene_bajo_principal": 78.28388331929062
-      },
-      "EDOMEX": {
-        "pct_bajo": 54.788854068392666,
-        "retiene_bajo_principal": 84.97993191263153
-      }
-    },
-    "Con hospitales": {
-      "CDMX": {
-        "pct_bajo": 28.828244428112033,
-        "retiene_bajo_principal": 64.45852134676299
-      },
-      "EDOMEX": {
-        "pct_bajo": 62.98753041810211,
-        "retiene_bajo_principal": 80.75754648390391
+        "pct_bajo": 53.53760606546375,
+        "retiene_bajo_principal": 87.30103534893298
       }
     },
     "Demanda = población total": {
       "CDMX": {
-        "pct_bajo": 24.261814286478558,
-        "retiene_bajo_principal": 97.30838278093715
+        "pct_bajo": 29.883120983002332,
+        "retiene_bajo_principal": 97.0951682848341
       },
       "EDOMEX": {
-        "pct_bajo": 54.29961409829721,
-        "retiene_bajo_principal": 90.85779060868194
+        "pct_bajo": 47.13701356635081,
+        "retiene_bajo_principal": 89.75137760661242
+      }
+    },
+    "Capacidad = consultorios": {
+      "CDMX": {
+        "pct_bajo": 27.833578883620184,
+        "retiene_bajo_principal": 88.32084187941935
+      },
+      "EDOMEX": {
+        "pct_bajo": 42.446793130061714,
+        "retiene_bajo_principal": 77.30115450258975
+      }
+    },
+    "Ampliado (DIF y municipales)": {
+      "CDMX": {
+        "pct_bajo": 28.777963381710286,
+        "retiene_bajo_principal": 96.31206085270611
+      },
+      "EDOMEX": {
+        "pct_bajo": 48.94251995774263,
+        "retiene_bajo_principal": 91.38624689436455
+      }
+    },
+    "Oferta DENUE (fuente anterior)": {
+      "CDMX": {
+        "pct_bajo": 22.69344132913893,
+        "retiene_bajo_principal": 53.76014273411583
+      },
+      "EDOMEX": {
+        "pct_bajo": 58.43373255022763,
+        "retiene_bajo_principal": 78.6628550521762
       }
     },
     "Acceso bajo = 20% peor": {
       "CDMX": {
-        "pct_bajo": 9.210284997561846,
-        "retiene_bajo_principal": 40.585669066135054
+        "pct_bajo": 11.341657058132666,
+        "retiene_bajo_principal": 40.02788056340808
       },
       "EDOMEX": {
-        "pct_bajo": 25.539970115513366,
-        "retiene_bajo_principal": 43.707579510790424
+        "pct_bajo": 24.44459127284707,
+        "retiene_bajo_principal": 47.40247030542378
       },
-      "corte_sobre_promedio": 0.14996618934925784
+      "corte_sobre_promedio": 0.12511748180923968
     }
   }
 }

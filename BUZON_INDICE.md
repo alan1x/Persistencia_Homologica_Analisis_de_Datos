@@ -16,3 +16,6 @@
 
 ## 2026-11-22
 - HITO: validación de F4 completa (`notebooks/36` a `38`). Ni el nulo espacial (campos Matérn con ceros fijos) ni el nulo de la oferta (unidades reubicadas por municipio) dan evidencia de que las islas o la ubicación actual sean peores que el azar. El acceso bajo se explica sobre todo por falta de oferta: solo 4% es atribuible a la ubicación. Los resultados resisten un cambio en la forma del decaimiento, pero no un horizonte de 15 min; se reportan como acceso a pie en 30 min. Sigue pendiente F7 (escritura).
+
+## 2026-11-23
+- HITO: cambio de fuente de la oferta, de DENUE a CLUES/DGIS con Recursos en Salud 2025 (médicos como capacidad; DIF y municipales como escenario ampliado), y F3 a F5 recalculados (`notebooks/29`, `lib/acceso.py`). Cambia el veredicto del nulo de la oferta, que pasa a "mejor que el azar", y se duplica la gente sin unidad cercana (1.13 M). Sigue pendiente F7 (escritura).

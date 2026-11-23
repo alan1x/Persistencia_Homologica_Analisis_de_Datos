@@ -1,8 +1,13 @@
 """Oferta y demanda para el análisis de acceso (fases F1 a F3 de `PLAN_ACCESO.md`).
 
-- `oferta`: unidades públicas de DENUE con una capacidad aproximada.
+- `oferta`: unidades públicas con su capacidad. Desde F8.1 (2026-11-22) la fuente principal es
+  CLUES con médicos (`notebooks/29_oferta_clues.py`); DENUE queda como comparación.
 - `rejilla`: personas sin seguro repartidas en una rejilla de 100 m (igual que los notebooks 26 y 28).
+
+La variable de entorno `OFERTA` (denue, clues o clues_ampliado) cambia la fuente por defecto.
 """
+import os
+
 import numpy as np
 import pandas as pd
 import shapely
@@ -19,9 +24,40 @@ SEG_SOCIAL = (r"IMSS(?!.*BIENESTAR)|SEGURO SOCIAL(?!.*BIENESTAR)|ISSSTE|SEGURIDA
               r"UNIDAD DE MEDICINA FAMILIAR|\bU\.?M\.?F\b")
 
 
-def oferta(nivel="primer", abierta=False, capacidad="personal"):
-    """Unidades públicas de ambos estados con columnas x, y, region, cap.
+FUENTES = ("denue", "clues", "clues_ampliado")
 
+
+def fuente_oferta():
+    """Fuente vigente: la de la variable de entorno OFERTA, o CLUES."""
+    f = os.environ.get("OFERTA", "clues")
+    if f not in FUENTES:
+        raise ValueError(f"OFERTA={f!r}; usa una de {FUENTES}")
+    return f
+
+
+def sufijo_oferta():
+    """Sufijo para archivos de puntos de control que dependen de la oferta ("" con DENUE, para
+    conservar los nombres de antes de F8.1)."""
+    f = fuente_oferta()
+    return "" if f == "denue" else f"_{f}"
+
+
+def oferta(nivel="primer", abierta=False, capacidad="personal", fuente=None):
+    """Unidades públicas de ambos estados con columnas id, nom_estab, x, y, region, cap.
+
+    fuente:
+        None usa `fuente_oferta()`.
+        "clues": IMSS-Bienestar, SSA y UMR del IMSS de primer nivel (notebook 29). Ya excluye la
+        seguridad social, así que `abierta` no cambia nada. Se quitan las unidades con cap 0 y
+        las que no tienen celda de demanda a ≤ 1,667 m (`en_dominio`, rurales fuera de F3).
+        "clues_ampliado": lo anterior más DIF y consultorios municipales (CLUES y DENUE).
+        "denue": consultorios del sector público de DENUE (lo usado hasta F7).
+    capacidad, con CLUES:
+        "personal" o "medicos": médicos generales, familiares y pasantes (principal).
+        "consultorios": consultorios de medicina general y familiar (solo "clues").
+        "unidad": cada unidad vale 1.
+
+    Con DENUE:
     nivel:
         "primer": consultorios y clínicas (6211), es decir, la consulta de primer contacto.
         "todo": además hospitales (622).
@@ -33,6 +69,9 @@ def oferta(nivel="primer", abierta=False, capacidad="personal"):
         "personal_tope": como "personal", con tope de 75, para que un hospital grande no
         cuente como cien consultorios.
     """
+    fuente = fuente or fuente_oferta()
+    if fuente != "denue":
+        return _oferta_clues(fuente, nivel, capacidad)
     s = pd.concat([pd.read_parquet(config.INTERMEDIOS_DIR / f"salud_{r}.parquet")
                    for r in ["CDMX", "EDOMEX"]], ignore_index=True)
     cod = s["codigo_act"].astype(str)
@@ -49,7 +88,45 @@ def oferta(nivel="primer", abierta=False, capacidad="personal"):
         o["cap"] = o["per_ocu_num"].astype(float).clip(upper=75)
     else:
         raise ValueError(capacidad)
+    o["fuente"] = "denue"
     return o.reset_index(drop=True)
+
+
+def _oferta_clues(fuente, nivel, capacidad):
+    if nivel != "primer":
+        raise NotImplementedError("CLUES solo tiene armado el primer nivel")
+    col = {"personal": "medicos", "medicos": "medicos", "consultorios": "consultorios", "unidad": None}
+    if capacidad not in col:
+        raise ValueError(capacidad)
+    if fuente == "clues":
+        c = pd.read_parquet(config.INTERMEDIOS_DIR / "oferta_clues.parquet")
+        c = c[c["principal"] & c["coord_ok"] & c["en_dominio"]]
+        o = pd.DataFrame({"id": c["CLUES"], "nom_estab": c["NOMBRE DE LA UNIDAD"], "region": c["region"],
+                          "x": c["x"], "y": c["y"], "medicos": c["medicos"], "consultorios": c["consultorios"]})
+        o["fuente"] = "clues"
+    else:
+        if capacidad == "consultorios":
+            raise ValueError("el escenario ampliado no tiene consultorios para la capa DENUE")
+        a = pd.read_parquet(config.INTERMEDIOS_DIR / "oferta_clues_ampliada.parquet")
+        o = a[a["en_dominio"]].rename(columns={"NOMBRE DE LA UNIDAD": "nom_estab"})
+    o["cap"] = 1.0 if col[capacidad] is None else o[col[capacidad]].astype(float)
+    return o[o["cap"] > 0].reset_index(drop=True)
+
+
+def rango_capacidad(o):
+    """(lo, hi) enteros para las réplicas que sortean la capacidad de cada unidad de CLUES.
+
+    F8.1: entre consultorios (un médico por consultorio, un turno) y médicos reportados
+    (plantilla completa), en el orden que toque, con mínimo 1. Sin consultorios (capa DENUE del
+    ampliado, o capacidad = unidad): el valor fijo. DENUE usa los rangos de `per_ocu` de cada
+    notebook (`f4.RANGOS`).
+    """
+    cap = o["cap"].to_numpy(float)
+    otra = o["consultorios"].to_numpy(float) if "consultorios" in o else cap
+    otra = np.where(np.isnan(otra), cap, otra)
+    lo = np.maximum(1, np.minimum(cap, otra)).astype(int)
+    hi = np.maximum(lo, np.maximum(cap, otra)).astype(int)
+    return lo, hi
 
 
 def rejilla(ageb, columna="PSINDER", paso=PASO):
