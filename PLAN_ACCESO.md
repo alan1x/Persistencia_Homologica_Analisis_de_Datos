@@ -193,7 +193,48 @@ Se comparan, con los mismos candidatos y el mismo K:
     (F5, notebook 32 con `DISTANCIA=calle`). La sección F5 de `red_real.json` es solo una
     comparación con los candidatos de la recta.
 
+### F8. Mejoras (estrategia acordada el 2026-11-22)
+
+F4 y F5 quedaron validadas (notebooks 36 a 39). Antes de escribir se atacan las limitaciones
+principales. **Orden:** primero lo que cambia los datos de entrada, al final lo que se
+calcula encima. Cada notebook fija sus criterios en la cabecera y pasa por una crítica de
+Codex antes de correr.
+
+1. **CLUES (oferta oficial).** Va primero porque cambia la oferta, de la que depende todo.
+   - Ver si el catálogo de establecimientos de la DGIS (datos abiertos) trae coordenadas y
+     recursos (consultorios, médicos) para las unidades de primer nivel de la zona.
+   - Cotejar con DENUE: coincidencias a ≤ 200 m y faltantes de cada lado.
+   - **Decisión (la de F1):** si ≥ 90% de las unidades tienen coordenadas utilizables y algún
+     dato de capacidad, se cambia a CLUES y se recalculan F3 a F5. Si no, se sigue con DENUE
+     y se reporta el cotejo.
+2. **Cruces peatonales de OSM.** Cambia las distancias.
+   - Revisar las zonas sospechosas más grandes (`outputs/entregables/zonas_sospechosas_osm.csv`:
+     Álvaro Obregón, Ecatepec, Gran Canal).
+   - Agregar los cruces que faltan con una regla explícita (por ejemplo, unir aceras a ≤ 30 m
+     separadas por una vía sin cruce mapeado) y medir cuánto cambian los ceros y las islas.
+3. **¿Cuántas unidades convienen?** Da la cifra central del paper.
+   - Curvas de K = 1 a 500 para tres soluciones: **llegar a los peores** (brecha),
+     **cubrir más gente** (MCLP) y **mixta** (α·p-mediana o cobertura + (1 − α)·brecha, con α
+     elegido en la frontera).
+   - Cuarta opción: **ampliar las unidades existentes saturadas**. El 22% de la gente sin
+     seguro de EDOMEX tiene acceso bajo con una unidad a ≤ 1,125 m, así que puede salir más
+     barato que abrir unidades nuevas.
+   - "Cuántas conviene", fijado antes de correr: el K donde la ganancia marginal cae bajo una
+     fracción de la inicial (rendimientos decrecientes); el K que reduce la brecha 25% y 50%;
+     el K que saca de acceso bajo a la mitad de la gente con prioridad.
+   - Se corre con los datos actuales y se repite cuando entren CLUES y los cruces.
+4. **Transporte público.** Al final, por ser lo más caro.
+   - Antes de comprometerse, verificar que r5py funcione (necesita Java 21) y que el GTFS de
+     CDMX esté vigente.
+   - EDOMEX casi no tiene GTFS (las combis no están mapeadas): ahí sigue siendo solo caminata,
+     y eso se reporta como limitación.
+
+Opcionales: estratos de macrozonas en el nulo de la oferta y pendiente del terreno.
+
 ### F7. Escritura
+
+Va al final, después de F8. Será un paper nuevo, `reporte/paper_acceso.typ`, firmado por
+Mario; el paper del equipo no se toca.
 
 Reporte, paper, presentación y figuras con el enfoque nuevo.
 
