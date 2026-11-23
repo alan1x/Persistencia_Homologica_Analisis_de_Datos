@@ -1,0 +1,308 @@
+{
+  "criterios": {
+    "principal": "una cola p <= 0.05 y diferencia >= 100000 personas frente a la mediana de S1",
+    "atribuible": "f < 0.5 en el observado y en < 20% de las réplicas de S1"
+  },
+  "redondeo": {
+    "desplazamiento_mediano_m": 203.44942258318298,
+    "desplazamiento_p90_m": 301.0661268494039,
+    "real": {
+      "psin_bajo": 3385320.85014713,
+      "psin_cero": 560145.0779807998,
+      "brecha": 1030906.0239770737,
+      "n_islas": 933,
+      "n_b0": 337,
+      "n_bpos": 477,
+      "n_esenciales": 119,
+      "frac_bajo_en_islas": 0.8288507787522333
+    },
+    "redondeado": {
+      "psin_bajo": 3418701.9689260605,
+      "psin_cero": 595223.0251655193,
+      "brecha": 1057416.2492650393,
+      "n_islas": 947,
+      "n_b0": 356,
+      "n_bpos": 476,
+      "n_esenciales": 115,
+      "frac_bajo_en_islas": 0.6263040648864294,
+      "nodos_ocupados": 1181
+    },
+    "abierta_redondeado": {
+      "psin_bajo": 3245212.983554443,
+      "psin_cero": 722599.261714491,
+      "brecha": 1018280.1982983038,
+      "n_islas": 992,
+      "n_b0": 397,
+      "n_bpos": 488,
+      "n_esenciales": 107,
+      "frac_bajo_en_islas": 0.806117084391295,
+      "nodos_ocupados": 1068
+    },
+    "jaccard_bajo_real_vs_redondeado": 0.8936925999617802,
+    "cambio_psin_bajo": 33381.11877893051,
+    "distancia_obs_a_p95_S1": -161550.71934647718,
+    "veredicto_depende_del_redondeo": false
+  },
+  "n_sim": {
+    "S1": 999,
+    "S2": 200,
+    "S1_abierta": 200
+  },
+  "S1": {
+    "psin_bajo": {
+      "observado": 3418701.9689260605,
+      "mediana_nulo": 3470838.5468622106,
+      "p5": 3366726.4891029187,
+      "p95": 3580252.6882725377,
+      "percentil_observado": 20.22022022022022,
+      "p_superior": 0.798,
+      "p_inferior": 0.203,
+      "p_dos_colas": 0.406
+    },
+    "psin_cero": {
+      "observado": 595223.0251655193,
+      "mediana_nulo": 797578.3186536557,
+      "p5": 735445.4293815665,
+      "p95": 868229.3948453353,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.001,
+      "p_dos_colas": 0.002
+    },
+    "brecha": {
+      "observado": 1057416.2492650393,
+      "mediana_nulo": 1160576.73791726,
+      "p5": 1116150.528309782,
+      "p95": 1208131.7069974674,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.001,
+      "p_dos_colas": 0.002
+    },
+    "n_b0": {
+      "observado": 356,
+      "mediana_nulo": 280.0,
+      "p5": 249.0,
+      "p95": 308.0,
+      "percentil_observado": 100.0,
+      "p_superior": 0.001,
+      "p_inferior": 1.0,
+      "p_dos_colas": 0.002
+    },
+    "n_bpos": {
+      "observado": 476,
+      "mediana_nulo": 386.0,
+      "p5": 351.0,
+      "p95": 421.0999999999999,
+      "percentil_observado": 100.0,
+      "p_superior": 0.001,
+      "p_inferior": 1.0,
+      "p_dos_colas": 0.002
+    },
+    "n_islas": {
+      "observado": 947,
+      "mediana_nulo": 818.0,
+      "p5": 773.0,
+      "p95": 866.0,
+      "percentil_observado": 100.0,
+      "p_superior": 0.001,
+      "p_inferior": 1.0,
+      "p_dos_colas": 0.002
+    },
+    "frac_bajo_en_islas": {
+      "observado": 0.6263040648864294,
+      "mediana_nulo": 0.8781468545753269,
+      "p5": 0.7768351029010315,
+      "p95": 0.9369801906236909,
+      "percentil_observado": 0.40040040040040037,
+      "p_superior": 0.996,
+      "p_inferior": 0.005,
+      "p_dos_colas": 0.01
+    },
+    "nodos_ocupados": {
+      "observado": 1181,
+      "mediana_nulo": 1191.0,
+      "p5": 1175.0,
+      "p95": 1204.0,
+      "percentil_observado": 13.113113113113112,
+      "p_superior": 0.869,
+      "p_inferior": 0.157,
+      "p_dos_colas": 0.314
+    },
+    "exceso_psin_bajo": -52136.57793615013,
+    "veredicto": "compatible"
+  },
+  "S2": {
+    "psin_bajo": {
+      "observado": 3418701.9689260605,
+      "mediana_nulo": 3807701.193996356,
+      "p5": 3699273.99278233,
+      "p95": 3909293.1305203824,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "psin_cero": {
+      "observado": 595223.0251655193,
+      "mediana_nulo": 855435.210434445,
+      "p5": 769183.013518537,
+      "p95": 933503.4065036441,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "brecha": {
+      "observado": 1057416.2492650393,
+      "mediana_nulo": 1305435.4294870961,
+      "p5": 1254846.338641309,
+      "p95": 1355147.1048710234,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "n_b0": {
+      "observado": 356,
+      "mediana_nulo": 351.5,
+      "p5": 322.95,
+      "p95": 382.04999999999995,
+      "percentil_observado": 55.00000000000001,
+      "p_superior": 0.4527363184079602,
+      "p_inferior": 0.572139303482587,
+      "p_dos_colas": 0.9054726368159204
+    },
+    "n_bpos": {
+      "observado": 476,
+      "mediana_nulo": 436.0,
+      "p5": 396.95,
+      "p95": 479.04999999999995,
+      "percentil_observado": 93.0,
+      "p_superior": 0.07462686567164178,
+      "p_inferior": 0.945273631840796,
+      "p_dos_colas": 0.14925373134328357
+    },
+    "n_islas": {
+      "observado": 947,
+      "mediana_nulo": 927.0,
+      "p5": 874.0,
+      "p95": 986.0,
+      "percentil_observado": 71.5,
+      "p_superior": 0.2885572139303483,
+      "p_inferior": 0.736318407960199,
+      "p_dos_colas": 0.5771144278606966
+    },
+    "frac_bajo_en_islas": {
+      "observado": 0.6263040648864294,
+      "mediana_nulo": 0.9071344880033141,
+      "p5": 0.8366686355670636,
+      "p95": 0.9400311672892522,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "nodos_ocupados": {
+      "observado": 1181,
+      "mediana_nulo": 1219.0,
+      "p5": 1204.95,
+      "p95": 1231.0,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "exceso_psin_bajo": -388999.2250702954,
+    "veredicto": "mejor"
+  },
+  "S1_abierta": {
+    "psin_bajo": {
+      "observado": 3245212.983554443,
+      "mediana_nulo": 3490901.405175568,
+      "p5": 3391143.523934457,
+      "p95": 3582824.928535821,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "psin_cero": {
+      "observado": 722599.261714491,
+      "mediana_nulo": 894555.0034326278,
+      "p5": 828498.5052576645,
+      "p95": 967584.85358977,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "brecha": {
+      "observado": 1018280.1982983038,
+      "mediana_nulo": 1180834.080348046,
+      "p5": 1134448.9406474526,
+      "p95": 1223530.4012753111,
+      "percentil_observado": 0.0,
+      "p_superior": 1.0,
+      "p_inferior": 0.004975124378109453,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "n_b0": {
+      "observado": 397,
+      "mediana_nulo": 294.0,
+      "p5": 265.95,
+      "p95": 327.04999999999995,
+      "percentil_observado": 100.0,
+      "p_superior": 0.004975124378109453,
+      "p_inferior": 1.0,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "n_bpos": {
+      "observado": 488,
+      "mediana_nulo": 376.5,
+      "p5": 340.9,
+      "p95": 411.04999999999995,
+      "percentil_observado": 100.0,
+      "p_superior": 0.004975124378109453,
+      "p_inferior": 1.0,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "n_islas": {
+      "observado": 992,
+      "mediana_nulo": 830.0,
+      "p5": 776.95,
+      "p95": 875.0,
+      "percentil_observado": 100.0,
+      "p_superior": 0.004975124378109453,
+      "p_inferior": 1.0,
+      "p_dos_colas": 0.009950248756218905
+    },
+    "frac_bajo_en_islas": {
+      "observado": 0.806117084391295,
+      "mediana_nulo": 0.8810969897553523,
+      "p5": 0.7780703028739405,
+      "p95": 0.9400599303573343,
+      "percentil_observado": 10.0,
+      "p_superior": 0.900497512437811,
+      "p_inferior": 0.1044776119402985,
+      "p_dos_colas": 0.208955223880597
+    },
+    "nodos_ocupados": {
+      "observado": 1068,
+      "mediana_nulo": 1070.0,
+      "p5": 1056.95,
+      "p95": 1082.0,
+      "percentil_observado": 36.0,
+      "p_superior": 0.6417910447761194,
+      "p_inferior": 0.4228855721393035,
+      "p_dos_colas": 0.845771144278607
+    },
+    "exceso_psin_bajo": -245688.4216211252,
+    "veredicto": "mejor"
+  },
+  "atribuible_ubicacion": {
+    "psin": 145926.4199934435,
+    "pct_del_bajo": 4.268474447899427,
+    "psin_bajo_en_80pct_o_mas_de_replicas": 912536.8401729071
+  }
+}

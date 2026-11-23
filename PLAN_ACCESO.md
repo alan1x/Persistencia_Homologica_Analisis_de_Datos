@@ -108,8 +108,22 @@ E2SFCA es el método de cuenca flotante en dos pasos, en su versión mejorada.
       bajo entre unidades, que un campo gaussiano no produce. Las que nacen en 0 son incluso
       menos que en el nulo (409 contra 472).
     - **Respuesta a la pregunta clave:** las islas sirven para describir y priorizar, pero su
-      persistencia no es una señal más allá de "aquí no hay unidades cerca". Siguiente nulo
-      sugerido: reubicar las unidades entre los candidatos de F5 y recalcular E2SFCA.
+      persistencia no es una señal más allá de "aquí no hay unidades cerca".
+  - **Nulo de la oferta (2026-11-22, `notebooks/37_nulo_oferta.py`):** misma oferta y mismo
+    número de unidades por municipio, reubicadas en nodos de 500 m. Contra la regla que sigue
+    la demanda (S1, 999 réplicas):
+    - **La ubicación actual es compatible** en gente con acceso bajo: 3.42 M contra 3.47 M de
+      mediana (percentil 20). Contra la regla ciega (S2) es mucho mejor (3.81 M). Con la oferta
+      abierta (sin seguridad social) es mejor que S1: 3.25 M contra 3.49 M.
+    - **La actual cubre más territorio:** menos gente sin ninguna unidad alcanzable (595 mil
+      contra 798 mil) y menor brecha (p = 0.002). A cambio deja más bolsas: 476 islas que nacen
+      con acceso > 0 contra 386.
+    - **Solo 146 mil personas (4%) tienen acceso bajo atribuible a la ubicación;** 913 mil lo
+      tienen en ≥ 80% de las réplicas. El problema es sobre todo la **cantidad** de oferta por
+      municipio, no dónde está: esto respalda que F5 agregue capacidad en lugar de reubicar.
+    - La fracción de gente en cuencas de islas es frágil: mover 21 unidades al redondear la
+      bajó de 83% a 63%, porque una cuenca de 760 mil personas con persistencia 0.30 dejó de
+      contar como isla. Pendiente: estratos de macrozonas en lugar de municipios.
 - **Pregunta clave:** ¿las islas persistentes contienen a la mayoría de las personas con
   peor acceso, y lo hacen mejor que un umbral simple sobre el mapa?
 

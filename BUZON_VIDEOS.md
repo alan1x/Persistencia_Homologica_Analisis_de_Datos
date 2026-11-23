@@ -175,3 +175,14 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   Moraleja: un resultado que suena fuerte necesita su nulo antes de contarse.
 - **Evidencia:** `outputs/auditoria/nulo_espacial.json`, `outputs/figuras/nulo_espacial.png`.
 
+## 2026-11-22 — Nulo de la oferta (F4/F5)
+
+- **Qué se agregó:** `notebooks/37_nulo_oferta.py`. Reubica las 1,290 unidades al azar dentro
+  de su municipio (sigue la demanda, uniforme, y con la oferta abierta) y recalcula E2SFCA por
+  calle. Diseño criticado con Codex (una cola, diferencia mínima, efecto del redondeo).
+- **Qué se aprendió:** la ubicación actual no es peor que una regla que sigue la demanda, y
+  cubre más territorio (menos gente sin ninguna unidad). Solo 4% del acceso bajo se explica por
+  la ubicación; el resto es falta de oferta. Un estadístico topológico (gente en cuencas de
+  islas) resultó frágil: mover 21 unidades lo cambia 20 puntos.
+- **Evidencia:** `outputs/auditoria/nulo_oferta.json`, `outputs/figuras/nulo_oferta.png`.
+
