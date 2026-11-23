@@ -1,0 +1,402 @@
+{
+  "capacidad": {
+    "cap_mediana": 3.0,
+    "cap_p75": 7.0,
+    "unidades_actuales": 898
+  },
+  "linea_base": {
+    "brecha": 1310203.911908174,
+    "psin_bajo": 3208531.298698244,
+    "psin_prioridad": 806460.9332833965
+  },
+  "alfa_mixta": 0.5,
+  "frontera_k20": [
+    {
+      "alfa": 0.0,
+      "pm_norm": 0.7009,
+      "brecha_norm": 1.0,
+      "dist_utopia": 0.2991
+    },
+    {
+      "alfa": 0.1,
+      "pm_norm": 0.7146,
+      "brecha_norm": 1.0015,
+      "dist_utopia": 0.2854
+    },
+    {
+      "alfa": 0.2,
+      "pm_norm": 0.7651,
+      "brecha_norm": 0.9898,
+      "dist_utopia": 0.2352
+    },
+    {
+      "alfa": 0.3,
+      "pm_norm": 0.8582,
+      "brecha_norm": 0.9641,
+      "dist_utopia": 0.1462
+    },
+    {
+      "alfa": 0.4,
+      "pm_norm": 0.9085,
+      "brecha_norm": 0.9354,
+      "dist_utopia": 0.112
+    },
+    {
+      "alfa": 0.5,
+      "pm_norm": 0.9221,
+      "brecha_norm": 0.9235,
+      "dist_utopia": 0.1092
+    },
+    {
+      "alfa": 0.6,
+      "pm_norm": 0.9701,
+      "brecha_norm": 0.8648,
+      "dist_utopia": 0.1384
+    },
+    {
+      "alfa": 0.7,
+      "pm_norm": 0.9847,
+      "brecha_norm": 0.8384,
+      "dist_utopia": 0.1624
+    },
+    {
+      "alfa": 0.8,
+      "pm_norm": 0.9918,
+      "brecha_norm": 0.8108,
+      "dist_utopia": 0.1894
+    },
+    {
+      "alfa": 0.9,
+      "pm_norm": 0.9976,
+      "brecha_norm": 0.7728,
+      "dist_utopia": 0.2272
+    },
+    {
+      "alfa": 1.0,
+      "pm_norm": 1.0,
+      "brecha_norm": 0.7365,
+      "dist_utopia": 0.2635
+    }
+  ],
+  "cuantas": {
+    "brecha": {
+      "pasos_efectivos": 500,
+      "medicos_por_paso": 3.0,
+      "rendimientos_10pct": {
+        "k": 359,
+        "alcanzada": true,
+        "medicos": 1077.0,
+        "oferta_agregada_pct": 23.0719794344473
+      },
+      "rendimientos_25pct": {
+        "k": 195,
+        "alcanzada": true,
+        "medicos": 585.0,
+        "oferta_agregada_pct": 12.532133676092544
+      },
+      "brecha_25": {
+        "k": 49,
+        "alcanzada": true,
+        "medicos": 147.0,
+        "oferta_agregada_pct": 3.1491002570694087
+      },
+      "brecha_50": {
+        "k": 130,
+        "alcanzada": true,
+        "medicos": 390.0,
+        "oferta_agregada_pct": 8.354755784061698
+      },
+      "prioridad_mitad": {
+        "k": 186,
+        "alcanzada": true,
+        "medicos": 558.0,
+        "oferta_agregada_pct": 11.953727506426736
+      },
+      "al_final": {
+        "K": 500,
+        "reduccion_brecha": 0.9142226319556992,
+        "sale_bajo": 2630207.353956704,
+        "sale_prioridad": 675955.3953644898,
+        "sale_prioridad_pct": 83.81750032359643,
+        "cobertura_nueva_personas": 1562360.7136478815,
+        "oferta_agregada_pct": 32.13367609254499
+      },
+      "en_K20": {
+        "K": 20,
+        "reduccion_brecha": 0.12641010312322287
+      }
+    },
+    "mclp": {
+      "pasos_efectivos": 500,
+      "medicos_por_paso": 3.0,
+      "rendimientos_10pct": {
+        "k": 413,
+        "alcanzada": true,
+        "medicos": 1239.0,
+        "oferta_agregada_pct": 26.542416452442158
+      },
+      "rendimientos_25pct": {
+        "k": 43,
+        "alcanzada": true,
+        "medicos": 129.0,
+        "oferta_agregada_pct": 2.763496143958869
+      },
+      "brecha_25": {
+        "k": 87,
+        "alcanzada": true,
+        "medicos": 261.0,
+        "oferta_agregada_pct": 5.591259640102828
+      },
+      "brecha_50": {
+        "k": 226,
+        "alcanzada": true,
+        "medicos": 678.0,
+        "oferta_agregada_pct": 14.524421593830333
+      },
+      "prioridad_mitad": {
+        "k": 288,
+        "alcanzada": true,
+        "medicos": 864.0,
+        "oferta_agregada_pct": 18.50899742930591
+      },
+      "al_final": {
+        "K": 500,
+        "reduccion_brecha": 0.7723962564952054,
+        "sale_bajo": 2105733.55402842,
+        "sale_prioridad": 567648.9620159518,
+        "sale_prioridad_pct": 70.38765780071277,
+        "cobertura_nueva_personas": 2567354.1295476393,
+        "oferta_agregada_pct": 32.13367609254499
+      },
+      "en_K20": {
+        "K": 20,
+        "reduccion_brecha": 0.09398574946031713
+      }
+    },
+    "mixta": {
+      "pasos_efectivos": 500,
+      "medicos_por_paso": 3.0,
+      "rendimientos_10pct": {
+        "k": 344,
+        "alcanzada": true,
+        "medicos": 1032.0,
+        "oferta_agregada_pct": 22.10796915167095
+      },
+      "rendimientos_25pct": {
+        "k": 210,
+        "alcanzada": true,
+        "medicos": 630.0,
+        "oferta_agregada_pct": 13.496143958868895
+      },
+      "brecha_25": {
+        "k": 55,
+        "alcanzada": true,
+        "medicos": 165.0,
+        "oferta_agregada_pct": 3.534704370179949
+      },
+      "brecha_50": {
+        "k": 141,
+        "alcanzada": true,
+        "medicos": 423.0,
+        "oferta_agregada_pct": 9.061696658097686
+      },
+      "prioridad_mitad": {
+        "k": 213,
+        "alcanzada": true,
+        "medicos": 639.0,
+        "oferta_agregada_pct": 13.688946015424165
+      },
+      "al_final": {
+        "K": 500,
+        "reduccion_brecha": 0.877215249748863,
+        "sale_bajo": 2466105.0884249816,
+        "sale_prioridad": 669106.6718982942,
+        "sale_prioridad_pct": 82.9682684285917,
+        "cobertura_nueva_personas": 2285479.414524654,
+        "oferta_agregada_pct": 32.13367609254499
+      },
+      "en_K20": {
+        "K": 20,
+        "reduccion_brecha": 0.11673774455629493
+      }
+    },
+    "ampliar": {
+      "pasos_efectivos": 500,
+      "medicos_por_paso": 3.0,
+      "rendimientos_10pct": {
+        "k": 127,
+        "alcanzada": true,
+        "medicos": 381.0,
+        "oferta_agregada_pct": 8.161953727506427
+      },
+      "rendimientos_25pct": {
+        "k": 44,
+        "alcanzada": true,
+        "medicos": 132.0,
+        "oferta_agregada_pct": 2.827763496143959
+      },
+      "brecha_25": {
+        "k": 232,
+        "alcanzada": true,
+        "medicos": 696.0,
+        "oferta_agregada_pct": 14.910025706940875
+      },
+      "brecha_50": {
+        "k": "> 500",
+        "alcanzada": false,
+        "medicos": null,
+        "oferta_agregada_pct": null
+      },
+      "prioridad_mitad": {
+        "k": "> 500",
+        "alcanzada": false,
+        "medicos": null,
+        "oferta_agregada_pct": null
+      },
+      "al_final": {
+        "K": 500,
+        "reduccion_brecha": 0.3003249821796625,
+        "sale_bajo": 1321338.8980724805,
+        "sale_prioridad": 342655.8304626087,
+        "sale_prioridad_pct": 42.48883192240099,
+        "cobertura_nueva_personas": 0.0,
+        "oferta_agregada_pct": 32.13367609254499
+      },
+      "en_K20": {
+        "K": 20,
+        "reduccion_brecha": 0.06825465875242309
+      }
+    },
+    "ampliar_libre": {
+      "pasos_efectivos": 500,
+      "medicos_por_paso": 3.0,
+      "rendimientos_10pct": {
+        "k": 136,
+        "alcanzada": true,
+        "medicos": 408.0,
+        "oferta_agregada_pct": 8.740359897172237
+      },
+      "rendimientos_25pct": {
+        "k": 45,
+        "alcanzada": true,
+        "medicos": 135.0,
+        "oferta_agregada_pct": 2.892030848329049
+      },
+      "brecha_25": {
+        "k": 216,
+        "alcanzada": true,
+        "medicos": 648.0,
+        "oferta_agregada_pct": 13.881748071979436
+      },
+      "brecha_50": {
+        "k": "> 500",
+        "alcanzada": false,
+        "medicos": null,
+        "oferta_agregada_pct": null
+      },
+      "prioridad_mitad": {
+        "k": "> 500",
+        "alcanzada": false,
+        "medicos": null,
+        "oferta_agregada_pct": null
+      },
+      "al_final": {
+        "K": 500,
+        "reduccion_brecha": 0.31970653634702473,
+        "sale_bajo": 1381459.6296131038,
+        "sale_prioridad": 393621.1400032614,
+        "sale_prioridad_pct": 48.80845726781658,
+        "cobertura_nueva_personas": 0.0,
+        "oferta_agregada_pct": 32.13367609254499
+      },
+      "en_K20": {
+        "K": 20,
+        "reduccion_brecha": 0.06825465875242309
+      }
+    },
+    "brecha_p75": {
+      "pasos_efectivos": 500,
+      "medicos_por_paso": 7.0,
+      "rendimientos_10pct": {
+        "k": 184,
+        "alcanzada": true,
+        "medicos": 1288.0,
+        "oferta_agregada_pct": 27.59211653813196
+      },
+      "rendimientos_25pct": {
+        "k": 68,
+        "alcanzada": true,
+        "medicos": 476.0,
+        "oferta_agregada_pct": 10.197086546700943
+      },
+      "brecha_25": {
+        "k": 27,
+        "alcanzada": true,
+        "medicos": 189.0,
+        "oferta_agregada_pct": 4.048843187660668
+      },
+      "brecha_50": {
+        "k": 78,
+        "alcanzada": true,
+        "medicos": 546.0,
+        "oferta_agregada_pct": 11.696658097686376
+      },
+      "prioridad_mitad": {
+        "k": 96,
+        "alcanzada": true,
+        "medicos": 672.0,
+        "oferta_agregada_pct": 14.395886889460154
+      },
+      "al_final": {
+        "K": 500,
+        "reduccion_brecha": 0.9571379166709643,
+        "sale_bajo": 2976830.7389145927,
+        "sale_prioridad": 749667.726149569,
+        "sale_prioridad_pct": 92.9577237049039,
+        "cobertura_nueva_personas": 1498732.439691779,
+        "oferta_agregada_pct": 74.97857754927165
+      },
+      "en_K20": {
+        "K": 20,
+        "reduccion_brecha": 0.20127036659677222
+      }
+    }
+  },
+  "ampliar": {
+    "unidades_distintas": 246,
+    "max_ampliaciones_una_unidad": 3,
+    "pasos_en_saturadas_pct": 100.0
+  },
+  "abrir_vs_ampliar": {
+    "brecha_25": {
+      "medicos_abrir": 147.0,
+      "medicos_ampliar_saturadas": 696.0,
+      "llega_abrir": true,
+      "llega_ampliar": true
+    },
+    "brecha_50": {
+      "medicos_abrir": 390.0,
+      "medicos_ampliar_saturadas": null,
+      "llega_abrir": true,
+      "llega_ampliar": false
+    }
+  },
+  "minoux_brecha": {
+    "20": {
+      "ganancia": 165623.01161676252,
+      "cota": 297604.4421197905,
+      "razon": 0.5565206299914591
+    },
+    "100": {
+      "ganancia": 549991.0794285692,
+      "cota": 898757.2870039974,
+      "razon": 0.6119461698741397
+    },
+    "500": {
+      "ganancia": 1197818.0687433444,
+      "cota": 1387564.6499112279,
+      "razon": 0.8632520789715832
+    }
+  },
+  "minutos": 0.22988633314768472
+}

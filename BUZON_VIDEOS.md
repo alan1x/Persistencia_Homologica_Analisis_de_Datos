@@ -244,3 +244,17 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
     puede exagerar la fragilidad. Corregir el dato con una regla explícita da una respuesta
     más honesta.
 - **Evidencia:** `outputs/auditoria/cruces_osm.json`, `outputs/figuras/cruces_osm.png`.
+
+## 2026-11-23 — ¿Cuántas unidades convienen? (F8.3)
+
+- **Qué se agregó:** `notebooks/41_cuantas_unidades.py`. Curvas de K = 1 a 500 para cuatro
+  soluciones: llegar a los peores, cobertura (MCLP), mixta y ampliar las unidades saturadas.
+  Las metas ("cuántas") quedaron fijas antes de correr.
+- **Qué se aprendió:**
+  - Con unidades de 3 médicos, 49 cierran una cuarta parte de la brecha y 130 la mitad.
+  - Ampliar las unidades que ya existen necesita casi 5 veces más médicos para la cuarta
+    parte y nunca llega a la mitad. El problema es de lugar, no de tamaño: la brecha está
+    donde no llega ninguna unidad.
+  - Una curva dice más que un K fijo: muestra dónde empiezan los rendimientos decrecientes.
+- **Evidencia:** `outputs/auditoria/cuantas_unidades.json`,
+  `outputs/auditoria/cuantas_unidades_curvas.csv`, `outputs/figuras/cuantas_unidades.png`.

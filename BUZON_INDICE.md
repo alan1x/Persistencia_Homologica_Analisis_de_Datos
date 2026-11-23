@@ -19,3 +19,4 @@
 
 ## 2026-11-23
 - HITO: cambio de fuente de la oferta, de DENUE a CLUES/DGIS con Recursos en Salud 2025 (médicos como capacidad; DIF y municipales como escenario ampliado), y F3 a F5 recalculados (`notebooks/29`, `lib/acceso.py`). Cambia el veredicto del nulo de la oferta, que pasa a "mejor que el azar", y se duplica la gente sin unidad cercana (1.13 M). Sigue pendiente F7 (escritura).
+- HITO: F8.2 y F8.3 completas. Los huecos de OSM no explican las islas por calle (`notebooks/40`). La cifra central queda así: con unidades nuevas de 3 médicos, 49 cierran el 25% de la brecha y 130 el 50%; ampliar las existentes necesita casi 5 veces más médicos (`notebooks/41`). Falta F8.4 (transporte) y F7 (escritura).

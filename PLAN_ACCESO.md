@@ -278,6 +278,22 @@ Codex antes de correr.
      fracción de la inicial (rendimientos decrecientes); el K que reduce la brecha 25% y 50%;
      el K que saca de acceso bajo a la mitad de la gente con prioridad.
    - Se corre con los datos actuales y se repite cuando entren CLUES y los cruces.
+   - **Estado (2026-11-23, `notebooks/41_cuantas_unidades.py`):** corrido con CLUES, por calle
+     y sobre la red base (F8.2 la dejó como principal). Cada paso suma 3 médicos (la mediana).
+     Criterios fijados en la cabecera y criticados por Codex antes de correr.
+     - **Unidades nuevas con la brecha:** 25% de la brecha con K = 49 (147 médicos, +3% de
+       la oferta) y 50% con K = 130. La mitad de la gente con prioridad sale de acceso bajo
+       con K = 186. La ganancia sostenida cae bajo el 10% de la inicial en K = 359; con el
+       umbral de 25%, en K = 195. Con K = 500 se cierra el 91% de la brecha.
+     - **Mixta (α = 0.5):** cuesta poco en brecha (25% con K = 55) y cubre mucha más gente
+       nueva (2.29 M contra 1.56 M en K = 500). El MCLP solo necesita K = 87 para el 25%.
+     - **Ampliar las saturadas** (≤ 3 por sede) necesita 696 médicos para el 25% contra 147
+       abriendo unidades, y no llega al 50% ni con 500 pasos. Ampliar cualquiera sin tope
+       casi no cambia esto. La brecha está sobre todo donde ninguna unidad llega (1.13 M sin
+       unidad por calle), así que agregar médicos donde ya hay unidades rinde poco.
+     - Con 7 médicos por unidad (P75): 25% con K = 27 y 50% con K = 78.
+     - Cota de Minoux de la brecha: 0.56 con K = 20 y 0.86 con K = 500 (holgada con K chico).
+     - Límite: el promedio metropolitano queda fijo; con K = 500 la oferta crece 32%.
 4. **Transporte público.** Al final, por ser lo más caro.
    - Antes de comprometerse, verificar que r5py funcione (necesita Java 21) y que el GTFS de
      CDMX esté vigente.
