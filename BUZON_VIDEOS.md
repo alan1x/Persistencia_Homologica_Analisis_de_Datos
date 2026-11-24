@@ -258,3 +258,22 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   - Una curva dice más que un K fijo: muestra dónde empiezan los rendimientos decrecientes.
 - **Evidencia:** `outputs/auditoria/cuantas_unidades.json`,
   `outputs/auditoria/cuantas_unidades_curvas.csv`, `outputs/figuras/cuantas_unidades.png`.
+
+## 2026-11-23 — Transporte público con r5py (F8.4)
+
+- **Qué se agregó:** `notebooks/42_transporte_publico.py`. Usa r5py (motor R5 en Java) con el
+  GTFS de la CDMX y el PBF de OSM recortado a la zona. Calcula tiempos puerta a puerta de 30
+  minutos de cada unidad a cada celda, con un control a pie en el mismo motor y una muestra
+  para medir la asimetría entre ida y vuelta.
+- **Qué se aprendió:**
+  - En CDMX el transporte baja el acceso bajo de 27% a 21%. En EDOMEX no cambia nada, porque
+    el GTFS casi no llega ahí (solo el 5% de su gente sin seguro vive cerca de una parada).
+  - El transporte ayuda donde ya hay red: de la gente con prioridad (acceso bajo y
+    marginación alta) casi nadie sale de acceso bajo.
+  - Medir contra un control en el mismo motor separa el efecto del transporte del efecto de
+    cambiar de red de calles.
+  - Problemas prácticos: JPype tomaba un Java viejo, el GTFS oficial trae errores de formato y
+    sus calendarios ya vencieron, y la corrida se detuvo una vez por falta de memoria (se
+    retomó desde los bloques guardados).
+- **Evidencia:** `outputs/auditoria/transporte_publico.json`,
+  `outputs/figuras/transporte_publico.png`.

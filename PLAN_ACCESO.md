@@ -299,6 +299,30 @@ Codex antes de correr.
      CDMX esté vigente.
    - EDOMEX casi no tiene GTFS (las combis no están mapeadas): ahí sigue siendo solo caminata,
      y eso se reporta como limitación.
+   - **Estado (2026-11-23): hecho** (`notebooks/42_transporte_publico.py`).
+     - **Datos:**
+       - r5py 1.1.7 con el JDK 25 (hay que fijar `JAVA_HOME`: JPype tomaba el Java 8).
+       - GTFS de SEMOVI, copia de MobilityDatabase del 2026-03-09. Los calendarios vencen el
+         2025-12-31, así que se usa un martes de octubre de 2025, de 8:00 a 9:00. r5 lo
+         rechazaba por formato, así que el notebook escribe una copia limpia.
+       - PBF recortado a la zona: 52 MB, 825 mil vías.
+     - **Control:** r5 a pie da casi lo mismo que el 33 (Spearman 0.99; 98% de la gente con la
+       misma clase de acceso bajo).
+     - **Asimetría:** ir y volver da tiempos casi iguales (diferencia mediana 0 min, P90 de
+       1.2 min). La clase de acceso bajo coincide en el 99.6% de la gente de la muestra.
+     - **Efecto del transporte** (contra el control a pie con r5):
+       - **CDMX:** el acceso bajo baja de 27.1% a 21.1%, y el acceso 0 de 182 mil a 82 mil.
+       - **EDOMEX:** no cambia (51.7% contra 51.8%). Solo el 4.7% de su gente sin seguro vive a
+         ≤ 500 m de una parada del GTFS; en CDMX es el 84%.
+       - Salen de acceso bajo 225 mil personas y entran 79 mil, porque las unidades se reparten
+         entre más gente.
+       - Con prioridad solo salen 9 mil: el transporte ayuda donde ya hay red y no a las zonas
+         marginadas de la periferia.
+     - **Islas:** sobreviven 80.4% de las estables por calle (control a pie: 83.4%). De las que
+       sobreviven a pie, el 96% siguen con transporte. Pasa el criterio, pero por poco:
+       **la caminata sigue como versión principal** y el transporte va como sensibilidad.
+     - **Límites:** sin Mexibús, Mexicable ni combis (EDOMEX queda subestimado); la mediana de
+       r5 tiene ruido de simulación que no se midió; el GTFS es de 2025.
 
 Opcionales: estratos de macrozonas en el nulo de la oferta y pendiente del terreno.
 

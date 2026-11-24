@@ -1,0 +1,114 @@
+{
+  "datos": {
+    "gtfs": "cdmx_gtfs_20260309_limpio.zip",
+    "fuente_gtfs": "MobilityDatabase mdb-1830 (2026-03-09)",
+    "nota_gtfs": "calendarios vencen 2025-12-31; sin Mexibús, Mexicable ni combis",
+    "pbf": "zmvm_r5.osm.pbf",
+    "salida": "2025-10-14T08:00:00",
+    "ventana_min": 60,
+    "tope_min": 30,
+    "velocidad_pie_kmh": 4.5,
+    "direccion": "unidad -> celda; asimetría medida en una muestra"
+  },
+  "huella": "71ea504827",
+  "cercania_paradas_catalogo_500m_pct": {
+    "CDMX": 84.397489272044,
+    "EDOMEX": 4.664395685431261
+  },
+  "pares": {
+    "pie_r5": 447925,
+    "transporte_r5": 636542
+  },
+  "asimetria": {
+    "pares_posibles": 1796000,
+    "ambas_direcciones_pct": 0.19927616926503341,
+    "solo_ida_pct": 0.007461024498886415,
+    "solo_vuelta_pct": 0.0094097995545657,
+    "ninguna_pct": 99.78385300668151,
+    "solo_un_sentido_de_los_alcanzables_pct": 7.805255023183926,
+    "dif_mediana_min": 0.0,
+    "dif_abs_mediana_min": 0.0,
+    "dif_abs_p90_min": 1.2000000000002728,
+    "muestra_bajo_igual_pct_gente": 99.57775234346137,
+    "muestra_bajo_solo_ida_pct_gente": 0.22153722095261766,
+    "muestra_bajo_solo_vuelta_pct_gente": 0.20071043558602641,
+    "nota": "solo cambia el paso 2 del E2SFCA; la demanda de cada unidad sigue siendo la de unidad -> celda"
+  },
+  "acceso": {
+    "calle_33": {
+      "psin_cero": 1129848.1681383653,
+      "psin_bajo": 3208531.298698244,
+      "psin_prioridad": 806460.9332833965,
+      "psin_cero_CDMX": 181653.55463466782,
+      "psin_bajo_CDMX": 688810.3320855938,
+      "pct_bajo_CDMX": 27.800437668123685,
+      "psin_cero_EDOMEX": 948194.6135036976,
+      "psin_bajo_EDOMEX": 2519720.96661265,
+      "pct_bajo_EDOMEX": 52.20174826052904
+    },
+    "pie_r5": {
+      "psin_cero": 1132656.6985858988,
+      "psin_bajo": 3167334.4075725107,
+      "psin_prioridad": 798729.8427278675,
+      "psin_cero_CDMX": 182026.193350647,
+      "psin_bajo_CDMX": 671207.6459683151,
+      "pct_bajo_CDMX": 27.08999191056187,
+      "psin_cero_EDOMEX": 950630.5052352517,
+      "psin_bajo_EDOMEX": 2496126.7616041955,
+      "pct_bajo_EDOMEX": 51.71294066374406
+    },
+    "transporte_r5": {
+      "psin_cero": 1022702.9710448394,
+      "psin_bajo": 3020848.432743732,
+      "psin_prioridad": 798502.39917433,
+      "psin_cero_CDMX": 82328.04532040251,
+      "psin_bajo_CDMX": 521831.81042996794,
+      "pct_bajo_CDMX": 21.0611717672373,
+      "psin_cero_EDOMEX": 940374.9257244368,
+      "psin_bajo_EDOMEX": 2499016.622313764,
+      "pct_bajo_EDOMEX": 51.77281069827081
+    }
+  },
+  "control": {
+    "corr_spearman_pie_r5_vs_33": 0.9912257084039113,
+    "bajo_igual_pie_r5_vs_33_pct_gente": 98.06878823900806
+  },
+  "cambio": {
+    "psin_sale_de_bajo": 225407.8741223537,
+    "psin_entra_a_bajo": 78921.8992935748,
+    "psin_prioridad_sale": 9006.993185261257,
+    "psin_sale_CDMX": 199397.64164002676,
+    "psin_sale_EDOMEX": 26010.232482326966,
+    "psin_entra_CDMX": 50021.806101679686,
+    "psin_entra_EDOMEX": 28900.093191895117
+  },
+  "islas": {
+    "estables_calle": 760,
+    "pie_r5": {
+      "islas": 1088,
+      "sobreviven_pct": 83.42105263157895,
+      "b0_sobreviven_pct": 88.69047619047619,
+      "b_pos_sobreviven_pct": 73.046875,
+      "jaccard_resumen": 0.6280040161135885
+    },
+    "transporte_r5": {
+      "islas": 1158,
+      "sobreviven_pct": 80.39473684210526,
+      "b0_sobreviven_pct": 85.31746031746032,
+      "b_pos_sobreviven_pct": 70.703125,
+      "jaccard_resumen": 0.5805379808588924,
+      "sin_pareja_entre_las_estables": 547,
+      "psin_sin_pareja": 2791193.5811754283
+    },
+    "cruce_isla_por_isla": {
+      "en_ambas_pct": 80.0,
+      "solo_pie_pct": 3.421052631578948,
+      "solo_transporte_pct": 0.39473684210526316,
+      "ninguna_pct": 16.18421052631579,
+      "de_las_que_sobreviven_a_pie_siguen_con_transporte_pct": 95.74132492113566,
+      "islas_pie_r5_con_pareja_en_transporte_pct": 86.67279411764706
+    },
+    "geografia_robusta_al_transporte": true
+  },
+  "minutos": 3.4114073316256204
+}
