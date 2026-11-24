@@ -344,6 +344,19 @@ Mario; el paper del equipo no se toca.
 
 Reporte, paper, presentación y figuras con el enfoque nuevo.
 
+- **Estado (2026-11-23): borrador del paper** (`reporte/paper_acceso.typ` → `paper_acceso.pdf`,
+  7 págs.).
+  - Esquema propuesto por Codex. Cifras verificadas contra `outputs/auditoria/*.json`, con una
+    segunda revisión de Codex número por número contra los JSON y el código (45 correcciones).
+  - **Los JSON mandan sobre este plan.** Algunas cifras de arriba son de la etapa DENUE o de una
+    corrida anterior y no van al paper:
+    - 15 min: con CLUES son 4.18 M en cero, no 3.04 M.
+    - N2: 88.0% contra 90.2% (p = 0.806) y 990 contra 779 islas.
+    - Recta contra calle: 64.3% / 28.4% de islas con pareja; J = 0.639 la unión de cuencas y
+      0.816 el mapa.
+    - S1: 3.26 M contra 3.63 M, con 59.5 mil (1.8%) atribuibles.
+  - Falta: la presentación, y que Mario revise el texto.
+
 ## Cómputo
 
 | Tarea | Recursos | ¿Dónde? |

@@ -294,3 +294,21 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   - Con valores empatados (todas las celdas de un AGEB), el rango tiene que ser el medio del
     bloque; si no, el índice depende del orden de las filas.
 - **Evidencia:** `outputs/auditoria/equidad_transporte.json`, `outputs/figuras/equidad_transporte.png`.
+
+## 2026-11-23 — El paper del enfoque de acceso (F7, borrador)
+
+- **Qué se agregó:** `reporte/paper_acceso.typ` → `reporte/paper_acceso.pdf` (7 págs., firmado
+  por Mario; el paper del equipo no se tocó). Además, una página explicativa paso a paso con
+  visualizaciones interactivas (artifact privado en claude.ai).
+- **Qué se aprendió:**
+  - Escribir obliga a reconciliar cifras: el plan tenía números de la etapa DENUE y de corridas
+    anteriores. Los JSON de auditoría son la fuente; el plan es historial.
+  - Usar a Codex en dos pasadas: primero esquema y riesgos, luego revisión número por número
+    contra los JSON y el código. Encontró 45 correcciones, casi todas de etiquetado
+    (una cola contra dos, conteo contra ponderado por población) y de afirmaciones causales
+    que los nulos no sostienen.
+  - Un nulo responde solo su pregunta: S1 compara contra una regla que sigue a la demanda, no
+    contra el azar; N2 no da exceso de acceso bajo dentro de islas. La topología queda como
+    herramienta de descripción y priorización, no como prueba.
+- **Evidencia:** `reporte/paper_acceso.pdf`; figuras `acceso_calle_mapa.png`,
+  `persistencia_calle.png`, `cuantas_unidades.png`, `equidad_transporte.png`.
