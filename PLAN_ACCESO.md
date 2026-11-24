@@ -323,6 +323,17 @@ Codex antes de correr.
        **la caminata sigue como versión principal** y el transporte va como sensibilidad.
      - **Límites:** sin Mexibús, Mexicable ni combis (EDOMEX queda subestimado); la mediana de
        r5 tiene ruido de simulación que no se midió; el GTFS es de 2025.
+   - **¿A quién le sirve?** (`notebooks/43_equidad_transporte.py`, 2026-11-23).
+     - El acceso total se conserva (Σ psin·Δf ≈ 0): el transporte redistribuye, no agrega.
+     - La gente en marginación Alta y Muy alta es el 21.7% de la gente sin seguro, pero recibe
+       el 3.4% de las ganancias y carga el 3.3% de las pérdidas. **El transporte casi no la
+       toca:** no le quita ni le da. Su cambio neto es ~0.
+     - Las ganancias van sobre todo a Muy bajo (25.6% de las ganancias, con 9.6% de la gente) y
+       Bajo. En CDMX, el acceso bajo de Muy bajo pasa de 42% a 26%.
+     - Índice de concentración: ΔCI = +0.003 (IC 95% −0.008 a +0.015). El veredicto fijado es
+       **indeterminado**: el transporte no mueve la desigualdad del acceso, pero deja fuera a
+       la periferia marginada.
+     - Límite: el bootstrap de CDMX tiene solo 16 alcaldías, así que sus intervalos son anchos.
 
 Opcionales: estratos de macrozonas en el nulo de la oferta y pendiente del terreno.
 

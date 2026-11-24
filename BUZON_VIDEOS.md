@@ -277,3 +277,20 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
     retomó desde los bloques guardados).
 - **Evidencia:** `outputs/auditoria/transporte_publico.json`,
   `outputs/figuras/transporte_publico.png`.
+
+## 2026-11-23 — ¿A quién le sirve el transporte público?
+
+- **Qué se agregó:** `notebooks/43_equidad_transporte.py`. Mide hacia qué grados de marginación
+  se mueve el acceso cuando se agrega el transporte, con un índice de concentración y un
+  bootstrap de municipios.
+- **Qué se aprendió:**
+  - En el E2SFCA el acceso total se conserva. El transporte no agrega acceso: lo cambia de
+    lugar. Por eso la pregunta útil es a quién, no cuánto.
+  - La gente más marginada (Alta y Muy alta, el 22%) recibe el 3% de las ganancias y el 3% de
+    las pérdidas: el transporte casi no la toca. Las ganancias van a los barrios menos
+    marginados de la CDMX.
+  - Un índice de concentración puede no moverse aunque el reparto sea muy desigual: el
+    criterio fijado dio "indeterminado", y la tabla por grado cuenta lo que el índice no ve.
+  - Con valores empatados (todas las celdas de un AGEB), el rango tiene que ser el medio del
+    bloque; si no, el índice depende del orden de las filas.
+- **Evidencia:** `outputs/auditoria/equidad_transporte.json`, `outputs/figuras/equidad_transporte.png`.

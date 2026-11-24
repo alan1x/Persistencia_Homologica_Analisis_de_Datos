@@ -1,0 +1,316 @@
+{
+  "criterio": "regresivo si Alta+Muy alta recibe menos ganancias que su parte de la gente y ΔCI > 0 (IC 95% > 0)",
+  "comparacion": "transporte r5 contra control a pie r5 (notebook 42; tiempos unidad -> celda)",
+  "conservacion": {
+    "total": -7.778453436912969e-10,
+    "CDMX": 422.6142952154405,
+    "EDOMEX": -422.6142952162253,
+    "escala_total": 7251382.074550128
+  },
+  "exclusiones": {
+    "psin_sin_grado": 1961.0,
+    "psin_grado_inesperado": 0.0,
+    "psin_analizada": 7302625.0,
+    "cambio_neto_analizado": -33.27146006850057
+  },
+  "por_grado": {
+    "total": [
+      {
+        "grado": "Muy bajo",
+        "psin": 697880.0,
+        "pct_gente": 9.5566,
+        "f_pie": 0.7357,
+        "f_tp": 0.7733,
+        "cambio_medio": 0.0376,
+        "bajo_pie_pct": 57.0749,
+        "bajo_tp_pct": 48.3764,
+        "psin_sale": 67921.5994,
+        "psin_entra": 7216.7305,
+        "pct_ganancias": 25.5733,
+        "pct_perdidas": 19.2133
+      },
+      {
+        "grado": "Bajo",
+        "psin": 2234267.0,
+        "pct_gente": 30.5954,
+        "f_pie": 1.0704,
+        "f_tp": 1.0602,
+        "cambio_medio": -0.0102,
+        "bajo_pie_pct": 40.8588,
+        "bajo_tp_pct": 36.8693,
+        "psin_sale": 109249.4698,
+        "psin_entra": 20115.3285,
+        "pct_ganancias": 50.9369,
+        "pct_perdidas": 56.4755
+      },
+      {
+        "grado": "Medio",
+        "psin": 2785225.0,
+        "pct_gente": 38.1401,
+        "f_pie": 1.0018,
+        "f_tp": 1.0004,
+        "cambio_medio": -0.0014,
+        "bajo_pie_pct": 37.9342,
+        "bajo_tp_pct": 38.0638,
+        "psin_sale": 39189.9116,
+        "psin_entra": 42799.0362,
+        "pct_ganancias": 20.0568,
+        "pct_perdidas": 21.0192
+      },
+      {
+        "grado": "Alto",
+        "psin": 1293214.0,
+        "pct_gente": 17.7089,
+        "f_pie": 0.845,
+        "f_tp": 0.8462,
+        "cambio_medio": 0.0012,
+        "bajo_pie_pct": 50.7601,
+        "bajo_tp_pct": 50.7571,
+        "psin_sale": 8771.3161,
+        "psin_entra": 8733.5043,
+        "pct_ganancias": 3.3684,
+        "pct_perdidas": 2.9917
+      },
+      {
+        "grado": "Muy alto",
+        "psin": 292039.0,
+        "pct_gente": 3.9991,
+        "f_pie": 1.5707,
+        "f_tp": 1.5674,
+        "cambio_medio": -0.0033,
+        "bajo_pie_pct": 48.7241,
+        "bajo_tp_pct": 48.6592,
+        "psin_sale": 235.6771,
+        "psin_entra": 46.0453,
+        "pct_ganancias": 0.0645,
+        "pct_perdidas": 0.3004
+      }
+    ],
+    "CDMX": [
+      {
+        "grado": "Muy bajo",
+        "psin": 390221.0,
+        "pct_gente": 15.7516,
+        "f_pie": 1.0406,
+        "f_tp": 1.1032,
+        "cambio_medio": 0.0627,
+        "bajo_pie_pct": 41.6556,
+        "bajo_tp_pct": 26.2907,
+        "psin_sale": 65720.0597,
+        "psin_entra": 5763.2998,
+        "pct_ganancias": 26.5919,
+        "pct_perdidas": 20.301
+      },
+      {
+        "grado": "Bajo",
+        "psin": 1202467.0,
+        "pct_gente": 48.5386,
+        "f_pie": 1.2601,
+        "f_tp": 1.2389,
+        "cambio_medio": -0.0213,
+        "bajo_pie_pct": 23.9418,
+        "bajo_tp_pct": 17.1703,
+        "psin_sale": 97224.5242,
+        "psin_entra": 15800.0836,
+        "pct_ganancias": 51.5715,
+        "pct_perdidas": 58.2403
+      },
+      {
+        "grado": "Medio",
+        "psin": 753895.0,
+        "pct_gente": 30.4316,
+        "f_pie": 1.054,
+        "f_tp": 1.0546,
+        "cambio_medio": 0.0006,
+        "bajo_pie_pct": 22.8587,
+        "bajo_tp_pct": 22.3799,
+        "psin_sale": 28552.2683,
+        "psin_entra": 24942.2284,
+        "pct_ganancias": 18.3714,
+        "pct_perdidas": 18.2766
+      },
+      {
+        "grado": "Alto",
+        "psin": 116773.0,
+        "pct_gente": 4.7136,
+        "f_pie": 0.8931,
+        "f_tp": 0.9106,
+        "cambio_medio": 0.0175,
+        "bajo_pie_pct": 34.6605,
+        "bajo_tp_pct": 31.1004,
+        "psin_sale": 7625.2122,
+        "psin_entra": 3467.986,
+        "pct_ganancias": 3.3968,
+        "pct_perdidas": 2.8719
+      },
+      {
+        "grado": "Muy alto",
+        "psin": 13985.0,
+        "pct_gente": 0.5645,
+        "f_pie": 0.6368,
+        "f_tp": 0.5699,
+        "cambio_medio": -0.0669,
+        "bajo_pie_pct": 55.7626,
+        "bajo_tp_pct": 54.3416,
+        "psin_sale": 235.6771,
+        "psin_entra": 36.9538,
+        "pct_ganancias": 0.0684,
+        "pct_perdidas": 0.3102
+      }
+    ],
+    "EDOMEX": [
+      {
+        "grado": "Muy bajo",
+        "psin": 307659.0,
+        "pct_gente": 6.376,
+        "f_pie": 0.349,
+        "f_tp": 0.3549,
+        "cambio_medio": 0.0059,
+        "bajo_pie_pct": 76.6321,
+        "bajo_tp_pct": 76.3889,
+        "psin_sale": 2201.5397,
+        "psin_entra": 1453.4307,
+        "pct_ganancias": 10.1331,
+        "pct_perdidas": 3.0114
+      },
+      {
+        "grado": "Bajo",
+        "psin": 1031800.0,
+        "pct_gente": 21.3832,
+        "f_pie": 0.8493,
+        "f_tp": 0.852,
+        "cambio_medio": 0.0026,
+        "bajo_pie_pct": 60.5739,
+        "bajo_tp_pct": 59.8267,
+        "psin_sale": 12024.9456,
+        "psin_entra": 4315.2449,
+        "pct_ganancias": 41.3182,
+        "pct_perdidas": 30.185
+      },
+      {
+        "grado": "Medio",
+        "psin": 2031330.0,
+        "pct_gente": 42.0976,
+        "f_pie": 0.9824,
+        "f_tp": 0.9802,
+        "cambio_medio": -0.0022,
+        "bajo_pie_pct": 43.5293,
+        "bajo_tp_pct": 43.8847,
+        "psin_sale": 10637.6433,
+        "psin_entra": 17856.8078,
+        "pct_ganancias": 45.6045,
+        "pct_perdidas": 61.8738
+      },
+      {
+        "grado": "Alto",
+        "psin": 1176441.0,
+        "pct_gente": 24.3808,
+        "f_pie": 0.8403,
+        "f_tp": 0.8399,
+        "cambio_medio": -0.0004,
+        "bajo_pie_pct": 52.3581,
+        "bajo_tp_pct": 52.7083,
+        "psin_sale": 1146.1039,
+        "psin_entra": 5265.5183,
+        "pct_ganancias": 2.9376,
+        "pct_perdidas": 4.7756
+      },
+      {
+        "grado": "Muy alto",
+        "psin": 278054.0,
+        "pct_gente": 5.7624,
+        "f_pie": 1.6177,
+        "f_tp": 1.6175,
+        "cambio_medio": -0.0001,
+        "bajo_pie_pct": 48.3701,
+        "bajo_tp_pct": 48.3734,
+        "psin_sale": 0.0,
+        "psin_entra": 9.0915,
+        "pct_ganancias": 0.0065,
+        "pct_perdidas": 0.1543
+      }
+    ]
+  },
+  "concentracion": {
+    "total": {
+      "ci_pie": -0.01707218548579695,
+      "ci_transporte": -0.014369651639947256,
+      "delta_ci": 0.002702533845849696,
+      "ci_pie_ic95": [
+        -0.08113049062807827,
+        0.048912373696472236
+      ],
+      "ci_transporte_ic95": [
+        -0.07966392766966414,
+        0.047806559257377666
+      ],
+      "delta_ci_ic95": [
+        -0.007860963803942708,
+        0.014829086841787137
+      ],
+      "municipios": 141,
+      "bloques_im": 6536
+    },
+    "CDMX": {
+      "ci_pie": 0.02194448657954837,
+      "ci_transporte": 0.028902790915124838,
+      "delta_ci": 0.006958304335576468,
+      "ci_pie_ic95": [
+        -0.0606855167859467,
+        0.07060481028533108
+      ],
+      "ci_transporte_ic95": [
+        -0.06333211749979006,
+        0.07681600889383867
+      ],
+      "delta_ci_ic95": [
+        -0.014367193546925835,
+        0.02676541718242815
+      ],
+      "municipios": 16,
+      "bloques_im": 2380
+    },
+    "EDOMEX": {
+      "ci_pie": -0.07772478795224459,
+      "ci_transporte": -0.07676037194176462,
+      "delta_ci": 0.0009644160104799737,
+      "ci_pie_ic95": [
+        -0.16784798427256645,
+        0.008647048564826008
+      ],
+      "ci_transporte_ic95": [
+        -0.1663984665527672,
+        0.00921702621467067
+      ],
+      "delta_ci_ic95": [
+        -7.70246926526025e-05,
+        0.002137298608509424
+      ],
+      "municipios": 125,
+      "bloques_im": 4156
+    }
+  },
+  "veredicto": {
+    "total": {
+      "alta_muy_alta_pct_ganancias": 3.4329512911778957,
+      "alta_muy_alta_pct_gente": 21.707988565755464,
+      "alta_muy_alta_pct_perdidas": 3.2920216700832583,
+      "alta_muy_alta_cambio_medio_neto": 0.0003664318342235151,
+      "veredicto": "indeterminado"
+    },
+    "CDMX": {
+      "alta_muy_alta_pct_ganancias": 3.4651966854397656,
+      "alta_muy_alta_pct_gente": 5.278159123027471,
+      "alta_muy_alta_pct_perdidas": 3.1820749607739827,
+      "alta_muy_alta_cambio_medio_neto": 0.008482901366199082,
+      "veredicto": "indeterminado"
+    },
+    "EDOMEX": {
+      "alta_muy_alta_pct_ganancias": 2.9441724165801446,
+      "alta_muy_alta_pct_gente": 30.14319986139676,
+      "alta_muy_alta_pct_perdidas": 4.929850735212765,
+      "alta_muy_alta_cambio_medio_neto": -0.00036323263561778953,
+      "veredicto": "indeterminado"
+    }
+  }
+}
