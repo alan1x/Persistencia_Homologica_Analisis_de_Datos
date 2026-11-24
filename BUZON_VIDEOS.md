@@ -312,3 +312,149 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
     herramienta de descripción y priorización, no como prueba.
 - **Evidencia:** `reporte/paper_acceso.pdf`; figuras `acceso_calle_mapa.png`,
   `persistencia_calle.png`, `cuantas_unidades.png`, `equidad_transporte.png`.
+
+## 2026-11-24 — Gráficas del video (esquema `esquemas/persistencia.md`)
+
+- **Qué se agregó:** `notebooks/44_graficas_video.py`, que genera 14 gráficas verticales de 1080×1920
+  en `outputs/video/`. Cada cifra se lee de `outputs/auditoria/*.json` o se recalcula de los
+  intermedios con un `assert` contra el JSON. Las 🎬 salen como GIF (sin ffmpeg en el entorno; no
+  hubo permiso para instalar `imageio-ffmpeg`), y su último cuadro también como PNG.
+  - Parte 1: `p1_00_gancho.png`, `p1_01_clinicas.gif`, `p1_02_gente.png`, `p1_03_calles.gif`,
+    `p1_04_acceso.png`, `p1_05_topologia.gif`.
+  - Parte 2: `p2_A_reubicar.png`, `p2_B_abrir_ampliar.gif`, `p2_C_prioridad.png`,
+    `p2_D_transporte.png`, `p2_E_horizonte.png`.
+  - Parte 3: `p3_2_rodeo.gif`, `p3_3_equidad.png`, `p3_4_nulo.png`. La conclusión 1 usa A y B.
+    Las limitaciones no llevan gráfica.
+- **Cifras verificadas sin cambio:** 1.13 M sin ninguna unidad, 898 clínicas, 4,668 médicos,
+  7.3 M personas, 2.25 km, 3.21 M con acceso bajo (CDMX 28%, Edomex 52%), 760 islas con el 87%
+  (86.6%), A (3.26 contra 3.63 M), B (49 clínicas, 147 contra 696 médicos, 130 para la mitad),
+  C (104 y 85 mil; 4 de 20), E (4.18 M), 806 mil prioritarias (2% y 16%), 22% contra 3%,
+  88% contra 90%. El horizonte de 15 min se recalculó desde los pares por calle y da exacto el JSON.
+- **Qué cambié del esquema y por qué:**
+  - **⚠ El gradiente por marginación ya no es cierto.** Con CLUES y por calle, en la CDMX el acceso
+    bajo forma una U: Muy bajo 43%, Bajo 25%, Medio 23%, Alto 36%, Muy alto 57% (acceso mediano
+    0.71, 1.12, 0.86, 0.73 y 0.24). La cifra 1.65 → 0.09 era de DENUE. No usarla.
+  - **El ejemplo de Ecatepec (133 m → 8.5 km) es de la etapa DENUE**: la unidad era del ISSSTE,
+    que no está en la oferta CLUES. Lo reemplacé por un caso real de hoy, en Álvaro Obregón: la
+    clínica C.S.T-I Puente Colorado está a **365 m en línea recta y a 5.8 km por calle**, y la más
+    cercana por calle queda a 4.0 km. Caso extremo: en Naucalpan, 116 m contra 6.6 km. El texto dice
+    «no hay calle que cruce», no «barranca»: sin ir a verlo no se distingue una barrera de un hueco
+    de OSM.
+  - **Escenario C:** «los peores» saca a 77 mil marginados, pero «más gente» saca a 74 mil: casi
+    los mismos. La diferencia está en la proporción (91% contra 71%) y en la brecha cerrada (12.6%
+    contra 9.4%). Además, los dos objetivos ya dan peso doble a la marginación. Sin ese peso,
+    «los peores» conserva 4 de 20 sitios y saca del acceso bajo a solo 2.5 mil personas. Los dos
+    mapas comparten 5 de 20 sitios.
+  - **Escenario D:** el 27% es la caminata medida en el mismo motor de transporte (27.1%); la fase 4
+    dice 28% (red propia, 27.8%). No se contradicen, pero conviene decir «comparado en el mismo
+    motor» o el espectador verá dos cifras.
+  - **87% contra 88%:** el 87% (fase 5) es de las 760 islas estables; el 88% (conclusión 4) es de
+    las 990 islas, que es lo que compara el nulo. Son conjuntos distintos; la gráfica del nulo lo dice.
+  - **Fase 2:** «sin seguridad social» → «sin seguro médico». El Censo mide falta de afiliación a
+    servicios de salud.
+  - **Fase 3, cifra nueva:** en la clínica mediana, por calle se alcanza solo el **61%** de la gente
+    que cabe en el círculo de 2.25 km. La animación usa una clínica cercana a la mediana (60%), no
+    un caso extremo.
+  - **Fase 4:** solo el mapa. El esquema de una clínica con su gente no se hizo: es más fácil
+    hacerlo a mano en la edición.
+- **Qué falta en el esquema y se puede agregar:**
+  - **Limitación:** cómo se mide la capacidad. Contando consultorios en lugar de médicos, el
+    acceso bajo del Edomex baja de 52% a 42% (versión en línea recta). Es el supuesto que más mueve
+    al Edomex después del horizonte.
+  - **Escenario A, apoyo:** reubicando las clínicas sin seguir a la gente (uniforme), habría 4.02 M
+    con acceso bajo. La ubicación actual también le gana a eso.
+  - **Conclusión 1, apoyo:** el 35% de la gente con acceso bajo no tiene ninguna clínica a 30 min.
+    Ampliar no le llega; por eso abrir rinde más.
+  - **Hallazgo sin explicar:** en el Edomex, la gente de marginación Muy baja tiene el peor acceso
+    (77% con acceso bajo y la mitad sin ninguna clínica). Una hipótesis no verificada son los
+    conjuntos habitacionales de la periferia. No lo contaría sin revisarlo.
+- **Qué se aprendió:** un esquema escrito con cifras de distintas etapas mezcla resultados que
+  ya no existen (el gradiente y Ecatepec venían de DENUE). Recalcular cada cifra desde los
+  intermedios con un `assert` contra el JSON evita que eso llegue al video. Una gráfica de «la
+  calle recorta el círculo» puede exagerar si se elige la clínica más dramática; por eso se mostró
+  la mediana.
+
+## 2026-11-24 — Pendiente del esquema: `p1_04a_esquema_acceso.png`
+
+- **Qué quedó hecho:** `outputs/video/p1_04a_esquema_acceso.png` (1080×1920, mismo estilo), generada
+  por la función `p1_04a_esquema_acceso` de `notebooks/44_graficas_video.py`. Va antes de
+  `p1_04_acceso.png`. Es un dibujo ilustrativo: una clínica de 3 médicos con su círculo de 30 min,
+  arriba con mucha gente y abajo con poca. Cada punto vale 50 personas.
+- **El 0.64 está verificado:** `acceso_e2sfca.json` da 0.639 médicos por mil (4,668 médicos entre
+  7,304,586 personas). El script lo lee del JSON y se detiene si no redondea a 0.64.
+- **Qué cambié del pendiente y por qué:** el caso de arriba pasó de 6,000 a **12,000 personas**
+  (0.25 médicos por mil). Con 6,000 salen 0.5 por mil, que es el 78% del promedio: no es acceso
+  bajo (el umbral es 0.32), y pintarlo en rojo junto al pie «acceso bajo es menos de la mitad» lo
+  habría contradicho. El de abajo queda igual (1,500 personas, 2 por mil, acceso suficiente).
+- **Lo opcional, sin hacer:** el cuadrito que alcanza dos clínicas (paso 2 del E2SFCA). Con los
+  dos paneles la pantalla ya está llena; si hace falta, mejor como gráfica aparte.
+
+## 2026-11-24 — Paleta del video, gráficas nuevas y escenarios rehechos
+
+- **Qué quedó** (todo en `notebooks/44_graficas_video.py`, salida en `outputs/video/`, 1080×1920):
+  - Nuevas: `p1_03b_marginacion.png`, `p1_03c_capas.png`, `p1_03d_un_cuadro.gif` (+ PNG).
+    `p1_04a_esquema_acceso.png` ya estaba de la entrada anterior; solo se le aplicó la paleta.
+  - Rehechas: `p1_02_gente.png`, `p2_A_reubicar.gif` (+ PNG; antes era PNG fijo), `p2_B`, `p2_C`,
+    `p2_D_transporte.png` y `p2_E_horizonte.png`.
+  - Paleta aplicada a las 18 gráficas. Constantes al inicio del script: rojo = acceso bajo; azul =
+    acceso suficiente (y nada más); blanco = clínicas de hoy (círculo); verde = lo que se agrega;
+    ámbar = gente; morado = marginación; gris = fondo y referencia. Ya no hay azul en clínicas
+    (`p1_01`), alcance (`p1_03`), rutas (`p3_2`), «abrir» (B), transporte (D) ni ganancias (`p3_3`).
+    `p2_E` ya no usa rojo para «sin clínica», y la línea «real» de `p3_4` pasó de rojo a blanco.
+- **Escenario A, confirmado:** **0 de 999** reacomodos le ganan a hoy. El mejor reacomodo deja a
+  3.44 M con acceso bajo, contra 3.26 M hoy (clínicas ajustadas a la rejilla de 500 m) y 3.21 M sin
+  ajustar. Ninguno le gana tampoco a 3.21 M. El script lo comprueba con `assert`. Ojo con la cifra
+  del esquema: los 999 son la regla «sigue a la gente»; el reparto parejo (mediana 4.02 M) son
+  **200** simulaciones aparte, y la mejor deja 3.77 M.
+- **Cifras nuevas, verificadas contra los JSON o los intermedios:**
+  - Barrio común de los zooms: **Iztapalapa, alrededor del Peñón Viejo** (5.6 × 5.6 km, 174 mil
+    personas sin seguro, 6 clínicas).
+  - `p1_02`: la leyenda usa el cuartil bajo, la mediana y el p90 reales: 5, 14 y 59 personas por
+    cuadro, con tope de 100 o más.
+  - `p1_03b`: 22% en marginación alta o muy alta (21.7%, igual a `equidad_transporte.json`). Por
+    grado: Muy bajo 10%, Bajo 31%, Medio 38%, Alto 18%, Muy alto 4%.
+  - `p1_03d`, el cuadro que se sigue (497000, 2142100): 97 personas sin seguro y marginación
+    «Alto». Alcanza dos clínicas por calle: Peñón Viejo a 1 min (2 médicos; su demanda ponderada
+    equivale a 23 mil personas, de 48 mil a su alcance) y San Andrés Xicotencatl a 30 min
+    (3 médicos; casi no aporta porque queda en el límite). El acceso resultante es **0.09 médicos
+    por mil**, contra 0.64 de promedio: acceso bajo. Se recalcula el E2SFCA desde los pares y el
+    `assert` coincide con el pipeline a 1e-6.
+  - D: en el barrio salen del acceso bajo 21 mil personas con transporte. 27.1% y 21.1% se
+    recalculan desde `acceso_transporte_clues.parquet` e igualan al JSON.
+  - E: en el barrio, sin ninguna clínica: 1.4 mil a 30 min y 101 mil a 15 min.
+- **Qué cambié respecto del pendiente, y por qué:**
+  - **Verde menta `#58D6A9`**, no un verde puro (idea de Codex, validada). Contra el rojo, con
+    deuteranopía, separa ΔE 12.2; `#0ca30c` daba 7.1 y los verdes intermedios fallaban. Excede la
+    banda de luminosidad del validador, pero aquí el verde debe destacar. Siempre va con forma o
+    etiqueta (estrellas, «abrir», «+ transporte»).
+  - **Morado de oscuro a claro, al revés de lo que dice el esquema.** Sobre fondo oscuro, «muy alta»
+    en oscuro se perdía. Así, lo más marginado es lo más visible, y eso es lo que importa en C y en
+    la conclusión 3. Mario: si prefieres el orden del esquema, es invertir la lista `MORADO`.
+  - **Escala de gente en raíz cuadrada**, no lineal ni logarítmica. La lineal deja casi todo oscuro
+    (mediana 14) y la logarítmica exagera los cuadros vacíos.
+  - **`p1_03c`:** la marginación va separada abajo, con la etiqueta «para priorizar», y el texto
+    dice que no entra al cálculo. Codex advirtió que cuatro capas iguales sugieren que las cuatro
+    forman el acceso. Las clínicas llevan su número de médicos.
+  - **`p1_03d`:** la demanda dice «ponderada: cuenta más quien vive más cerca». No uso «te tocan X
+    médicos», porque suena a cupo asignado: dice «acceso de este cuadro».
+  - **A:** se hizo el GIF de las «999 ciudades imaginarias» como pila de puntos. «Hoy» aparece aparte
+    en blanco. El titular dice «ninguno de los 999», y la nota aclara que es la regla dentro de cada
+    municipio, siguiendo a la gente.
+  - **B:** «brecha» pasó a «falta de acceso». La nota aclara que no es número de personas (cuánto
+    falta para el umbral, sumado, con peso doble en marginación alta). «Ampliar» va en línea
+    discontinua, además de en gris.
+  - **D:** el mapa del barrio a pie contra con transporte, con las celdas que salen del acceso bajo en
+    verde. Las barras de apoyo van abajo, en horizontal.
+  - **E:** **un solo mapa**, no dos. En el mismo barrio se ve lo que alcanza una clínica en 15 min,
+    lo que solo la alcanza en 30 y lo que no alcanza ninguna, con todas las clínicas reales. Así no
+    hay que comparar dos mapas casi iguales y el gris no se confunde con «sin clínica». Las cifras
+    metropolitanas (1.13 → 4.18 M) van en la respuesta. El acceso bajo (3.21 → 4.95 M) va en la
+    nota, como otra medida.
+  - **Escenarios:** el título es la pregunta, debajo va la respuesta en una o dos líneas, y no hay «p»
+    ni signos negativos en el titular.
+- **Codex como segunda opinión:** revisó el plan, el script y los JSON sin renderizar. Se adoptaron
+  el verde menta, la marginación separada en `p1_03c`, la redacción de la demanda ponderada y las
+  aclaraciones de A, B y E. No se adoptaron la escala lineal de gente ni los dos mapas en E, por
+  las razones de arriba. Confirmó de forma independiente 0 de 999, el rango de 3.445 a 3.831 M y
+  el 21.7%.
+- **Sin cambio:** las animaciones siguen como GIF (sin ffmpeg).
