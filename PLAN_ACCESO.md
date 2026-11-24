@@ -355,7 +355,7 @@ Reporte, paper, presentación y figuras con el enfoque nuevo.
     - Recta contra calle: 64.3% / 28.4% de islas con pareja; J = 0.639 la unión de cuencas y
       0.816 el mapa.
     - S1: 3.26 M contra 3.63 M, con 59.5 mil (1.8%) atribuibles.
-  - Falta: la presentación, y que Mario revise el texto.
+  - No habrá presentación (decisión de Mario, 2026-11-23). F7 queda en el paper.
 
 ## Cómputo
 
