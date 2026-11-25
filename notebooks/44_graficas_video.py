@@ -629,101 +629,6 @@ def p2_A_reubicar():
     return ganan, float(sims.min()), hoy, hoy_orig
 
 
-def p2_B_abrir_ampliar():
-    cu = cargar("cuantas_unidades")
-    cur = pd.read_csv(AUD / "cuantas_unidades_curvas.csv")
-    base = cu["linea_base"]["brecha"]
-    ab, am = cu["abrir_vs_ampliar"]["brecha_25"]["medicos_abrir"], cu["abrir_vs_ampliar"]["brecha_25"]["medicos_ampliar_saturadas"]
-    k25 = cu["cuantas"]["brecha"]["brecha_25"]["k"]
-    k50 = cu["cuantas"]["brecha"]["brecha_50"]["k"]
-    assert (k25, ab, am, k50) == (49, 147.0, 696.0, 130) and not cu["abrir_vs_ampliar"]["brecha_50"]["llega_ampliar"]
-    curvas = {}
-    for sol in ["brecha", "ampliar"]:
-        c = cur[cur.solucion == sol].sort_values("K")
-        curvas[sol] = (np.r_[0, c.K.values * 3], np.r_[0, 100 * (1 - c.brecha.values / base)])
-    fig = lienzo_pregunta("¿Abrir clínicas nuevas\no ampliar las que hay?",
-                          f"Para quitar una cuarta parte de la falta de acceso:\nabrir {k25} clínicas ({ab:.0f} médicos) "
-                          f"o ampliar con {am:.0f}.\nLas nuevas llegan a donde no hay ninguna; ampliar\n"
-                          "solo ayuda a quien ya tenía una cerca.",
-                          nota="Falta de acceso = cuánto le falta a cada persona para llegar al umbral de acceso bajo, sumado por\n"
-                               "persona y con peso doble en marginación alta (no es «número de personas»). Abrir: sedes de 3 médicos\n"
-                               f"elegidas una por una; con {k50} se quita la mitad. Ampliar: +3 médicos a una unidad saturada.\n"
-                               "Cuenta médicos, no costos.")
-    ax = fig.add_axes([0.13, 0.17, 0.80, 0.43])
-    for y in [25, 50]:
-        ax.axhline(y, color=CALLE, lw=1.2)
-        ax.text(1495, y + 1, f"{y}%", color=TXT3, fontsize=17, ha="right", va="bottom")
-    l1, = ax.plot([], [], color=VERDE, lw=4.5, solid_capstyle="round")
-    l2, = ax.plot([], [], color=GRIS, lw=4, ls=(0, (6, 3)))
-    t1 = ax.text(255, 70, "", color=TXT, fontsize=22, fontweight="bold", ha="left")
-    t2 = ax.text(1050, 33, "", color=TXT2, fontsize=22, fontweight="bold", ha="left")
-    p1, = ax.plot([], [], "o", color=VERDE, ms=13, mec=FONDO, mew=2)
-    p2, = ax.plot([], [], "o", color=GRIS, ms=13, mec=FONDO, mew=2)
-    ax.set_xlim(0, 1500); ax.set_ylim(0, 100)
-    ax.set_xlabel("médicos agregados", fontsize=19)
-    ax.set_ylabel("falta de acceso quitada (%)", fontsize=19)
-    ax.tick_params(labelsize=17)
-    for s in ["top", "right"]:
-        ax.spines[s].set_visible(False)
-    N, FIN = 70, 30
-
-    def act(k):
-        lim = 1500 * min(1, (k + 1) / N)
-        for (x, y), ln in zip(curvas.values(), [l1, l2]):
-            m = x <= lim
-            ln.set_data(x[m], y[m])
-        t1.set_text("abrir" if lim >= 400 else "")
-        t2.set_text("ampliar" if lim >= 1050 else "")
-        p1.set_data([ab] if lim >= ab else [], [25] if lim >= ab else [])
-        p2.set_data([am] if lim >= am else [], [25] if lim >= am else [])
-    guardar_anim(fig, act, N + FIN, "p2_B_abrir_ampliar")
-
-
-def p2_C_prioridad():
-    oc = cargar("optimizacion_calle")
-    sit = pd.read_csv(AUD / "optimizacion_sitios_calle.csv")
-    ev = oc["evaluacion"]
-    mc, br = ev["cobertura"]["20"], ev["brecha"]["20"]
-    red = oc["criterio"]["reduccion_brecha"]
-    sinp = oc["brecha_sin_peso_marginacion"]
-    pts = {o: sit[(sit.objetivo == o) & (sit.orden <= 20)] for o in ["cobertura", "brecha"]}
-    iguales = int(sum(np.hypot(*(pts["brecha"][["x", "y"]].values - r).T).min() <= 500
-                      for r in pts["cobertura"][["x", "y"]].values))
-    assert iguales == 5 and sinp["sitios_iguales_500m"] == 4
-    fig = lienzo_pregunta("20 clínicas nuevas:\n¿a quién primero?",
-                          f"Cada opción elige otros lugares: solo {iguales} de 20 coinciden.",
-                          nota="Sedes de 3 médicos elegidas una por una; las dos opciones dan peso doble a la marginación alta.\n"
-                               f"Sin ese peso, «los que están peor» saca del acceso bajo a solo "
-                               f"{sinp['evaluacion']['salen_de_bajo_psin'] / 1e3:.1f} mil personas.\n"
-                               "Falta de acceso = lo que le falta a cada persona para el umbral, sumado.")
-    v = (494000, 520000, 2126000, 2152000)
-    fuera = {o: int((~en_ventana(p.x.values, p.y.values, v)).sum()) for o, p in pts.items()}
-    textos = {"cobertura": ("Llegar a\nmás gente", mc, red["cobertura"]),
-              "brecha": ("Llegar a los\nque están peor", br, red["brecha"])}
-    for o, y0 in [("cobertura", 0.41), ("brecha", 0.09)]:
-        ax = fig.add_axes([0.02, y0, 0.55, 0.31])
-        mapa(ax, (CEL.f.values < 0.5).astype(int), [SUF, BAJO], ventana=v)
-        p = pts[o]
-        ax.scatter(p.x, p.y, marker="*", s=700, c=VERDE, edgecolors=FONDO, linewidths=2, zorder=5)
-        t, e, rb = textos[o]
-        fig.text(0.60, y0 + 0.29, t, fontsize=26, fontweight="bold", va="top", linespacing=1.15)
-        fig.text(0.60, y0 + 0.205, mil(e["salen_de_bajo_psin"]), fontsize=36, fontweight="bold", va="top")
-        fig.text(0.60, y0 + 0.16, "salen del acceso bajo", fontsize=17, color=TXT2, va="top")
-        fig.text(0.60, y0 + 0.12, f"{100 * e['salen_de_bajo_alta_marg_psin'] / e['salen_de_bajo_psin']:.0f}% de ellos "
-                 f"en\nmarginación alta\nfalta de acceso: −{100 * rb:.1f}%", fontsize=17, color=TXT2, va="top",
-                 linespacing=1.35)
-        if fuera[o]:
-            fig.text(0.60, y0 + 0.005, f"+{fuera[o]} estrellas fuera del recuadro", fontsize=13.5, color=TXT3)
-    leyenda(fig, 0.06, 0.79, [(BAJO, "acceso bajo antes de abrir"), (SUF, "acceso suficiente")], dy=0.026, fs=16)
-    fig.add_artist(plt.Line2D([0.575], [0.781], marker="*", ms=24, color=VERDE, mec=FONDO, mew=1.5,
-                              transform=fig.transFigure))
-    fig.text(0.60, 0.79, "clínica nueva", color=TXT2, fontsize=16, va="top")
-    guardar(fig, "p2_C_prioridad")
-    return iguales, fuera
-
-
-
-
 def p2_E_horizonte():
     """Un solo mapa del barrio con lo que queda a 15 min y lo que solo queda a 30."""
     sf = cargar("sensibilidad_f3")["resultados"]
@@ -1301,9 +1206,378 @@ def p3_3_equidad():
     return n_mor, n_gan
 
 
+# ══ Ronda 4: dónde y cuántas clínicas (B y C juntos) ═════════════════════════
+# Sale del notebook 41: `cuantas_unidades_curvas.csv` (métricas por K), `cuantas_unidades_sitios.csv`
+# (orden y lugar de cada sitio elegido) y `cuantas_unidades_celdas.parquet` (primer K en que cada
+# cuadro sale del acceso bajo). Las tres estrategias abren clínicas de 3 médicos con el voraz.
+ESTRAT = [("mclp", "cubrir"), ("mixta", "mixta"), ("brecha", "los peores")]
+
+
+def _cuantas():
+    cv = pd.read_csv(AUD / "cuantas_unidades_curvas.csv")
+    js = cargar("cuantas_unidades")
+    sit = pd.read_csv(AUD / "cuantas_unidades_sitios.csv")
+    kc = pd.read_parquet(INT / "cuantas_unidades_celdas.parquet")
+    assert (kc.x.values == CEL.x.values).all() and (kc.y.values == CEL.y.values).all()
+    return cv, js, sit, kc, js["linea_base"]["brecha"]
+
+
+def _en(cv, n, K):
+    return cv[(cv.solucion == n) & (cv.K == K)].iloc[0]
+
+
+def _vista(cx, cy, hx, rect):
+    """Ventana centrada con la proporción del eje, para que el eje no cambie de tamaño al moverla."""
+    r = rect[3] * H / (rect[2] * W)
+    return (cx - hx, cx + hx, cy - hx * r, cy + hx * r)
+
+
+def _voraz_local(v, pasos=3):
+    """Las primeras decisiones del voraz con solo las candidatas de la ventana (demostración local).
+
+    Mismos objetivos que el notebook 41: «cubrir» = gente (×2 si marginación alta) que queda con
+    una clínica a ≤ 15 min; «los peores» = lo que falta para llegar a la mitad del promedio,
+    con el mismo peso. Cada clínica nueva tiene 3 médicos y sube el acceso de su cuenca."""
+    pc = pd.read_parquet(INT / "pares_red_candidatos_calle.parquet",
+                         filters=[("cx", ">=", v[0]), ("cx", "<=", v[1]), ("cy", ">=", v[2]), ("cy", "<=", v[3])])
+    p = pares()
+    prom = OF.cap.sum() / PSIN.sum()
+    cap = float(np.median(OF.cap))
+    peso = PSIN * np.where(CEL.alta_marg.values.astype(bool), 2.0, 1.0)
+    d0 = np.full(len(CEL), np.inf)
+    np.minimum.at(d0, p.i.values, p.d.values)
+    I, J, DIST = pc.i.values, pc.j.values, pc.d.values.astype(float)
+    w = acceso.peso(DIST, 2250)
+    cands = np.unique(J)
+    pos = np.searchsorted(cands, J)
+    den = np.bincount(pos, weights=PSIN[I] * w, minlength=len(cands))
+    dd = w / np.maximum(den[pos], 1e-9) / prom * cap      # cuánto sube el acceso de cada cuadro
+    xy = pc.drop_duplicates("j").set_index("j").loc[cands, ["cx", "cy"]].to_numpy()
+    res = {}
+    for n in ("mclp", "brecha"):
+        f, cub = CEL.f.values.copy(), d0 <= 1125
+        hist = []
+        for _ in range(pasos):
+            if n == "brecha":
+                gp = peso[I] * (np.maximum(0, 0.5 - f[I]) - np.maximum(0, 0.5 - f[I] - dd))
+            else:
+                gp = np.where((DIST <= 1125) & ~cub[I], peso[I], 0.0)
+            g = np.bincount(pos, weights=gp, minlength=len(cands))
+            k = int(np.argmax(g))
+            m = pos == k
+            nuevos = I[m][(DIST[m] <= 1125) & ~cub[I[m]]]
+            antes = f.copy()
+            f[I[m]] += dd[m]
+            cub[nuevos] = True
+            hist.append(dict(g=g, k=k, j=int(cands[k]), antes=antes, despues=f.copy(), cel=I[m], dist=DIST[m],
+                             cubre=float(PSIN[nuevos].sum())))
+        res[n] = hist
+    return cands, xy, res
+
+
+def p2_BC1_la_primera():
+    """¿Dónde pondrías la primera? Las tres primeras decisiones de cubrir y de los peores en un barrio."""
+    cv, js, sit, _, _ = _cuantas()
+    rect = [0.02, 0.09, 0.96, 0.68]
+    v = _vista(507000, 2131800, 3300, rect)
+    cands, cxy, res = _voraz_local(v)
+    # La primera de «cubrir» en el barrio es también la primera de toda la zona (notebook 41).
+    g1 = sit[(sit.solucion == "mclp") & (sit.orden == 1)].iloc[0]
+    assert res["mclp"][0]["j"] == g1.candidato_id
+    assert np.isclose(res["mclp"][0]["cubre"], _en(cv, "mclp", 1).cobertura_nueva, rtol=1e-9)
+    fig, _ = lienzo_tiktok("Demostración local: el voraz elige entre las candidatas de este barrio (Valle de Chalco "
+                           "y Chalco), una a la vez.\nTamaño del círculo = cuánto ayudaría ahí una clínica de 3 médicos. "
+                           "Cubrir: gente que queda a 15 min;\nlos peores: lo que les falta a los de acceso bajo. "
+                           "Marginación alta cuenta doble en las dos.")
+    fig.text(0.06, 0.955, "¿Dónde pondrías\nla primera?", fontsize=46, fontweight="bold", va="top", linespacing=1.1)
+    t_est = fig.text(0.06, 0.815, "", fontsize=30, color=TXT2, va="top")
+    ax = fig.add_axes(rect)
+    clase = (CEL.f.values < 0.5).astype(int)
+    img = ax.imshow(raster(clase), origin="lower", extent=EXT, cmap=ListedColormap([SUF, BAJO]),
+                    vmin=-0.5, vmax=1.5, interpolation="nearest", zorder=1)
+    alc = ax.imshow(raster(np.zeros(len(CEL))), origin="lower", extent=EXT,
+                    cmap=ListedColormap([(0, 0, 0, 0), NEUTRO]), vmin=-0.5, vmax=1.5, alpha=0.35,
+                    interpolation="nearest", zorder=2)
+    clinicas(ax, v, escala=6)
+    # Candidatas rellenas en gris (las clínicas de hoy son aros blancos); las dos mejores, aro menta.
+    cand = ax.scatter(cxy[:, 0], cxy[:, 1], s=0, c=[NEUTRO], alpha=0.75, edgecolors=FONDO, linewidths=0.8, zorder=4)
+    fin = ax.scatter([], [], s=0, facecolors="none", edgecolors=VERDE, linewidths=4, zorder=5)
+    nuevas = ax.scatter([], [], s=260, c=[VERDE], edgecolors=FONDO, linewidths=2, zorder=7, marker="o")
+    encuadre(ax, v)
+    escala_km(ax, v)
+    INTRO, PULSO, CAE, CRECE, QUIETO = 10, 18, 6, 14, 6
+    POR = PULSO + CAE + CRECE + QUIETO
+    POR_EST = INTRO + 3 * POR
+    N = 2 * POR_EST + 20
+
+    def act(fr):
+        e = min(fr // POR_EST, 1)
+        n, nombre = [("mclp", "cubrir"), ("brecha", "los peores")][e]
+        hist = res[n]
+        r = fr - e * POR_EST
+        paso, t = (0, -1) if r < INTRO else divmod(r - INTRO, POR)
+        paso = min(paso, 2)
+        if fr >= 2 * POR_EST:
+            paso, t = 2, POR - 1
+        h = hist[paso]
+        t_est.set_text(f"{nombre} · {paso + 1}ª" if t >= 0 else nombre)
+        gmax = hist[0]["g"].max()
+        # puestas antes de este paso; la de este paso cae después del pulso
+        puestas = [hist[q]["k"] for q in range(paso)] + ([h["k"]] if t >= PULSO else [])
+        ys = cxy[puestas, 1].copy()
+        if t >= PULSO and t < PULSO + CAE:
+            ys[-1] += (1 - suave((t - PULSO + 1) / CAE)) * 900
+        nuevas.set_offsets(np.c_[cxy[puestas, 0], ys] if puestas else np.empty((0, 2)))
+        # candidatas: tamaño = ganancia; las dos mejores pulsan
+        rel = h["g"] / gmax
+        tam = np.where(rel > 0.05, 1500 * rel ** 1.5, 0.0)   # potencia: que se note cuál destaca
+        tam[puestas] = 0
+        cand.set_sizes(tam if t >= 0 else np.zeros(len(cands)))
+        top = np.argsort(h["g"])[::-1][:2]
+        if 0 <= t < PULSO:
+            fin.set_offsets(cxy[top])
+            fin.set_sizes(tam[top] * (1 + 0.25 * np.sin(t / PULSO * 4 * np.pi) ** 2))
+        else:
+            fin.set_offsets(np.empty((0, 2)))
+        # alcance por calle y cuadros que salen del rojo
+        f = h["antes"].copy()
+        if t >= PULSO + CAE:
+            rr = 2250 * suave((t - PULSO - CAE) / CRECE)
+            m = h["dist"] <= rr
+            f[h["cel"][m]] = h["despues"][h["cel"][m]]
+            ver = np.zeros(len(CEL))
+            ver[h["cel"][m]] = 1
+            alc.set_data(raster(ver) if t < POR - QUIETO else raster(np.zeros(len(CEL))))
+        else:
+            alc.set_data(raster(np.zeros(len(CEL))))
+        img.set_data(raster((f < 0.5).astype(int)))
+    guardar_anim(fig, act, N, "p2_BC1_la_primera", fps=15)
+    return {n: [(int(x["j"]), round(x["cubre"])) for x in res[n]] for n in res}
+
+
+def p2_BC2_49_clinicas():
+    """Las 49 clínicas de cada estrategia; de una a la otra solo se mueven los sitios que cambian."""
+    from scipy.optimize import linear_sum_assignment
+    cv, js, sit, kc, br0 = _cuantas()
+    K = 49
+    met = {n: (_en(cv, n, k_).cobertura_nueva, (1 - _en(cv, n, k_).brecha / br0) * 100)
+           for n, _ in ESTRAT for k_ in [K]}
+    assert [round(met[n][0] / 1e3) for n, _ in ESTRAT] == [533, 432, 279]
+    assert [round(met[n][1], 1) for n, _ in ESTRAT] == [16.8, 23.0, 25.1]
+    s49 = {n: sit[(sit.solucion == n) & (sit.orden <= K)].sort_values("orden")[["x", "y"]].to_numpy()
+           for n, _ in ESTRAT}
+    assert all(len(a) == K for a in s49.values())
+
+    def emparejar(a, b):
+        D = np.hypot(a[:, None, 0] - b[None, :, 0], a[:, None, 1] - b[None, :, 1])
+        _, c = linear_sum_assignment(D)
+        return b[c], D[np.arange(len(a)), c]
+    pasos = []           # posiciones de llegada de cada transición, en el orden de la anterior
+    prev = s49["mclp"]
+    coinc = {}
+    for (n0, _), (n1, _) in zip(ESTRAT[:-1], ESTRAT[1:]):
+        nuevo, d = emparejar(prev, s49[n1])
+        coinc[f"{n0}->{n1}"] = (int((d < 1).sum()), int((d <= 500).sum()), round(float(np.median(d))))
+        pasos.append((prev, nuevo, d))
+        prev = nuevo
+    rect = [0.02, 0.09, 0.96, 0.66]
+    # Encuadre del oriente: todos los sitios al este de x = 470 km (los del oeste, en Toluca, se cuentan aparte).
+    todos = np.vstack(list(s49.values()))
+    este = todos[todos[:, 0] >= 470000]
+    cx_, cy_ = (este[:, 0].min() + este[:, 0].max()) / 2, (este[:, 1].min() + este[:, 1].max()) / 2
+    r_ = rect[3] * H / (rect[2] * W)
+    hx = max(np.ptp(este[:, 0]) / 2, np.ptp(este[:, 1]) / 2 / r_) + 1500
+    vE = _vista(cx_, cy_, hx, rect)
+    assert en_ventana(este[:, 0], este[:, 1], vE).all()
+    hF = max((EXT[1] - EXT[0]) / 2, (EXT[3] - EXT[2]) / 2 / r_)
+    vF = _vista((EXT[0] + EXT[1]) / 2, (EXT[2] + EXT[3]) / 2, hF, rect)
+    fig, _ = lienzo_tiktok("49 clínicas nuevas de 3 médicos con cada estrategia (voraz, notebook 41). Clínica cerca =\n"
+                           "gente sin seguro que gana su primera clínica a ≤ 15 min por calle. Brecha = lo que falta para "
+                           "la\nmitad del promedio, con marginación alta contando doble. Entre estrategias, cada sitio "
+                           "se\nempareja uno a uno con el de la siguiente; los que se mueven más de 3 km saltan.")
+    t_nom = fig.text(0.06, 0.955, "", fontsize=44, fontweight="bold", va="top")
+    t_k = fig.text(0.94, 0.955, "", fontsize=30, color=TXT2, va="top", ha="right")
+    t_a = fig.text(0.06, 0.885, "", fontsize=58, fontweight="bold", va="top")
+    t_b = fig.text(0.56, 0.885, "", fontsize=58, fontweight="bold", va="top")
+    fig.text(0.065, 0.805, "clínica cerca", fontsize=21, color=TXT2, va="top")
+    fig.text(0.565, 0.805, "de la brecha", fontsize=21, color=TXT2, va="top")
+    t_fuera = fig.text(0.06, 0.105, "", fontsize=18, color=TXT2, va="bottom")
+    ax = fig.add_axes(rect)
+    base = (CEL.f.values < 0.5).astype(int)
+    img = ax.imshow(raster(base), origin="lower", extent=EXT, cmap=ListedColormap([SUF, BAJO, VERDE]),
+                    vmin=-0.5, vmax=2.5, interpolation="nearest", zorder=1)
+    ax.scatter(OF.x, OF.y, s=8, c=CLIN, alpha=0.35, linewidths=0, zorder=3)
+    rastro = LineCollection([], colors=VERDE, linewidths=2.5, alpha=0.8, zorder=4)
+    ax.add_collection(rastro)
+    sitios = ax.scatter([], [], s=130, c=[VERDE], edgecolors=FONDO, linewidths=1.6, zorder=5)
+    encuadre(ax, vF)
+
+    def clases(n, k_):
+        ks = kc[f"k_sale_{n}"].to_numpy()
+        return np.where((ks > 0) & (ks <= k_), 0, base), ks
+
+    def mostrar(v):
+        ax.set_xlim(v[0], v[1]); ax.set_ylim(v[2], v[3])
+
+    def fuera(xy, v):
+        n_ = int((~en_ventana(xy[:, 0], xy[:, 1], v)).sum())
+        return f"+{n_} al oeste (Toluca)" if n_ else ""
+    SECU = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 24, 28, 33, 38, 43, 49]
+    marcos = [("mapa", 0)] * 10 + [("zoom", i) for i in range(14)]
+    for i, k_ in enumerate(SECU):
+        marcos += [("k", k_)] * (3 if i < 8 else 2)
+    marcos += [("quieto", 0)] * 22
+    for t_ in range(2):
+        marcos += [("mueve", (t_, i)) for i in range(18)] + [("llega", t_)] * 24
+    estado = {"prev": 0}
+
+    def act(fr):
+        modo, val = marcos[fr]
+        if modo in ("mapa", "zoom"):
+            s = suave(val / 13) if modo == "zoom" else 0
+            v = tuple(np.array(vF) + (np.array(vE) - np.array(vF)) * s)
+            mostrar(v)
+            t_nom.set_text("cubrir"); t_k.set_text("0 clínicas"); t_a.set_text("0"); t_b.set_text("0%")
+            img.set_data(raster(base)); sitios.set_offsets(np.empty((0, 2))); return
+        mostrar(vE)
+        if modo == "k":
+            cl, ks = clases("mclp", val)
+            prev = estado["prev"]
+            cl = np.where((ks > prev) & (ks <= val), 2, cl)      # pulso: los que acaban de salir del rojo
+            estado["prev"] = val
+            img.set_data(raster(cl))
+            xy = s49["mclp"][:val]
+            sitios.set_offsets(xy)
+            r = _en(cv, "mclp", val)
+            t_nom.set_text("cubrir"); t_k.set_text(f"{val} clínicas")
+            t_a.set_text(mil(r.cobertura_nueva)); t_b.set_text(f"{(1 - r.brecha / br0) * 100:.0f}%")
+            t_fuera.set_text(fuera(xy, vE)); return
+        if modo == "quieto":
+            img.set_data(raster(clases("mclp", K)[0])); return
+        t_, i = val if modo == "mueve" else (val, 17)
+        a, b, d = pasos[t_]
+        n0, n1 = ESTRAT[t_][0], ESTRAT[t_ + 1][0]
+        s = suave(i / 17)
+        # Los cortos (≤ 3 km) se deslizan con rastro; los largos saltan a la mitad, sin rayar el mapa.
+        corto = d <= 3000
+        xy = np.where(corto[:, None], a + (b - a) * s, b if s >= 0.5 else a)
+        sitios.set_offsets(xy)
+        mov = (d >= 1) & corto
+        rastro.set_segments([np.array([a[q], xy[q]]) for q in np.flatnonzero(mov)] if modo == "mueve" else [])
+        img.set_data(raster(clases(n1 if s >= 0.5 else n0, K)[0]))
+        t_nom.set_text(ESTRAT[t_ + 1][1]); t_k.set_text(f"{K} clínicas")
+        ca = met[n0][0] + (met[n1][0] - met[n0][0]) * s
+        cb = met[n0][1] + (met[n1][1] - met[n0][1]) * s
+        t_a.set_text(mil(ca)); t_b.set_text(f"{cb:.0f}%")
+        t_fuera.set_text(fuera(xy, vE))
+    guardar_anim(fig, act, len(marcos), "p2_BC2_49_clinicas", fps=15)
+    return coinc
+
+
+def p2_BC3_cuantas():
+    """¿Cuántas para cerrar ¼ de la brecha? Íconos de clínica, diez por fila, por estrategia."""
+    js = cargar("cuantas_unidades")["cuantas"]
+    m25 = [js[n]["brecha_25"]["k"] for n, _ in ESTRAT]
+    m50 = [js[n]["brecha_50"]["k"] for n, _ in ESTRAT]
+    assert m25 == [87, 55, 49] and m50 == [226, 141, 130], (m25, m50)
+    fig, ax = lienzo_tiktok("Clínicas nuevas de 3 médicos, elegidas de una en una con cada estrategia (notebook 41). "
+                            "Brecha = lo que falta\npara la mitad del promedio, con marginación alta contando doble.")
+    t_q = fig.text(0.06, 0.955, "", fontsize=46, fontweight="bold", va="top", linespacing=1.1)
+    XS, SP, Y0 = [0.55, 3.45, 6.35], 0.235, 11.6
+    capas, nums = [], []
+    for x0, (_, nombre) in zip(XS, ESTRAT):
+        ax.text(x0 + 4.5 * SP, 12.25, nombre, ha="center", fontsize=22, color=TXT2)
+        nums.append(ax.text(x0 + 4.5 * SP, 12.75, "", ha="center", fontsize=40, fontweight="bold", color=TXT))
+        capas.append(ax.scatter([], [], s=62, c=[VERDE], edgecolors=FONDO, linewidths=0.8, marker="s"))
+
+    def pos(n_, x0):
+        k = np.arange(n_)
+        return np.c_[x0 + (k % 10) * SP, Y0 - (k // 10) * SP]
+    VEL, P1, P2 = 2, 25, 35
+    f1 = int(np.ceil(max(m25) / VEL))
+    f2 = int(np.ceil((max(m50) - max(m25)) / VEL))
+    N = f1 + P1 + f2 + P2
+
+    def act(fr):
+        if fr < f1 + P1:
+            c, meta, q = min(fr * VEL + VEL, max(m25)), m25, "¿Cuántas para\ncerrar ¼?"
+        else:
+            c, meta, q = min(max(m25) + (fr - f1 - P1) * VEL + VEL, max(m50)), m50, "¿Y para\ncerrar ½?"
+        t_q.set_text(q)
+        for sc, tx, x0, mt in zip(capas, nums, XS, meta):
+            n_ = min(c, mt)
+            sc.set_offsets(pos(n_, x0))
+            tx.set_text(f"{n_}")
+    guardar_anim(fig, act, N, "p2_BC3_cuantas", fps=15)
+    return m25, m50
+
+
+def p2_BC4_ampliar():
+    """¿Y si agrandamos las que hay? Con los mismos 147 médicos, y luego para cerrar ¼ de la brecha."""
+    cv, js, _, _, _ = _cuantas()
+    ab, am = _en(cv, "brecha", 49), _en(cv, "ampliar", 49)
+    comp = js["abrir_vs_ampliar"]["brecha_25"]
+    med_ab, med_am = int(comp["medicos_abrir"]), int(comp["medicos_ampliar_saturadas"])
+    assert (med_ab, med_am) == (147, 696) and js["cuantas"]["brecha"]["brecha_25"]["k"] * 3 == med_ab
+    assert round(ab.sale_bajo / 1e3) == 263 and round(am.sale_bajo / 1e3) == 403
+    assert am.cobertura_nueva == 0 and round(ab.cobertura_nueva / 1e3) == 279
+    fig, ax = lienzo_tiktok("Abrir = 49 clínicas nuevas con la estrategia «los peores». Ampliar = sumar 3 médicos a "
+                            "clínicas\nsaturadas, hasta 3 veces cada una. Con los mismos 147 médicos, ampliar saca a más "
+                            "gente del\nacceso bajo, pero no le da clínica cerca a nadie nuevo. Para cerrar ¼ de la brecha "
+                            "(marginación\nalta cuenta doble): 49 clínicas contra 232 ampliaciones.")
+    t_q = fig.text(0.06, 0.955, "¿Y si agrandamos\nlas que hay?", fontsize=46, fontweight="bold", va="top",
+                   linespacing=1.1)
+    t_s = fig.text(0.06, 0.80, "", fontsize=30, color=TXT2, va="top")
+    XL, XR = 2.4, 6.6
+    filas = [("salen del acceso bajo", ab.sale_bajo, am.sale_bajo, 9.4),
+             ("clínica cerca nueva", ab.cobertura_nueva, am.cobertura_nueva, 6.4)]
+    PER = 36
+
+    def grid(n_, y0):
+        k = np.arange(n_)
+        return np.c_[0.75 + (k % PER) * 0.215, y0 - (k // PER) * 0.27]
+    cab = [ax.scatter([], [], s=24, c=CLIN, linewidths=0) for _ in range(2)]
+    cue = [ax.scatter([], [], s=46, c=CLIN, linewidths=0, marker="s") for _ in range(2)]
+    F1, F2, Q1 = 15, 45, 85
+    VEL = 6
+    n2 = int(np.ceil(med_am / VEL))
+    N = Q1 + 12 + n2 + 35
+
+    def act(fr):
+        for a_ in list(ax.texts) + list(ax.patches):
+            a_.remove()
+        if fr < Q1:
+            t_s.set_text(f"con los mismos {med_ab} médicos")
+            ax.add_patch(plt.Circle((XL, 11.6), 0.32, fc=VERDE, ec=FONDO, lw=2))
+            ax.add_patch(plt.Circle((XR, 11.6), 0.32, fc=FONDO, ec=CLIN, lw=4))
+            ax.text(XL, 10.85, "abrir", ha="center", fontsize=28, fontweight="bold", color=TXT)
+            ax.text(XR, 10.85, "ampliar", ha="center", fontsize=28, fontweight="bold", color=TXT)
+            for i, (lab, a, b, y) in enumerate(filas):
+                if fr < (F1, F2)[i]:
+                    continue
+                ax.text(W / 2, y + 0.55, lab, ha="center", fontsize=22, color=TXT2)
+                ax.text(XL, y - 0.5, mil(a) if a else "0", ha="center", fontsize=50, fontweight="bold", color=TXT)
+                ax.text(XR, y - 0.5, mil(b) if b else "0", ha="center", fontsize=50, fontweight="bold", color=TXT)
+            for sc in cab + cue:
+                sc.set_offsets(np.empty((0, 2)))
+            return
+        t_q.set_text("¿Y para cerrar ¼\nde la brecha?")
+        t_s.set_text("")
+        c = max(0, (fr - Q1 - 12) * VEL + VEL) if fr >= Q1 + 12 else 0
+        na, nb = min(c, med_ab), min(c, med_am)
+        ax.text(0.65, 12.35, f"abrir: {na} médicos", fontsize=26, fontweight="bold", color=TXT)
+        ax.text(0.65, 9.75, f"ampliar: {nb} médicos", fontsize=26, fontweight="bold", color=TXT)
+        for sc_c, sc_b, n_, y0 in [(cab[0], cue[0], na, 11.85), (cab[1], cue[1], nb, 9.25)]:
+            g = grid(n_, y0)
+            sc_c.set_offsets(g + [0, 0.085]); sc_b.set_offsets(g - [0, 0.03])
+    guardar_anim(fig, act, N, "p2_BC4_ampliar", fps=15)
+    return med_ab, med_am, round(ab.sale_bajo), round(am.sale_bajo)
+
+
 TODAS = [p1_00_gancho, p1_01_clinicas, p1_02_gente, p1_03_calles, p1_03b_marginacion, p1_03c_capas,
          p1_03d1_alcance, p1_03d2_cuentas, p1_03e_todos_los_cuadros, p1_04a_esquema_acceso, p1_04_acceso,
-         p1_05_topologia, p2_A_reubicar, p2_B_abrir_ampliar, p2_C_prioridad, p2_D1_transporte_barrio,
+         p1_05_topologia, p2_A_reubicar, p2_BC1_la_primera, p2_BC2_49_clinicas, p2_BC3_cuantas,
+         p2_BC4_ampliar, p2_D1_transporte_barrio,
          p2_D2_transporte_ciudad, p2_E_horizonte, p3_2_rodeo, p3_3_equidad, p3_4_nulo]
 
 if __name__ == "__main__":

@@ -383,6 +383,75 @@ pd.concat({n: cv for n, cv in curvas.items()}, names=["solucion"]).reset_index(l
     SALIDA / "cuantas_unidades_curvas.csv", index=False)
 
 # %% [markdown]
+# ## Sitios elegidos y primer K por cuadro (para las gráficas del video, notebook 44)
+#
+# - `cuantas_unidades_sitios.csv`: por solución, el orden en que el voraz eligió cada sitio y su
+#   coordenada (candidata nueva, o unidad actual en «ampliar»).
+# - `cuantas_unidades_celdas.parquet`: por cuadro y solución, el primer K en que sale de acceso
+#   bajo y el primer K en que queda con una unidad a ≤ 15 min de calle (−1 = nunca en 500 pasos).
+#   Con esto el mapa de cualquier K se pinta sin recalcular.
+
+# %%
+_pc = pd.read_parquet(INT / "pares_red_candidatos_calle.parquet", columns=["j", "cx", "cy"]).drop_duplicates("j")
+CAND_XY = np.full((NUEVAS.M, 2), np.nan)
+CAND_XY[_pc["j"].to_numpy()] = _pc[["cx", "cy"]].to_numpy()
+del _pc
+VIDEO = ["brecha", "mixta", "mclp", "ampliar"]
+
+
+def primeros_k(sel, P, cap):
+    f, cub = F0.copy(), D0 <= R15
+    k_sale = np.full(N, -1, np.int32)
+    k_cub = np.full(N, -1, np.int32)
+    d = P.D1 * cap
+    for paso, k in enumerate(sel, 1):
+        s = P.tramo(k)
+        i = P.I[s]
+        f[i] += d[s]
+        nuevo = i[(f[i] >= UMBRAL) & (F0[i] < UMBRAL) & (k_sale[i] < 0)]
+        k_sale[nuevo] = paso
+        if P is NUEVAS:
+            nc = i[(P.DIST[s] <= R15) & ~cub[i]]
+            k_cub[nc] = paso
+            cub[nc] = True
+    return k_sale, k_cub
+
+
+filas, celdas = [], {}
+for n in VIDEO:
+    P, cap = DEF[n]
+    sel = np.asarray(sol[n][0])
+    xy = CAND_XY[sel] if P is NUEVAS else o[["x", "y"]].to_numpy()[sel]
+    assert np.isfinite(xy).all()
+    if P is NUEVAS:  # una coordenada por sitio, sin repetidos
+        assert len(np.unique(sel)) == len(sel) and len(np.unique(xy, axis=0)) == len(sel), n
+    else:  # ampliar: tope de 3 por sede
+        assert np.bincount(sel).max() <= TOPE_SEDE
+    assert len(sel) == len(curvas[n])  # orden 1…K igual a la curva
+    filas.append(pd.DataFrame({"solucion": n, "orden": np.arange(1, len(sel) + 1), "candidato_id": sel,
+                               "x": xy[:, 0], "y": xy[:, 1], "medicos": cap}))
+    ks, kc = primeros_k(sel, P, cap)
+    celdas[f"k_sale_{n}"] = ks
+    if P is NUEVAS:
+        celdas[f"k_cub15_{n}"] = kc
+    # Métricas reconstruidas desde el primer K por cuadro = curva, en K = 49 y en los cruces de ¼ y ½.
+    cv = curvas[n].set_index("K")
+    for K in {49, res_k[n]["brecha_25"]["k"], res_k[n]["brecha_50"]["k"]}:
+        if not isinstance(K, (int, np.integer)) or K > len(cv):
+            continue
+        sale = (ks > 0) & (ks <= K)
+        assert np.isclose(PSIN[sale].sum(), cv.at[K, "sale_bajo"], rtol=1e-9), (n, K)
+        assert np.isclose(PSIN[sale & PRIOR].sum(), cv.at[K, "sale_prioridad"], rtol=1e-9), (n, K)
+        assert cv.at[K, "sale_prioridad"] <= cv.at[K, "sale_bajo"]
+        if P is NUEVAS:
+            assert np.isclose(PSIN[(kc > 0) & (kc <= K)].sum(), cv.at[K, "cobertura_nueva"], rtol=1e-9), (n, K)
+sitios = pd.concat(filas, ignore_index=True)
+sitios.to_csv(SALIDA / "cuantas_unidades_sitios.csv", index=False)
+pd.DataFrame({"x": c["x"].to_numpy(), "y": c["y"].to_numpy(), **celdas}).to_parquet(
+    INT / "cuantas_unidades_celdas.parquet")
+print(sitios.groupby("solucion").size().to_dict())
+
+# %% [markdown]
 # ## Figura: brecha cerrada y gente que sale de acceso bajo, según K
 
 # %%

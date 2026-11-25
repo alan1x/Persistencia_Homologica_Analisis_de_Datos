@@ -517,3 +517,69 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
 - **Se borraron** `p1_03d_un_cuadro` y `p2_D_transporte`, que el esquema reemplaza (siguen en el
   commit anterior).
 - **Sin commit** de esta ronda.
+
+## 2026-11-24 — Ronda 4: dónde y cuántas clínicas (B y C juntos)
+
+- **Pedido:** la última entrada de `../Videos Ciencia de Datos/PEDIDOS.md` y la sección «Ronda 4» del
+  esquema. Antes, la ronda 3 quedó en su commit (`feat(video): ronda 3, más imagen y menos texto`).
+- **Código en el notebook 41** (corre en unos 18 s; las curvas y el JSON no cambian, salvo los minutos):
+  - **`outputs/auditoria/cuantas_unidades_sitios.csv`:** `solucion, orden, candidato_id, x, y, medicos`
+    para cubrir (`mclp`), mixta, los peores (`brecha`) y ampliar. Son 500 pasos de cada una.
+  - **`outputs/intermedios/cuantas_unidades_celdas.parquet`:** por cuadro, el primer K en que sale del
+    acceso bajo y el primer K en que queda a ≤ 15 min (−1 = nunca en 500 pasos).
+  - **Asserts que pasan:**
+    - Cada sitio es único y tiene una coordenada.
+    - El orden 1…K es igual a la curva.
+    - Las personas que salen, la prioridad y la cobertura, rearmadas desde el primer K por cuadro,
+      son iguales al CSV en K = 49 y en los cruces de ¼ y ½.
+    - `sale_prioridad ≤ sale_bajo`.
+    - Ampliar no pasa de 3 veces por sede.
+- **Cifras: todas las del esquema coinciden** con el CSV y el JSON:
+  - Clínica cerca: 533 / 432 / 279 mil.
+  - Brecha: 16.8 / 23.0 / 25.1%.
+  - Salen del acceso bajo: 244 / 176 / 263 mil. Marginados que salen: 198 mil.
+  - Clínicas para ¼: 87 / 55 / 49. Para ½: 226 / 141 / 130.
+  - Médicos para ¼: 147 al abrir contra 696 al ampliar.
+  - Ampliando 49 veces salen 403 mil, y nadie gana clínica cerca.
+- **Coincidencia recalculada a K = 49**, con emparejamiento uno a uno (Hungarian). Reemplaza al
+  «5 de 20»:
+  - **Mixta y los peores:** 6 sitios idénticos, 24 de 49 a ≤ 500 m y una mediana de 707 m. Casi
+    coinciden.
+  - **Cubrir y mixta:** 11 idénticos, 16 a ≤ 500 m y una mediana de 1.6 km.
+  - **Cubrir y los peores:** ninguno idéntico y una mediana de 4.5 km.
+- **Dónde caen las 49:** casi todas en el oriente del Edomex (Chimalhuacán, Ecatepec, Valle de Chalco,
+  Neza, La Paz y Chalco). En la CDMX caen 7 de cubrir, 4 de mixta y 1 de los peores. Mixta y los
+  peores ponen 3 en Toluca.
+- **Lo que Mario aprobó antes de dibujar** (con Codex como segunda opinión):
+  - **BC2 usa las mismas dos cifras para las tres estrategias:** «clínica cerca» y «de la brecha».
+    Ya no se muestra una cifra distinta por estrategia: 533 mil, 23% y 198 mil son medidas
+    diferentes y se compararían mal. Los 198 mil quedan para la voz.
+  - **BC4 muestra las dos caras de ampliar.** Con 147 médicos saca a 403 mil del acceso bajo, contra
+    263 mil al abrir, pero no le da clínica cerca a nadie (0 contra 279 mil). Para ¼ de la brecha
+    necesita 696 médicos contra 147. Mostrar solo el 696 escondía que ampliar gana en una medida.
+  - **Mixta se queda:** es el punto medio, y BC3 la necesita.
+  - **La guía para hablar (bloque «BC» de `persistencia_guia.md`) debe ajustarse a estos dos cambios.**
+    Desde aquí es solo de lectura.
+- **Lo que quedó en `outputs/video/`** (GIF + PNG del último cuadro, en `notebooks/44_graficas_video.py`):
+  - **`p2_BC1_la_primera`:** Valle de Chalco y Chalco, primero cubrir y luego los peores, tres
+    decisiones de cada una.
+    - Las candidatas son puntos grises. Su tamaño es la ganancia real del voraz en ese paso.
+    - Las dos mejores pulsan con un aro menta. Cae la clínica, se extiende su alcance por calle y
+      los cuadros cambian de rojo a azul. Después se recalcula y cambian los tamaños.
+    - **Es una demostración local:** solo usa las candidatas del barrio. La primera de cubrir
+      coincide con la primera de toda la zona (con `assert`): da clínica cerca a 16,202 personas,
+      igual que el CSV en K = 1.
+    - Las de los peores son locales: la primera de los peores en toda la zona está en otro lado.
+  - **`p2_BC2_49_clinicas`:** empieza en el mapa completo y se acerca al oriente.
+    - Cubrir se construye de 1 a 49: primero una por una, luego en tandas. Los cuadros que salen del
+      rojo destellan en menta.
+    - Después los sitios se mueven a mixta y luego a los peores. Los cortos (≤ 3 km) se deslizan con
+      rastro; los largos saltan para no rayar el mapa.
+    - Una nota cuenta los «+3 al oeste (Toluca)» que quedan fuera del encuadre. Un `assert` revisa
+      que el encuadre contenga los demás.
+  - **`p2_BC3_cuantas`:** íconos menta, diez por fila, que se detienen en 87 · 55 · 49. Luego la
+    meta pasa a ½ y siguen hasta 226 · 141 · 130.
+  - **`p2_BC4_ampliar`:** abrir contra ampliar con los mismos 147 médicos (263 contra 403 mil; 279
+    mil contra 0). Luego, figuritas de médico que se cuentan hasta 147 contra 696.
+- **Se borraron** `p2_B_abrir_ampliar` y `p2_C_prioridad`, junto con sus funciones (siguen en el
+  commit anterior).
