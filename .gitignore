@@ -17,3 +17,4 @@ outputs/intermedios/*.npz
 outputs/intermedios/*.npy
 outputs/intermedios/*.huella
 outputs/*.log
+outputs/intermedios/*/
