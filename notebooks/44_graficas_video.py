@@ -21,10 +21,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib import animation
+from matplotlib import animation, patheffects
 from matplotlib.collections import LineCollection
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap, PowerNorm
-from matplotlib.patches import Polygon
+from matplotlib.patches import FancyBboxPatch, Polygon
 from matplotlib.transforms import Affine2D
 from scipy import sparse
 from scipy.sparse import csgraph
@@ -392,35 +392,6 @@ def p1_03_calles():
     return frac, med_todas
 
 
-def p1_03b_marginacion():
-    eq = cargar("equidad_transporte")["veredicto"]["total"]
-    con = GRADO_I >= 0
-    parte = {g: PSIN[GRADO_I == i].sum() / PSIN[con].sum() * 100 for i, g in enumerate(GRADOS)}
-    alta = parte["Alto"] + parte["Muy alto"]
-    assert abs(alta - eq["alta_muy_alta_pct_gente"]) < 1e-6
-    fig = lienzo(f"{alta:.0f}%", "de la gente sin seguro vive en zonas\nde marginación alta o muy alta",
-                 nota="Índice de marginación urbana de CONAPO 2020, uno por zona del Censo (AGEB). Las líneas del zoom\n"
-                      "son los límites de esas zonas. El porcentaje cuenta personas, no superficie del mapa.")
-    _, az = _zona_y_barrio(
-        fig, mapa_marginacion,
-        [(MORADO[i], f"{g} · {parte[g]:.0f}%") for i, g in reversed(list(enumerate(GRADOS)))] + [(SILUETA, "sin dato")],
-        f"Zoom: {NOMBRE_BARRIO}")
-    # Límites de AGEB dentro del zoom: aristas entre cuadros vecinos de distinta AGEB.
-    m = en_ventana(CEL.x.values, CEL.y.values, BARRIO)
-    s = CEL[m]
-    clave = dict(zip(zip(s.x, s.y), s.CVEGEO))
-    segs = []
-    for (x, y), cv in clave.items():
-        for dx, dy in [(100, 0), (0, 100)]:
-            otro = clave.get((x + dx, y + dy))
-            if otro is not None and otro != cv:
-                if dx:
-                    segs.append([(x + 50, y - 50), (x + 50, y + 50)])
-                else:
-                    segs.append([(x - 50, y + 50), (x + 50, y + 50)])
-    az.add_collection(LineCollection(segs, colors=FONDO, linewidths=1.1, zorder=5))
-    guardar(fig, "p1_03b_marginacion")
-    return {g: round(v, 1) for g, v in parte.items()}
 
 
 def p1_03c_capas():
@@ -488,101 +459,6 @@ def p1_03c_capas():
     guardar(fig, "p1_03c_capas")
 
 
-def p1_03d_un_cuadro():
-    """Se sigue un cuadro real, paso a paso, hasta su acceso y su prioridad."""
-    k = celda(CUADRO)
-    q, A_mil, ref_mil = desglose_cuadro(k)
-    assert abs(ref_mil - cargar("acceso_e2sfca")["promedio_metropolitano_por_1000"]) < 1e-9
-    assert CEL.f.values[k] < 0.5 and CEL.grado.values[k] in ("Alto", "Muy alto")
-    gente = PSIN[k]
-    c1, c2 = q.iloc[0], q.iloc[-1]
-    xs = [CUADRO[0]] + list(OF.x.values[q.j]); ys = [CUADRO[1]] + list(OF.y.values[q.j])
-    v = (min(xs) - 900, max(xs) + 900, min(ys) - 1300, max(ys) + 1300)
-    alto = (v[1] - v[0]) * 1.12
-    v = (v[0], v[1], (v[2] + v[3]) / 2 - alto / 2, (v[2] + v[3]) / 2 + alto / 2)
-    xy, a, b, G, ok = red_local((v[0] + v[1]) / 2, (v[2] + v[3]) / 2, 3600)
-    s = nodo(xy, ok, CUADRO)
-    rutas = [ruta(xy, G, s, nodo(xy, ok, (OF.x.values[j], OF.y.values[j]))) for j in q.j]
-    fig = plt.figure(figsize=(W, H), dpi=DPI)
-    t_paso = fig.text(0.06, 0.955, "", fontsize=20, color=TXT3, va="top")
-    t_tit = fig.text(0.06, 0.925, "", fontsize=34, fontweight="bold", va="top", linespacing=1.15)
-    t_det = fig.text(0.06, 0.80, "", fontsize=21, color=TXT2, va="top", linespacing=1.35)
-    fig.text(0.06, 0.03, "Acceso E2SFCA a 30 min por calle. La demanda de cada clínica suma a la gente a su alcance,\n"
-             "contando más a quien vive más cerca. Un cuadro = 100 × 100 m; su gente es una estimación del Censo.\n"
-             + FUENTE, fontsize=12, color=TXT3, va="bottom", linespacing=1.4)
-    ax = fig.add_axes([0.02, 0.10, 0.96, 0.58])
-    segs = np.stack([xy[a], xy[b]], axis=1)
-    ax.add_collection(LineCollection(segs, colors=CALLE, linewidths=0.6, zorder=1))
-    # gente que comparte la clínica cercana (paso 3): cuadros que la alcanzan, brillo = peso × gente
-    p = pares()
-    pj = p[p.j == c1.j]
-    peso = PSIN[pj.i.values] * acceso.peso(pj.d.values, 2250)
-    val = np.full(len(CEL), np.nan)
-    val[pj.i.values] = peso
-    img = ax.imshow(raster(val), origin="lower", extent=EXT, cmap=AMBAR, norm=PowerNorm(0.5, 0, np.nanpercentile(peso, 98)),
-                    interpolation="nearest", alpha=0.0, zorder=2)
-    lineas = [ax.plot([], [], color=NEUTRO, lw=4, solid_capstyle="round", zorder=4)[0] for _ in rutas]
-    for j, row in zip(q.j, q.itertuples()):
-        ax.plot(OF.x.values[j], OF.y.values[j], "o", ms=16 + 2 * row.med, mfc="none", mec=CLIN, mew=3, zorder=6)
-    et = [ax.text(OF.x.values[j] + 160, OF.y.values[j] + 160, "", fontsize=17, color=TXT, zorder=7,
-                  bbox=dict(fc=FONDO, ec="none", alpha=0.75, pad=2)) for j in q.j]
-    cuad = plt.Rectangle((CUADRO[0] - 50, CUADRO[1] - 50), 100, 100, fc=AMBAR(0.85), ec=TXT, lw=2, zorder=8)
-    ax.add_patch(cuad)
-    anillo = plt.Circle(CUADRO, 230, fill=False, ec=MORADO[4], lw=4, zorder=9, visible=False)
-    ax.add_patch(anillo)
-    encuadre(ax, v)
-    escala_km(ax, v)
-    axb = fig.add_axes([0.10, 0.665, 0.82, 0.05]); axb.axis("off"); axb.set_visible(False)
-    pasos = [
-        ("Aquí viven\n{:.0f} personas sin seguro".format(gente),
-         f"Un cuadro de 100 × 100 m en {NOMBRE_BARRIO.split(',')[0]}."),
-        (f"Por calle alcanzan\n{len(q)} clínicas",
-         "\n".join(f"{r.nombre.title().replace(' De ', ' de ')}: {r.min:.0f} min" for r in q.itertuples())),
-        (f"La más cercana tiene\n{c1.med:.0f} médicos para mucha gente",
-         f"Su demanda equivale a unas {c1.demanda / 1000:.0f} mil personas\n(ponderada: cuenta más quien vive más cerca)."),
-        (f"Acceso de este cuadro:\n{A_mil:.2f} médicos por cada mil",
-         f"El promedio de la zona es {ref_mil:.2f}; menos de {ref_mil / 2:.2f} es acceso bajo.\n"
-         f"La clínica a {c2['min']:.0f} min casi no aporta: queda en el límite."),
-        ("Marginación alta:\nprioridad",
-         f"Acceso bajo y grado de marginación «{CEL.grado.values[k]}» (CONAPO).\n"
-         "Así entra en las cuentas de «a quién primero» (escenario C)."),
-    ]
-    POR = 45
-    N = POR * len(pasos)
-
-    def act(fr):
-        i = min(fr // POR, len(pasos) - 1)
-        t = (fr % POR + 1) / (POR * 0.6)
-        t_paso.set_text(f"Un cuadro, paso a paso · {i + 1} de {len(pasos)}")
-        t_tit.set_text(pasos[i][0])
-        t_det.set_text(pasos[i][1])
-        for n_, (ln, P) in enumerate(zip(lineas, rutas)):
-            if i == 1:
-                acum = np.r_[0, np.cumsum(np.hypot(*np.diff(P, axis=0).T))]
-                m = acum <= acum[-1] * min(1, t)
-                ln.set_data(P[m, 0], P[m, 1])
-            elif i > 1:
-                ln.set_data(P[:, 0], P[:, 1])
-            else:
-                ln.set_data([], [])
-            r = q.iloc[n_]
-            et[n_].set_text(f"{r['med']:.0f} médicos · {r['min']:.0f} min" if i >= 1 else "")
-        img.set_alpha(0.75 if i == 2 else 0.0)
-        cuad.set_facecolor(BAJO if i >= 3 else AMBAR(0.85))
-        anillo.set_visible(i >= 4)
-        if i >= 3:
-            axb.set_visible(True); axb.cla(); axb.axis("off")
-            axb.set_xlim(0, 0.8); axb.set_ylim(0, 1)
-            axb.barh(0.5, 0.8, 0.35, color=SILUETA)
-            axb.barh(0.5, A_mil / 1000 * 1000, 0.35, color=BAJO)
-            for xv, lab in [(ref_mil / 2, "mitad"), (ref_mil, "promedio")]:
-                axb.plot([xv, xv], [0.15, 0.85], color=TXT, lw=2)
-                axb.text(xv, 1.0, f"{lab} {xv:.2f}", ha="center", va="bottom", fontsize=14, color=TXT2)
-            axb.text(A_mil + 0.01, 0.5, f"{A_mil:.2f}", va="center", fontsize=16, color=TXT, fontweight="bold")
-        else:
-            axb.set_visible(False)
-    guardar_anim(fig, act, N, "p1_03d_un_cuadro", fps=15)
-    return q[["nombre", "med", "min", "demanda", "gente_alcance", "aporte_mil"]].round(3).to_dict("records"), A_mil
 
 
 def p1_04a_esquema_acceso():
@@ -846,51 +722,6 @@ def p2_C_prioridad():
     return iguales, fuera
 
 
-def p2_D_transporte():
-    a = cargar("transporte_publico")
-    pie, tp = a["acceso"]["pie_r5"], a["acceso"]["transporte_r5"]
-    t = pd.read_parquet(INT / "acceso_transporte_clues.parquet")
-    assert (t.x.values == CEL.x.values).all()
-    fp, ft = t.acceso_rel_pie_r5.values, t.acceso_rel_transporte.values
-    cd = (CEL.region == "CDMX").values
-    assert abs(100 * PSIN[cd & (fp < .5)].sum() / PSIN[cd].sum() - pie["pct_bajo_CDMX"]) < 1e-6
-    assert abs(100 * PSIN[cd & (ft < .5)].sum() / PSIN[cd].sum() - tp["pct_bajo_CDMX"]) < 1e-6
-    sale = (fp < .5) & (ft >= .5)
-    mb = en_ventana(CEL.x.values, CEL.y.values, BARRIO)
-    sale_barrio = PSIN[mb & sale].sum()
-    fig = lienzo_pregunta("¿Y el transporte\npúblico?",
-                          f"En la CDMX el acceso bajo pasa de {pie['pct_bajo_CDMX']:.0f}% a {tp['pct_bajo_CDMX']:.0f}%.\n"
-                          "En el Edomex casi no cambia: faltan datos" + chr(10) + "de su transporte.",
-                          nota="Ambos casos calculados en el mismo motor (r5py), puerta a puerta, 30 min; por eso la CDMX\n"
-                               "parte de 27% y no del 28% de la red de calles propia. Metro, Metrobús, RTP, Tren Ligero y\n"
-                               "trolebús (GTFS de SEMOVI); sin Mexibús, Mexicable ni combis.")
-    for x0, f, tit, verde in [(0.02, fp, "a pie", False), (0.51, ft, "a pie + transporte", True)]:
-        ax = fig.add_axes([x0, 0.385, 0.47, 0.30])
-        clase = (f < .5).astype(int)
-        cols = [SUF, BAJO]
-        if verde:
-            clase = np.where(sale, 2, clase)
-            cols = [SUF, BAJO, VERDE]
-        mapa(ax, clase, cols, BARRIO)
-        clinicas(ax, BARRIO, escala=6)
-        fig.text(x0 + 0.235, 0.70, tit, ha="center", fontsize=21, fontweight="bold", va="top")
-    escala_km(fig.axes[-1], BARRIO)
-    leyenda(fig, 0.06, 0.37, [(BAJO, "acceso bajo"), (SUF, "acceso suficiente"),
-                              (VERDE, f"sale del acceso bajo ({mil(sale_barrio)} en este barrio)")], dy=0.026, fs=16)
-    fig.text(0.06, 0.29, NOMBRE_BARRIO + " · ○ = clínica", fontsize=15, color=TXT3, va="top")
-    ax = fig.add_axes([0.24, 0.12, 0.72, 0.15])
-    ys = np.array([1, 0])
-    h = 0.36
-    for y, reg, nom in zip(ys, ["CDMX", "EDOMEX"], ["CDMX", "Edomex"]):
-        v1, v2 = pie[f"pct_bajo_{reg}"], tp[f"pct_bajo_{reg}"]
-        ax.barh(y + h / 2, v1, h, color=GRIS)
-        ax.barh(y - h / 2, v2, h, color=VERDE)
-        ax.text(v1 + 1, y + h / 2, f"{v1:.0f}% a pie", va="center", fontsize=15, color=TXT2)
-        ax.text(v2 + 1, y - h / 2, f"{v2:.0f}% + transporte", va="center", fontsize=15, color=TXT, fontweight="bold")
-        ax.text(-2, y, nom, ha="right", va="center", fontsize=19, color=TXT)
-    ax.set_xlim(0, 85); ax.axis("off")
-    guardar(fig, "p2_D_transporte")
-    return sale_barrio
 
 
 def p2_E_horizonte():
@@ -980,33 +811,6 @@ def p3_2_rodeo():
     return recta, largo, cz.d_calle.values[k], OF.nom_estab.values[j]
 
 
-def p3_3_equidad():
-    eq = cargar("equidad_transporte")
-    g = pd.DataFrame(eq["por_grado"]["total"])
-    ver = eq["veredicto"]["total"]
-    fig = lienzo(f"{ver['alta_muy_alta_pct_gente']:.0f}% · {ver['alta_muy_alta_pct_ganancias']:.0f}%",
-                 "los más marginados son el 22% de la gente\ny reciben el 3% de lo que gana el\nacceso con el transporte público",
-                 nota="Ganancia = acceso que sube al agregar el transporte, sumado por persona. El transporte no\n"
-                      "crea médicos: mueve el acceso de lugar. Marginación urbana CONAPO 2020 por AGEB.")
-    ax = fig.add_axes([0.26, 0.15, 0.70, 0.48])
-    y = np.arange(len(g))[::-1]
-    h = 0.36
-    ax.barh(y + h / 2 + 0.01, g.pct_gente, h, color=GRIS)
-    ax.barh(y - h / 2 - 0.01, g.pct_ganancias, h, color=VERDE)
-    for yy, a, b in zip(y, g.pct_gente, g.pct_ganancias):
-        ax.text(a + 0.8, yy + h / 2 + 0.01, f"{a:.0f}%", va="center", fontsize=18, color=TXT2)
-        ax.text(b + 0.8, yy - h / 2 - 0.01, f"{b:.0f}%", va="center", fontsize=18, color=TXT, fontweight="bold")
-    ax.set_yticks(y); ax.set_yticklabels(g.grado, fontsize=20, color=TXT)
-    ax.tick_params(axis="y", length=0)
-    ax.set_xlim(0, 60); ax.set_xticks([])
-    for s in ["top", "right", "bottom"]:
-        ax.spines[s].set_visible(False)
-    ax.text(0, len(g) - 0.3, "■", color=GRIS, fontsize=20)
-    ax.text(2.6, len(g) - 0.3, "parte de la gente", color=TXT2, fontsize=18)
-    ax.text(30, len(g) - 0.3, "■", color=VERDE, fontsize=20)
-    ax.text(32.6, len(g) - 0.3, "parte de lo que gana", color=TXT2, fontsize=18)
-    fig.text(0.06, 0.66, "grado de marginación", fontsize=16, color=TXT3)
-    guardar(fig, "p3_3_equidad")
 
 
 def p3_4_nulo():
@@ -1035,10 +839,472 @@ def p3_4_nulo():
     guardar(fig, "p3_4_nulo")
 
 
+# ══ Ronda 3: más imagen, menos texto ═════════════════════════════════════════
+# Regla del esquema: arriba como mucho una cifra o una pregunta corta; etiquetas de una a tres
+# palabras; contar con cosas (figuritas, puntos, cuadros) y no con barras; las fuentes, chicas.
+def lienzo_tiktok(nota=None):
+    """Figura vertical con un solo eje 0–9 × 0–16 (unidades = pulgadas) y la nota chica al pie."""
+    fig = plt.figure(figsize=(W, H), dpi=DPI)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, W); ax.set_ylim(0, H); ax.axis("off")
+    fig.text(0.06, 0.02, (nota + "\n" if nota else "") + FUENTE, fontsize=12, color=TXT3, va="bottom",
+             linespacing=1.4)
+    return fig, ax
+
+
+def cifra_arriba(fig, txt="", etiqueta=""):
+    """La única cifra grande de arriba y su etiqueta corta."""
+    c = fig.text(0.06, 0.955, txt, fontsize=96, fontweight="bold", color=TXT, va="top")
+    e = fig.text(0.065, 0.865, etiqueta, fontsize=28, color=TXT2, va="top")
+    return c, e
+
+
+def figura(ax, x, y, h, color, z=5, alpha=1.0):
+    """Figurita de persona (cabeza + torso) de alto h, con los pies en y."""
+    r = h * 0.18
+    cab = plt.Circle((x, y + h - r), r, fc=color, ec="none", zorder=z, alpha=alpha)
+    tor = FancyBboxPatch((x - h * 0.21, y), h * 0.42, h * 0.56, boxstyle=f"round,pad=0,rounding_size={h * 0.17}",
+                         fc=color, ec="none", zorder=z, alpha=alpha)
+    ax.add_patch(cab); ax.add_patch(tor)
+    return cab, tor
+
+
+def suave(t):
+    t = min(max(t, 0.0), 1.0)
+    return t * t * (3 - 2 * t)
+
+
+def lineas_gtfs():
+    """Trazos (shapes) del GTFS del transporte que usó el análisis, en metros UTM 14N."""
+    import zipfile
+    from pyproj import Transformer
+    nombre = cargar("transporte_publico")["datos"]["gtfs"]
+    z = zipfile.ZipFile(RAIZ / "Datos" / "GTFS" / nombre)
+    sh = pd.read_csv(z.open("shapes.txt")).sort_values(["shape_id", "shape_pt_sequence"])
+    tr = pd.read_csv(z.open("trips.txt"))[["route_id", "shape_id"]].drop_duplicates("shape_id")
+    ag = tr.merge(pd.read_csv(z.open("routes.txt"))[["route_id", "agency_id"]]).set_index("shape_id").agency_id
+    x, y = Transformer.from_crs(4326, 32614, always_xy=True).transform(sh.shape_pt_lon.values, sh.shape_pt_lat.values)
+    sh["x"], sh["y"] = x, y
+    st = pd.read_csv(z.open("stops.txt"))
+    sx, sy = Transformer.from_crs(4326, 32614, always_xy=True).transform(st.stop_lon.values, st.stop_lat.values)
+    orden = ["METRO", "TL", "MB", "TROLE", "CBB", "SUB", "INTERURBANO", "RTP", "CC", "PUMABUS", "SEMOVI"]
+    lin = [(ag.get(s, "?"), g[["x", "y"]].to_numpy()) for s, g in sh.groupby("shape_id")]
+    lin.sort(key=lambda t: orden.index(t[0]) if t[0] in orden else len(orden))
+    return lin, np.c_[sx, sy]
+
+
+def _cuadro_y_clinicas():
+    """El cuadro de Peñón Viejo, su desglose E2SFCA comprobado y las dos clínicas que alcanza."""
+    k = celda(CUADRO)
+    q, A_mil, ref_mil = desglose_cuadro(k)
+    assert abs(ref_mil - cargar("acceso_e2sfca")["promedio_metropolitano_por_1000"]) < 1e-9
+    assert CEL.f.values[k] < 0.5 and CEL.grado.values[k] in ("Alto", "Muy alto") and len(q) == 2
+    return k, q, A_mil, ref_mil
+
+
+def _mil_puntos(j):
+    """Gente a ≤ 30 min por calle de la clínica j, en puntos de mil personas.
+
+    Se ordenan los cuadros por distancia por calle y el punto n cae en el cuadro donde la suma de
+    gente cruza (n + ½) mil: así los puntos reproducen cuánta gente hay y a qué distancia vive."""
+    p = pares()
+    pj = p[p.j == j].sort_values("d")
+    acum = np.cumsum(PSIN[pj.i.values])
+    total = acum[-1]
+    n = int(round(total / 1000))
+    pos = np.searchsorted(acum, (np.arange(n) + 0.5) * total / n)
+    return pj, total, pj.i.values[pos], pj.d.values[pos]
+
+
+def p1_03b_marginacion():
+    """Dos estados: marginación alta o muy alta en morado, todo lo demás en gris; se encienden por zona."""
+    eq = cargar("equidad_transporte")["veredicto"]["total"]
+    con = GRADO_I >= 0
+    alta_c = GRADO_I >= 3
+    alta = PSIN[alta_c].sum() / PSIN[con].sum() * 100
+    assert abs(alta - eq["alta_muy_alta_pct_gente"]) < 1e-6
+    fig, ax = lienzo_tiktok("Morado = marginación alta o muy alta (CONAPO 2020, por zona del Censo). "
+                            "El porcentaje cuenta\npersonas sin seguro, no superficie del mapa.")
+    c, e = cifra_arriba(fig, "", "marginación alta")
+    axm = fig.add_axes([0.02, 0.09, 0.96, 0.70])
+    img = axm.imshow(raster(np.zeros(len(CEL))), origin="lower", extent=EXT, cmap=ListedColormap([SILUETA, MORADO[3]]),
+                     vmin=-0.5, vmax=1.5, interpolation="nearest")
+    encuadre(axm)
+    # Se encienden zona por zona (AGEB) en orden al azar; la cifra sube con la gente encendida.
+    zonas = CEL.CVEGEO.values
+    unicas = pd.unique(zonas[alta_c])
+    rng = np.random.default_rng(3)
+    turno = dict(zip(unicas, rng.permutation(len(unicas))))
+    t_cel = np.array([turno.get(z_, -1) if a_ else -1 for z_, a_ in zip(zonas, alta_c)])
+    INI, SUBE, FIN = 10, 40, 25
+
+    def act(fr):
+        t = suave((fr - INI) / SUBE)
+        on = alta_c & (t_cel < t * len(unicas)) if t < 1 else alta_c
+        img.set_data(raster(on.astype(float)))
+        pct = PSIN[on].sum() / PSIN[con].sum() * 100
+        c.set_text(f"{pct:.0f}%" if fr >= INI else "")
+    guardar_anim(fig, act, INI + SUBE + FIN, "p1_03b_marginacion", fps=15)
+    return round(alta, 1)
+
+
+def p1_03d1_alcance():
+    """Quién compite por la clínica: su mancha de 30 min por calle se llena de gente."""
+    k, q, _, _ = _cuadro_y_clinicas()
+    c1 = q.iloc[0]
+    j = int(c1.j)
+    pj, total, cel_p, d_p = _mil_puntos(j)
+    assert abs(total - c1.gente_alcance) < 1e-6
+    ox, oy = OF.x.values[j], OF.y.values[j]
+    xs, ys = CEL.x.values[pj.i.values], CEL.y.values[pj.i.values]
+    v = (xs.min() - 300, xs.max() + 300, ys.min() - 300, ys.max() + 300)
+    rect = [0.02, 0.09, 0.96, 0.72]
+    ratio = rect[3] * H / (rect[2] * W)
+    cx_, cy_ = (v[0] + v[1]) / 2, (v[2] + v[3]) / 2
+    hx = max(v[1] - v[0], (v[3] - v[2]) / ratio) / 2
+    v = (cx_ - hx, cx_ + hx, cy_ - hx * ratio, cy_ + hx * ratio)
+    fig, _ = lienzo_tiktok("Un punto = mil personas sin seguro que viven a 30 min o menos de la clínica, por calle.")
+    c, e = cifra_arriba(fig, "", "")
+    ax = fig.add_axes(rect)
+    xy, a, b, G, ok = red_local(cx_, cy_, hx * ratio + 200)
+    ax.add_collection(LineCollection(np.stack([xy[a], xy[b]], axis=1), colors=CALLE, linewidths=0.6, zorder=1))
+    d_cel = np.full(len(CEL), np.inf)
+    d_cel[pj.i.values] = pj.d.values
+    mancha = ax.imshow(raster(np.zeros(len(CEL))), origin="lower", extent=EXT,
+                       cmap=ListedColormap([(0, 0, 0, 0), NEUTRO]), vmin=-0.5, vmax=1.5, alpha=0.30,
+                       interpolation="nearest", zorder=2)
+    P = ruta(xy, G, nodo(xy, ok, CUADRO), nodo(xy, ok, (ox, oy)))
+    ax.plot(P[:, 0], P[:, 1], color=TXT, lw=3, zorder=4)
+    ax.add_patch(plt.Rectangle((CUADRO[0] - 50, CUADRO[1] - 50), 100, 100, fc=AMBAR(0.85), ec=TXT, lw=2, zorder=8))
+    ax.plot(ox, oy, "o", ms=26, mfc=FONDO, mec=CLIN, mew=4, zorder=7)
+    ax.text(CUADRO[0] + 140, CUADRO[1] - 260, f"{c1['min']:.0f} min", fontsize=26, fontweight="bold", color=TXT,
+            zorder=9, bbox=dict(fc=FONDO, ec="none", alpha=0.8, pad=3))
+    pts = ax.scatter(CEL.x.values[cel_p], CEL.y.values[cel_p], s=150, c=[AMBAR(0.8)], edgecolors=FONDO,
+                     linewidths=1.2, zorder=6)
+    encuadre(ax, v)
+    INI, CRECE, FIN = 15, 60, 30
+
+    def act(fr):
+        r = 2250 * suave((fr - INI) / CRECE)
+        mancha.set_data(raster((d_cel <= r).astype(float)))
+        vis = d_p <= r
+        pts.set_alpha(None)
+        pts.set_facecolors([AMBAR(0.8) if s_ else (0, 0, 0, 0) for s_ in vis])
+        pts.set_edgecolors([FONDO if s_ else (0, 0, 0, 0) for s_ in vis])
+        gente = PSIN[pj.i.values[pj.d.values <= r]].sum()
+        c.set_text(mil(gente) if fr >= INI else "")
+        e.set_text("personas" if fr >= INI else "")
+    guardar_anim(fig, act, INI + CRECE + FIN, "p1_03d1_alcance", fps=15)
+    return mil(total), len(cel_p)
+
+
+def p1_03d2_cuentas():
+    """Ya sin mapa: cómo se juntan médicos, gente y distancia en el acceso del cuadro (paso 2 del E2SFCA)."""
+    k, q, A_mil, ref_mil = _cuadro_y_clinicas()
+    c1, c2 = q.iloc[0], q.iloc[1]
+    _, total1, _, d_p = _mil_puntos(int(c1.j))
+    w_p = acceso.peso(d_p, 2250)
+    # Los 48 puntos encogidos por su peso suman casi la demanda ponderada real (23 mil).
+    assert abs(w_p.sum() * total1 / len(d_p) - c1.demanda) / c1.demanda < 0.02, (w_p.sum(), c1.demanda)
+    n2 = int(round(c2.demanda / 1000))
+    razon = c2.aporte_mil / c1.aporte_mil     # lo que aporta la de 30 min frente a la de 1 min
+    fig, ax = lienzo_tiktok(
+        f"Cada punto = mil personas; lejos de la clínica cuentan menos (peso por distancia, gaussiano a 30 min).\n"
+        f"Clínica de {c1['min']:.0f} min: {c1.med:.0f} médicos, {c1.demanda:,.0f} personas ponderadas. "
+        f"Clínica de {c2['min']:.0f} min: {c2.med:.0f} médicos,\n{c2.demanda:,.0f} ponderadas, y a ese cuadro "
+        f"le llega con peso {c2.w:.3f}. Acceso = {c1.aporte_mil:.4f} + {c2.aporte_mil:.4f} = {A_mil:.3f} "
+        f"médicos por mil.")
+    c, e = cifra_arriba(fig, "", "")
+    C1, C2, R1 = np.array([2.9, 9.9]), np.array([7.0, 10.7]), 2.0
+    CEL_XY = np.array([4.5, 4.9])
+    ang = np.deg2rad(np.arange(len(d_p)) * 137.508)
+    rad = 0.75 + d_p / 2250 * (R1 - 0.75)
+    px, py = C1[0] + rad * np.cos(ang), C1[1] + rad * np.sin(ang)
+    ang2 = np.deg2rad(np.arange(n2) * 137.508)
+    rad2 = 0.75 + np.sqrt((np.arange(n2) + 0.5) / n2) * 0.7
+    p2x, p2y = C2[0] + rad2 * np.cos(ang2), C2[1] + rad2 * np.sin(ang2)
+    S0 = 170
+    T = dict(aparece=0, encoge=20, medicos=55, otra=72, viaje=95, suma=125, prior=145, fin=185)
+
+    def clinica(C, n_med, alpha):
+        ax.add_patch(plt.Circle(C, 0.58, fc=FONDO, ec=CLIN, lw=4, zorder=6, alpha=alpha))
+        for i in range(n_med):
+            figura(ax, C[0] + (i - (n_med - 1) / 2) * 0.32, C[1] - 0.25, 0.5, CLIN, z=7, alpha=alpha)
+
+    def act(fr):
+        for a_ in list(ax.patches) + list(ax.collections) + list(ax.texts) + list(ax.lines):
+            a_.remove()
+        t_enc = suave((fr - T["encoge"]) / 30)
+        a_med = suave((fr - T["medicos"]) / 10)
+        a_otra = suave((fr - T["otra"]) / 12)
+        t_via = suave((fr - T["viaje"]) / 25)
+        llegado = fr >= T["suma"]
+        # clínica de 1 min y su gente
+        ax.scatter(px, py, s=S0 * (1 - t_enc + t_enc * w_p), c=[AMBAR(0.8)], edgecolors=FONDO, linewidths=1,
+                   zorder=4, alpha=suave((fr + 1) / 12))
+        clinica(C1, int(c1.med), max(a_med, 0.35))
+        if fr >= T["aparece"]:
+            ax.text(C1[0], C1[1] - R1 - 0.45, f"{c1['min']:.0f} min", ha="center", fontsize=26, fontweight="bold",
+                    color=TXT)
+        # clínica de 30 min y su gente (ya ponderada)
+        if a_otra > 0:
+            ax.scatter(p2x, p2y, s=S0, c=[AMBAR(0.8)], edgecolors=FONDO, linewidths=1, zorder=4, alpha=a_otra)
+            clinica(C2, int(c2.med), a_otra)
+            ax.text(C2[0], C2[1] - 1.95, f"{c2['min']:.0f} min", ha="center", fontsize=26, fontweight="bold",
+                    color=TXT, alpha=a_otra)
+        # el cuadro y lo que le llega de cada clínica: misma flecha, ficha del tamaño de su aporte
+        col = BAJO if llegado else AMBAR(0.85)
+        ax.add_patch(plt.Rectangle(CEL_XY - 0.45, 0.9, 0.9, fc=col, ec=TXT, lw=2.5, zorder=8))
+        if t_via > 0:
+            for C, apo in [(C1, 1.0), (C2, razon)]:
+                ini = C + (CEL_XY - C) / np.linalg.norm(CEL_XY - C) * 0.65
+                fin = CEL_XY + (C - CEL_XY) / np.linalg.norm(C - CEL_XY) * 0.6
+                ax.plot([ini[0], fin[0]], [ini[1], fin[1]], color=NEUTRO, lw=3, zorder=3)
+                if not llegado:
+                    pos = ini + (fin - ini) * t_via
+                    ax.scatter([pos[0]], [pos[1]], s=1300 * apo, c=[VERDE], edgecolors=FONDO, linewidths=1.5,
+                               zorder=9)
+        # cifra de arriba: gente → gente ponderada → acceso
+        if fr < T["encoge"]:
+            c.set_text(mil(total1)); e.set_text("personas")
+        elif fr < T["suma"]:
+            c.set_text(mil(total1 - (total1 - c1.demanda) * t_enc)); e.set_text("contando la distancia")
+        else:
+            c.set_text(f"{A_mil:.2f}"); e.set_text("médicos por mil")
+        if llegado:   # la regla: 0 a 0.7 médicos por mil, con la línea de acceso bajo (la mitad del promedio)
+            y0, x0, x1, top = 2.45, 1.0, 8.0, 0.7
+            esc = (x1 - x0) / top
+            ax.add_patch(FancyBboxPatch((x0, y0 - 0.14), x1 - x0, 0.28, boxstyle="round,pad=0,rounding_size=0.1",
+                                        fc=SILUETA, ec="none", zorder=3))
+            ax.add_patch(FancyBboxPatch((x0, y0 - 0.14), A_mil * esc, 0.28, boxstyle="round,pad=0,rounding_size=0.1",
+                                        fc=BAJO, ec="none", zorder=4))
+            xm = x0 + ref_mil / 2 * esc
+            ax.plot([xm, xm], [y0 - 0.32, y0 + 0.32], color=TXT, lw=3, zorder=5)
+            ax.text(xm, y0 + 0.45, f"{ref_mil / 2:.2f}", ha="center", fontsize=22, color=TXT)
+            ax.text(xm - 0.1, y0 - 0.65, "acceso bajo", ha="right", fontsize=20, color=TXT2)
+        if fr >= T["prior"]:
+            ax.text(CEL_XY[0] + 0.75, CEL_XY[1] + 0.15, "marginación alta", fontsize=24, color=FONDO,
+                    fontweight="bold", va="center", bbox=dict(boxstyle="round,pad=0.35", fc=MORADO[3], ec="none"),
+                    zorder=10)
+            ax.text(CEL_XY[0] + 0.75, CEL_XY[1] - 0.75, "prioridad", fontsize=34, fontweight="bold", color=TXT,
+                    va="center", zorder=10)
+    guardar_anim(fig, act, T["fin"], "p1_03d2_cuentas", fps=15)
+    return dict(c2=c2.nombre, med=c2.med, min=round(c2['min'], 1), demanda=round(c2.demanda),
+                gente=round(c2.gente_alcance), peso=round(c2.w, 4), aporte_rel=round(razon, 4), A=round(A_mil, 4))
+
+
+def p1_03e_todos_los_cuadros():
+    """De un cuadro a todos: tres saltos de cámara, y los cuadros se pintan rojo o azul hasta el mapa de p1_04."""
+    k = celda(CUADRO)
+    n_tot = len(CEL)
+    assert n_tot == len(_cal) == len(pd.read_parquet(INT / "acceso_transporte_clues.parquet", columns=["x"]))
+    bajo = PSIN[CEL.f.values < 0.5].sum()
+    assert abs(bajo - cargar("red_real")["f3"]["psin_bajo_calle"]) < 1
+    fig, _ = lienzo_tiktok("Un cuadro = 100 × 100 m. Rojo = acceso bajo; azul = suficiente (igual que la siguiente gráfica).")
+    c, e = cifra_arriba(fig, "", "")
+    rect = [0.02, 0.10, 0.96, 0.58]          # el mismo eje que p1_04_acceso, para que el corte sea continuo
+    ax = fig.add_axes(rect)
+    clase = 1 + (CEL.f.values < 0.5).astype(int)
+    img = ax.imshow(raster(np.zeros(len(CEL))), origin="lower", extent=EXT, cmap=ListedColormap([SILUETA, SUF, BAJO]),
+                    vmin=-0.5, vmax=2.5, interpolation="nearest")
+    ax.add_patch(plt.Rectangle((CUADRO[0] - 50, CUADRO[1] - 50), 100, 100, fill=False, ec=TXT, lw=2.5, zorder=5))
+    encuadre(ax)
+    ax.set_xlim(EXT[0], EXT[1]); ax.set_ylim(EXT[2], EXT[3])
+    ratio = (EXT[3] - EXT[2]) / (EXT[1] - EXT[0])
+    cheb = np.maximum(np.abs(CEL.x.values - CUADRO[0]), np.abs(CEL.y.values - CUADRO[1]))
+    hE = (EXT[1] - EXT[0]) / 2
+    cE = np.array([(EXT[0] + EXT[1]) / 2, (EXT[2] + EXT[3]) / 2])
+    c0 = np.array(CUADRO)
+    vistas = [500, 3000, 12000, hE]          # semiancho de la vista en cada salto
+    QUIETO, MUEVE = 12, 18
+
+    def estado(fr):
+        """(semiancho de la vista, radio pintado) en el cuadro fr."""
+        i, r = divmod(max(fr - QUIETO, 0), MUEVE + QUIETO)
+        if i >= len(vistas) - 1:
+            return hE, np.inf, 1.0
+        t = suave(r / MUEVE)
+        h = np.exp(np.log(vistas[i]) + (np.log(vistas[i + 1]) - np.log(vistas[i])) * t)
+        # Lo pintado crece más lento que la cámara, para que se vea el borde avanzar.
+        ultimo = i == len(vistas) - 2
+        r0 = 0 if i == 0 else vistas[i] * 0.92
+        r1 = 2e5 if ultimo else vistas[i + 1] * 0.92
+        return h, r0 + (r1 - r0) * t ** 2, (t if ultimo else 0.0)
+
+    N = QUIETO + (len(vistas) - 1) * (MUEVE + QUIETO) + 20
+
+    def act(fr):
+        h, rp, s = estado(fr)
+        cc = c0 + (cE - c0) * s           # la cámara sigue centrada en el cuadro hasta el último salto
+        ax.set_xlim(cc[0] - h, cc[0] + h); ax.set_ylim(cc[1] - h * ratio, cc[1] + h * ratio)
+        pint = cheb <= max(rp, 0)
+        img.set_data(raster(np.where(pint, clase, 0)))
+        n = int(pint.sum())
+        c.set_text(f"{n:,}" if n < 1000 else mil(n))
+        e.set_text("cuadro" if n == 1 else "cuadros")
+    guardar_anim(fig, act, N, "p1_03e_todos_los_cuadros", fps=15)
+    return n_tot, int((PSIN > 0).sum())
+
+
+def p2_D1_transporte_barrio():
+    """El barrio a pie; se dibuja el transporte y los cuadros que salen del acceso bajo se vuelven verdes."""
+    a = cargar("transporte_publico")
+    t = pd.read_parquet(INT / "acceso_transporte_clues.parquet")
+    assert (t.x.values == CEL.x.values).all()
+    fp, ft = t.acceso_rel_pie_r5.values, t.acceso_rel_transporte.values
+    cd = (CEL.region == "CDMX").values
+    assert abs(100 * PSIN[cd & (fp < .5)].sum() / PSIN[cd].sum() - a["acceso"]["pie_r5"]["pct_bajo_CDMX"]) < 1e-6
+    mb = en_ventana(CEL.x.values, CEL.y.values, BARRIO)
+    sale, entra = mb & (fp < .5) & (ft >= .5), mb & (fp >= .5) & (ft < .5)
+    lin, paradas = lineas_gtfs()
+    v = BARRIO
+    M = 400
+    dentro = [P for _, P in lin if en_ventana(P[:, 0], P[:, 1], (v[0] - M, v[1] + M, v[2] - M, v[3] + M)).any()]
+    par = paradas[en_ventana(paradas[:, 0], paradas[:, 1], v)]
+    # Los cuadros cambian de color del más cercano a una parada al más lejano.
+    dist = cKDTree(par).query(CEL[["x", "y"]].values)[0] if len(par) else np.zeros(len(CEL))
+    idx = np.flatnonzero(sale | entra)
+    idx = idx[np.argsort(dist[idx])]
+    fig, _ = lienzo_tiktok(f"Verde = sale del acceso bajo con el transporte. Hay {mil(PSIN[entra].sum())} personas que "
+                           "entran (rojo nuevo): el transporte\ntambién trae más gente a sus clínicas. Mismo motor (r5py) "
+                           "a pie y con transporte.\n" + f"{NOMBRE_BARRIO}. Líneas: GTFS de la CDMX.")
+    c, e = cifra_arriba(fig, "", "")
+    ax = fig.add_axes([0.02, 0.09, 0.96, 0.72])
+    base = (fp < .5).astype(int)
+    img = ax.imshow(raster(base), origin="lower", extent=EXT, cmap=ListedColormap([SUF, BAJO, VERDE]),
+                    vmin=-0.5, vmax=2.5, interpolation="nearest", zorder=1)
+    clinicas(ax, v, escala=6)
+    lc = LineCollection([], colors=VERDE, linewidths=1.8, zorder=4,
+                        path_effects=[patheffects.Stroke(linewidth=3.6, foreground=FONDO), patheffects.Normal()])
+    ax.add_collection(lc)
+    encuadre(ax, v)
+    escala_km(ax, v)
+    INI, DIBUJA, PAUSA, CAMBIA, FIN = 12, 25, 8, 40, 30
+
+    def act(fr):
+        td = suave((fr - INI) / DIBUJA)
+        lc.set_segments([P[: max(2, int(len(P) * td))] for P in dentro] if td > 0 else [])
+        tc = suave((fr - INI - DIBUJA - PAUSA) / CAMBIA)
+        hechos = idx[: int(round(tc * len(idx)))]
+        cl = base.copy()
+        cl[hechos] = np.where(sale[hechos], 2, 1)
+        img.set_data(raster(cl))
+        ya = PSIN[hechos[sale[hechos]]].sum()
+        c.set_text(mil(ya) if tc > 0 else "")
+        e.set_text("personas" if tc > 0 else "")
+    guardar_anim(fig, act, INI + DIBUJA + PAUSA + CAMBIA + FIN, "p2_D1_transporte_barrio", fps=15)
+    return PSIN[sale].sum(), PSIN[entra].sum(), len(dentro)
+
+
+def p2_D2_transporte_ciudad():
+    """Toda la zona con la red de transporte que hay en los datos: densa en la CDMX, casi vacía en el Edomex."""
+    a = cargar("transporte_publico")
+    pie, tp = a["acceso"]["pie_r5"], a["acceso"]["transporte_r5"]
+    lin, _ = lineas_gtfs()
+    fig, _ = lienzo_tiktok("Acceso bajo a pie y con transporte, calculados en el mismo motor (r5py). Red: GTFS de la CDMX\n"
+                           "(Metro, Metrobús, RTP, Trolebús, Tren Ligero, Cablebús, Suburbano…). Sin Mexibús, Mexicable "
+                           "ni combis:\nen el Edomex la red está incompleta en los datos, no ausente en la realidad.")
+    t_cd = fig.text(0.06, 0.955, "", fontsize=60, fontweight="bold", color=TXT, va="top")
+    t_ed = fig.text(0.06, 0.875, "", fontsize=60, fontweight="bold", color=TXT, va="top")
+    ax = fig.add_axes([0.02, 0.10, 0.96, 0.68])
+    cd = (CEL.region == "CDMX").values
+    # Edomex con rayas: «datos parciales»
+    raya = ((CI + CJ) % 6 < 2) & ~cd
+    # La vista recorta los cuadros sueltos de la orilla para que el mapa se vea más grande.
+    v = (np.percentile(CEL.x, 1), np.percentile(CEL.x, 99.5), np.percentile(CEL.y, 0.5), np.percentile(CEL.y, 99))
+    mapa(ax, np.where(cd, 1, np.where(raya, 2, 0)), [SILUETA, "#4f4f49", "#5c5c55"], v)
+    lc = LineCollection([], colors=VERDE, linewidths=0.9, zorder=4)
+    ax.add_collection(lc)
+    ex = CEL.x.values[~cd]; ey = CEL.y.values[~cd]
+    ax.text(np.percentile(ex, 88), np.percentile(ey, 93), "Edomex:\ndatos parciales", fontsize=19, color=TXT2,
+            ha="center", va="center", zorder=6, bbox=dict(fc=FONDO, ec="none", alpha=0.75, pad=3))
+    INI, DIBUJA, CD, ED, FIN = 8, 40, 20, 20, 30
+
+    def act(fr):
+        td = suave((fr - INI) / DIBUJA)
+        lc.set_segments([P for _, P in lin[: int(round(td * len(lin)))]])
+        tc = suave((fr - INI - DIBUJA) / CD)
+        v1, v2 = pie["pct_bajo_CDMX"], tp["pct_bajo_CDMX"]
+        t_cd.set_text(f"CDMX  {v1:.0f}% → {v1 + (v2 - v1) * tc:.0f}%" if fr >= INI else "")
+        te = fr >= INI + DIBUJA + CD
+        w1, w2 = pie["pct_bajo_EDOMEX"], tp["pct_bajo_EDOMEX"]
+        t_ed.set_text(f"Edomex  {w1:.0f}% → {w2:.0f}%" if te else "")
+    guardar_anim(fig, act, INI + DIBUJA + CD + ED + FIN, "p2_D2_transporte_ciudad", fps=15)
+    return (round(pie["pct_bajo_CDMX"], 1), round(tp["pct_bajo_CDMX"], 1),
+            round(pie["pct_bajo_EDOMEX"], 1), round(tp["pct_bajo_EDOMEX"], 1), len(lin))
+
+
+def p3_3_equidad():
+    """100 figuritas (22 moradas) y 100 fichas de mejora en dos bandejas: solo 3 van al lado morado."""
+    ver = cargar("equidad_transporte")["veredicto"]["total"]
+    n_mor = int(round(ver["alta_muy_alta_pct_gente"]))
+    n_gan = int(round(ver["alta_muy_alta_pct_ganancias"]))
+    assert (n_mor, n_gan) == (22, 3)
+    fig, ax = lienzo_tiktok(f"Cada figura = 1% de la gente sin seguro; morado = marginación alta o muy alta "
+                            f"({ver['alta_muy_alta_pct_gente']:.1f}%).\nCada ficha = 1% de lo que sube el acceso con el "
+                            f"transporte público ({ver['alta_muy_alta_pct_ganancias']:.1f}% les llega a ellos).\n"
+                            "El transporte no crea médicos: mueve el acceso de lugar.")
+    c, e = cifra_arriba(fig, "", "")
+    SP, X0g, Y0g = 0.7, 1.35, 12.3
+    gx = X0g + (np.arange(100) // 10) * SP          # por columnas: los 22 morados quedan juntos a la izquierda
+    gy = Y0g - (np.arange(100) % 10) * SP
+    xl, xr = X0g - SP / 2, X0g + 9.5 * SP
+    xm = xl + (xr - xl) * n_mor / 100
+    YB, HB, FS = 1.9, 2.9, 0.36
+    destino = np.zeros(100, bool)
+    destino[np.round((np.arange(n_gan) + 0.5) * 100 / n_gan).astype(int)] = True   # las 3 que van al lado morado
+    slot = np.zeros(100, int)
+    slot[destino] = np.arange(n_gan)
+    slot[~destino] = np.arange(100 - n_gan)
+
+    def lugar(i):
+        if destino[i]:
+            x0, w = xl, xm - xl
+        else:
+            x0, w = xm, xr - xm
+        porfila = max(1, int((w - 0.1) // FS))
+        f_, cc = divmod(slot[i], porfila)
+        return x0 + 0.05 + FS / 2 + cc * FS, YB + 0.05 + FS / 2 + f_ * FS
+
+    T = dict(gente=0, morado=15, caen=40, fin=40 + 100 + 8 + 30)
+
+    def act(fr):
+        for a_ in list(ax.patches) + list(ax.collections) + list(ax.texts) + list(ax.lines):
+            a_.remove()
+        tm = suave((fr - T["morado"]) / 12)
+        for i in range(100):
+            col = MORADO[3] if (i < n_mor and tm > 0.5) else GRIS
+            figura(ax, gx[i], gy[i] - 0.28, 0.56, col, alpha=suave((fr + 1) / 10))
+        if tm > 0.5:
+            ax.text((xl + xm) / 2, Y0g + 0.75, f"{n_mor}%", ha="center", fontsize=34, fontweight="bold", color=TXT)
+        # dos bandejas, divididas en el mismo punto que la gente
+        for x0, x1 in [(xl, xm - 0.06), (xm + 0.06, xr)]:
+            ax.add_patch(FancyBboxPatch((x0, YB), x1 - x0, HB, boxstyle="round,pad=0,rounding_size=0.12",
+                                        fill=False, ec=TXT3, lw=2, zorder=2))
+        if fr >= T["caen"]:
+            ax.text((xl + xr) / 2, YB + HB + 0.35, "mejora de acceso", ha="center", fontsize=24, color=TXT2)
+        xs, ys = [], []
+        for i in range(100):
+            t0 = T["caen"] + i
+            if fr < t0:
+                continue
+            x, y = lugar(i)
+            tt = suave((fr - t0) / 6)
+            xs.append(x); ys.append(YB + HB + 0.4 + (y - YB - HB - 0.4) * tt)
+        if xs:
+            ax.scatter(xs, ys, s=150, c=[VERDE], edgecolors=FONDO, linewidths=1, zorder=5)
+        listo = fr >= T["caen"] + 100 + 6
+        if listo:
+            ax.text((xl + xm) / 2, YB + HB - 0.75, f"{n_gan}%", ha="center", fontsize=34, fontweight="bold", color=TXT)
+        c.set_text(f"{n_mor}% · {n_gan}%" if listo else (f"{n_mor}%" if tm > 0.5 else ""))
+    guardar_anim(fig, act, T["fin"], "p3_3_equidad", fps=15)
+    return n_mor, n_gan
+
+
 TODAS = [p1_00_gancho, p1_01_clinicas, p1_02_gente, p1_03_calles, p1_03b_marginacion, p1_03c_capas,
-         p1_03d_un_cuadro, p1_04a_esquema_acceso, p1_04_acceso, p1_05_topologia,
-         p2_A_reubicar, p2_B_abrir_ampliar, p2_C_prioridad, p2_D_transporte, p2_E_horizonte,
-         p3_2_rodeo, p3_3_equidad, p3_4_nulo]
+         p1_03d1_alcance, p1_03d2_cuentas, p1_03e_todos_los_cuadros, p1_04a_esquema_acceso, p1_04_acceso,
+         p1_05_topologia, p2_A_reubicar, p2_B_abrir_ampliar, p2_C_prioridad, p2_D1_transporte_barrio,
+         p2_D2_transporte_ciudad, p2_E_horizonte, p3_2_rodeo, p3_3_equidad, p3_4_nulo]
 
 if __name__ == "__main__":
     pedidas = set(sys.argv[1:])

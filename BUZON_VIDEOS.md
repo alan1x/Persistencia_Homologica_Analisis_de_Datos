@@ -458,3 +458,62 @@ pipeline completo con Laguerre y si `Topología Grupos` se relaciona con este pr
   las razones de arriba. Confirmó de forma independiente 0 de 999, el rango de 3.445 a 3.831 M y
   el 21.7%.
 - **Sin cambio:** las animaciones siguen como GIF (sin ffmpeg).
+
+## 2026-11-24 — Ronda 3: más imagen, menos texto (TikTok)
+
+- **Qué se pidió:** la sección «Ronda 3» del esquema. La gráfica debe entenderse sin leer el texto:
+  una cifra grande arriba, etiquetas de una a tres palabras, contar con cosas y no con barras.
+- **Commit previo:** las 18 gráficas de la ronda 2, el script y este buzón quedaron en el commit
+  `feat(video): gráficas del video con la paleta y escenarios rehechos`.
+- **Codex como segunda opinión, antes de dibujar.** Leyó el esquema y el script. Se adoptó casi todo:
+  - **d1 cuenta personas, no demanda ponderada.** Los 23,257 están ponderados por distancia. En el
+    mapa viven 48,317 personas a 30 min por calle. Con un contador a 23 mil, parecería que ahí vive
+    la mitad de la gente. d1 cierra en **48 mil**, y los 23 mil pasan a d2.
+  - **En d2 no hay flecha delgada.** Las dos flechas son iguales, y lo que viaja es una ficha verde
+    del tamaño del aporte. La de 30 min es un punto de 1.6% del área: es su aporte efectivo
+    (0.0014 contra 0.0858), no solo el peso por distancia (1.15%). Se quitaron «2 ÷ 23 mil» y la
+    marca del 0.64: queda 0.09 contra la línea de 0.32.
+  - **Equidad con dos bandejas**, divididas en el mismo punto que la gente (22% | 78%). Las fichas
+    no caen sobre personas, porque parecerían 3 beneficiarios y no unidades de mejora.
+  - **D2:** el Edomex va rayado y con la etiqueta «datos parciales». Así el 52% → 52% se lee como
+    resultado de una red incompleta en los datos, no como un hecho sobre el Edomex. Se usa 27%
+    (r5py) en toda la secuencia de transporte.
+  - **p1_03e en tres saltos de cámara, no en oleadas.** Las oleadas parecían el problema
+    propagándose. Lo pintado avanza un poco detrás de la cámara.
+  - **No adoptado:** fusionar `p1_03b` con equidad. Es decisión del guion y queda para Mario.
+- **Cifras puestas desde los datos y verificadas** (con `desglose_cuadro`, que hace un `assert`
+  contra el pipeline):
+  - **Clínica de 30 min:** C.S.T-I San Andrés Xicotencatl, a 2,233 m (29.8 min), con **3 médicos**.
+    Tiene **60,351 personas** a su alcance y una demanda ponderada de **25,220**. Llega al cuadro con
+    peso **0.0115** y aporta **0.0014** médicos por mil.
+  - **Clínica de 1 min:** Peñón Viejo, con 2 médicos, 48,317 personas y 23,257 ponderadas. Aporta
+    0.0858.
+  - **Acceso del cuadro:** 0.0872.
+  - **Los 48 puntos de d1:** cada punto cae donde la gente acumulada por distancia cruza cada mil.
+    Encogidos por su peso, suman la demanda ponderada con menos de 2% de error (`assert`).
+  - **Total de cuadros:** **322,223**. Confirmado contra los tres parquet de cuadros, porque ningún
+    JSON trae el conteo. 320,348 tienen gente. El contador cuenta todos los cuadros pintados,
+    igual que el mapa de `p1_04`.
+- **Lo que quedó en `outputs/video/`** (GIF + PNG del último cuadro):
+  - `p1_03b_marginacion`: dos estados, morado y gris. Las zonas se encienden y la cifra sube hasta
+    22%.
+  - `p1_03d1_alcance`: la mancha de 30 min por calle de Peñón Viejo crece y se encienden 48 puntos.
+    Contador a 48 mil.
+  - `p1_03d2_cuentas`: sin mapa.
+    1. 48 puntos se encogen por distancia (48 → 23 mil).
+    2. Aparecen 2 y 3 figuritas de médico.
+    3. La ficha grande y la diminuta viajan al cuadro.
+    4. 0.09 contra 0.32, el cuadro rojo, la etiqueta «marginación alta» y «prioridad».
+  - `p1_03e_todos_los_cuadros`: de 1 cuadro a 322 mil, en tres saltos. Termina en el mismo eje y
+    encuadre que `p1_04_acceso`.
+  - `p2_D1_transporte_barrio`: se dibujan las 82 líneas del GTFS que cruzan el barrio, y los cuadros
+    que salen del acceso bajo se vuelven menta, desde las paradas hacia afuera. Contador a **21 mil**.
+    **Nuevo y honesto:** 3.1 mil personas del barrio *entran* al acceso bajo con transporte, porque
+    más gente llega a sus clínicas. Se pintan de rojo, y la nota lo dice.
+  - `p2_D2_transporte_ciudad`: las 721 líneas del GTFS. CDMX 27% → 21% y después Edomex 52% → 52%.
+    Las líneas son menta: el transporte es «lo que se agrega».
+  - `p3_3_equidad`: 100 figuritas, 22 moradas, y 100 fichas que caen en dos bandejas, 3 del lado
+    morado. Arriba, «22% · 3%».
+- **Se borraron** `p1_03d_un_cuadro` y `p2_D_transporte`, que el esquema reemplaza (siguen en el
+  commit anterior).
+- **Sin commit** de esta ronda.
